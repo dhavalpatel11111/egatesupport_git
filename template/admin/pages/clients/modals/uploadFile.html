@@ -1,0 +1,42 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Upload File</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="name">Name *</label>
+        <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="" required>
+    </div>
+ <div class="form-group">      
+ <?php $document_ty = getTable("document_type"); ?>
+<label for="name">Document Type *</label>        
+  <select class="form-control select2 select2-hidden-accessible" id="document_type" name="document_type" style="width: 100%;" tabindex="-1" aria-hidden="true">
+  <option value="">Select Document Type</option>
+  <?php foreach ($document_ty as $document_t) { echo "<option value='".$document_t['id']."'"; echo ">".$document_t['document_name']."</option>"; } ?>
+    </select>
+   
+ </div>
+
+<div class="form-group">  <label for="name">Document Memo *</label> <input type="text" class="form-control" id="document_memo" name="document_memo" value="" >    </div>
+    <div class="form-group">
+        <label for="file">File</label>
+        <input type="file" id="file" name="file" required>
+        <p class="help-block">Max upload file size on your server is <?php echo ini_get('upload_max_filesize'); ?>.</p>
+    </div>
+<?php $seareal = getSingleValue("assets","serial",$_GET['assetid']);?>
+    <input type="hidden" name="uploadFile">
+    <input type="hidden" name="clientid" value="<?php if(isset($_GET['clientid'])) echo $_GET['clientid']; else echo "0"; ?>">
+    <input type="hidden" name="seareal" value="<?php  echo $seareal; ?>">
+    <input type="hidden" name="projectid" value="<?php if(isset($_GET['projectid'])) echo $_GET['projectid']; else echo "0"; ?>">
+    <input type="hidden" name="assetid" value="<?php if(isset($_GET['assetid'])) echo $_GET['assetid']; else echo "0"; ?>">
+
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php if(isset($_GET['section'])) echo $_GET['section']; else echo ""; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> Upload</button>
+</div>
+
+<script type="text/javascript">
+		$(".select2").select2();
+</script>

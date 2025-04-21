@@ -1,0 +1,819 @@
+<style>
+    .client_handle_mistake .ckh {
+        float: left;
+        margin-right: 11px;
+    }
+
+    .client_handle_mistake .ckh input {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        height: 15px;
+        width: 15px;
+    }
+
+    .client_handle_mistakewrap {
+        padding: 0px 10px;
+    }
+
+    .client_handle_mistakewrap .client_handle_mistake {
+        box-shadow: none;
+        padding-top: 10px;
+        border-radius: 5px;
+    }
+
+    .client_handle_mistakewrap .client_handle_mistake label {
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    .client_handle_mistakewrap .client_handle_mistake .pmcon {
+        padding: 0px 7px;
+    }
+
+    .ms1 {
+        margin-top: 15px;
+    }
+
+    .ms2 {
+        padding-bottom: 15px;
+    }
+
+    .ms2 .client_handle_mistake.pmco {
+        padding-bottom: 0px;
+    }
+
+    .client_handle_mistake .pmcon {
+        width: 40%;
+    }
+
+    .client_handle_mistake.pmco input.cost {
+        width: 100%;
+        height: 32px;
+        padding: 5px;
+        border-color: #ecf0f5;
+    }
+
+    .client_handle_mistake.pmco input.pmcon {
+        width: 100%;
+        height: 32px;
+    }
+
+    .ms2.client_handle_mistakewrap span.select2 {
+        margin-bottom: 11px;
+    }
+
+    .client_handle_mistake.pmco input#cog {
+        width: 100%;
+        height: 32px;
+        padding: 5px;
+        border-color: #ecf0f5;
+    }
+
+    .save_button_daa .btn-success {
+        margin: 16px;
+    }
+
+    @media screen and (max-width: 767px) {
+        .box-header>.box-tools {
+            position: static;
+            margin-top: 5px;
+        }
+
+        .btngroupmobile .btn-sm {
+            font-size: 11px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        .btngroupmobile {
+            float: left;
+        }
+
+        .client_handle_mistakewrap .client_handle_mistake label {
+            font-size: 14px;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .client_handle_mistake.pmco input.cost {
+            border: 1px solid #bcbdbf;
+            margin-top: 10px;
+        }
+
+        .box-tools.pull-right.btngroupmobile {
+            float: left !important;
+        }
+
+    }
+</style>
+
+
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>#
+            <?php echo $ticket['ticket']; ?> -
+            <?php echo getSingleValue("ticketsubject","subject",$ticket['subject']);
+
+?>&nbsp;&nbsp;
+            <a href="/?route=tickets"><button type="text" class="btn btn-success">Back to Ticket</button></a>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li>Tickets</li>
+            <li class="active">#
+                <?php echo $ticket['ticket']; ?>
+            </li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row">
+            <div class='col-md-12'>
+                <div class="alert alert-<?php print $statusmessage[" type"]; ?> alert-auto" role="alert">
+                    <?php print $statusmessage["message"]; ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12 col-md-4 col-sm-4">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Ticket Details</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="hostTable" class="table table-striped table-hover">
+                            <tbody>
+                                <tr>
+                                    <td><b>Status</b></td>
+                                    <td>
+                                        <span>
+                                        <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                        <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                        <?php if($ticket['status'] == "Followed Up") echo "<span class='badge bg-teal'>Followed Up</span>"; ?>
+                                        <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                        <?php if($ticket['status'] == "Closed") echo "<span class='badge bg-gray'>Closed</span>"; ?>
+                                        </span>
+                                        <span>
+                                            <?php 
+                                            echo "<a href='?route=contract/manage&id=".$ticket['contractid']."&is_view_history=1&quick_filter=60' class='badge' style='background: none; color: green; font-weight: normal; border: 2px solid green; text-decoration: none; padding-top: 2px;padding-bottom: 3px;'>
+                                                View History
+                                            </a>";
+                                            ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Priority</b></td>
+                                    <td>
+                                        <?php echo $ticket['priority']; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Client</b></td>
+                                    <td>
+                                        <?php  if($ticket['clientid'] != 0) echo "<a href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$ticket['clientid']) . "</span></a> ";?>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td><b>Related Entity</b></td>
+                                    <td>
+                                        <?php
+                                               
+                                                $assetid = getSingleValue("contract","assetid",$ticket['contractid']);
+                                                $assettag = getSingleValue("assets","tag",$assetid);
+                                                $modelid = getSingleValue("assets","modelid",$assetid);
+                                                $assetmodel = getSingleValue("models","name",$modelid);
+                                                if($ticket['contractid'] != 0) echo "<a href='?route=contract/manage&id=".$ticket['contractid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"> " . getSingleValue("contract","contractno",$ticket['contractid']) . " | " .$assettag .":" . $assetmodel . "</span></a> ";
+                                                ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label>Department</label></td>
+                                    <td>
+                                        <?php 
+
+         $dipartment_id = getSingleValue('contract', 'department', $ticket['contractid']);  
+          $dipartment_name = getSingleValue('department', 'name', $dipartment_id); 
+
+           if($dipartment_name !=''){ echo $dipartment_name;}else{ echo "None";}?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Subject</b></td>
+                                    <td>
+                                        <?php echo getSingleValue("ticketsubject","subject",$ticket['subject']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Created</b></td>
+                                    <td>
+                                        <?php echo $ticket['timestamp']; ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Email Address</b></td>
+                                    <td>
+                                        <?php echo $ticket['email']; ?>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td><b>User</b></td>
+                                    <td>
+                                        <?php if($ticket['userid'] == 0) echo "<span class='text-muted'>None</span>"; else echo getSingleValue('people','name',$ticket['userid']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>User Department</b></td>
+                                    <td>
+                                        <?php if($ticket['userid'] == 0) echo "<span class='text-muted'>None</span>"; else echo getSingleValue('people','title',$ticket['userid']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>User Mobile Number</b></td>
+                                    <td>
+                                        <?php if($ticket['userid'] == 0) echo "<span class='text-muted'>None</span>"; else echo getSingleValue('people','mobile',$ticket['userid']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Contract</b></td>
+                                    <td>
+                                        <?php if($ticket['contractid'] == 0) echo "<span class='text-muted'>None</span>"; else echo getSingleValue('contract','contractno',$ticket['contractid']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Assigned To</b></td>
+                                    <td>
+                                        <?php if($ticket['adminid'] == 0) echo "<span class='text-muted'>To Be Scheduled</span>"; else echo getSingleValue('people','name',$ticket['adminid']); ?>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="col-xs-12 col-md-8 col-sm-8">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">#
+                            <?php echo $ticket['ticket']; ?> -
+                            <?php echo getSingleValue("ticketsubject","subject",$ticket['subject']); ?>
+                        </h3>
+                        <div class="box-tools pull-right  btngroupmobile">
+                            <div class="btn-group ">
+                                <a target="_blank" href="?route=pdf/ticket_report&id=<?php echo $ticket['id']; ?>"
+                                    class="btn btn-info btn-sm" style="margin: 0px 5px;">Service Report</a>
+                                <button
+                                    onClick='showM("ajax.php?modal=ticketEdit&reroute=tickets/manage&routeid=<?php echo $ticket['
+                                    id']; ?>&id=
+                                    <?php echo $ticket['id']; ?>&section=");return false' type="button" class="btn
+                                    btn-success btn-sm" style="margin: 0px 5px;">EDIT
+                                </button>
+                                <a href="ajax.php?quickAction=ticketAssignToMe&reroute=tickets/manage&routeid=<?php echo $ticket['id']; ?>&id=<?php echo $ticket['id']; ?>"
+                                    class="btn btn-primary btn-sm" style="margin: 0px 5px;">ASSIGN TO ME</a>
+                                <?php if($ticket['status'] != "Closed") { ?>
+                                <a href="ajax.php?quickAction=ticketClose&reroute=tickets/manage&routeid=<?php echo $ticket['id']; ?>&id=<?php echo $ticket['id']; ?>"
+                                    class="btn btn-primary btn-sm" style="margin: 0px 5px;">CLOSE</a>
+                                <?php } ?>
+                                <?php if($ticket['status'] == "Closed") { ?>
+                                <a href="ajax.php?quickAction=ticketReopen&reroute=tickets/manage&routeid=<?php echo $ticket['id']; ?>&id=<?php echo $ticket['id']; ?>"
+                                    class="btn bg-orange btn-sm" style="margin: 0px 5px;">REOPEN</a>
+                                <?php } ?>
+                                <button
+                                    onClick='showM("ajax.php?modal=ticketDelete&reroute=tickets&routeid=&section=&id=<?php echo $ticket['
+                                    id']; ?>");return false' type="button" class="btn btn-danger btn-sm" style="margin: 0px 5px;">DELETE</button>
+                            </div>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <form role="form" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <textarea class="form-control summernote" rows="5" id="message" name="message"
+                                    required><?php if(isset($lia['signature'])) echo $lia['signature']; ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="ticket_file" class="control-label">Attachment</label>
+
+                                <input type="file" id="ticket_file" name='ticket_file' class="filestyle"
+                                    data-iconName="glyphicon glyphicon-inbox">
+
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="checkbox"><label><input type="checkbox" name="notification" value="true"
+                                                checked> Send email notification</label></div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="Followed Up">Set to Followed Up</option>
+                                        <option value="Closed">Set to Closed</option>
+                                        <option value="In Progress">Set to In Progress</option>
+                                        <option value="Reopened">Set to Reopned</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 text-right"><button type="submit" id="reply12"
+                                        class="btn btn-primary"><i class="fa fa-reply"></i> Reply </button></div>
+
+                            </div>
+
+                            <input type="hidden" name="addTicketReply">
+                            <input type="hidden" name="ticketid" value="<?php echo $ticket['id']; ?>">
+                            <input type="hidden" name="reply_u_id" value="<?php echo $lia['id']; ?>">
+
+                            <!--<input type="hidden" name="userid" value="0">-->
+                            <input type="hidden" name="adminid" value="<?php echo $ticket['adminid']; ?>">
+                            <input type="hidden" name="userid" value="<?php //echo $ticket['userid']; ?>">
+
+                            <input type="hidden" name="route" value="tickets/manage">
+                            <input type="hidden" name="routeid" value="<?php echo $ticket['id']; ?>">
+                            <?php //print_r( $ticket['userid']); ?>
+                        </form><!-- /.form -->
+                    </div>
+                </div>
+
+
+
+                  <!-- Technician -->
+                  <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Technician Field Report</h3>
+                    </div><!-- /.box-header -->
+
+                    <?php 
+                    $host = $_SERVER['HTTP_HOST'];
+                    $host_upper = strtoupper($host);
+                    $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                    $baseurl = "http://" . $host . $path . "/";
+                    ?>
+
+                    <div class="box-body">
+                        <?php if($lia['role'] == 'technician' || $lia['role'] == 'admin'){ ?>
+                        <form role="form" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <label class="control-label" style="font-weight: unset;">Technician In
+                                        Charge</label>
+                                    <input type="text" class="form-control" name="updated_technician" class="pmcon"
+                                        value="<?php echo $technician_name['name'] ?>" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="control-label" style="font-weight: unset;">Model</label>
+                                    <input type="text" class="form-control" name="technician_modul" class="pmcon"
+                                        value="<?php echo  $assetmodel ?>" disabled>
+                                    <input type="hidden" name="modelid" value="<?php echo $modelid; ?>">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label for="technician_file" class="control-label"
+                                        style="font-weight: unset;">Problem Image</label>
+                                    <input type="file" id="technician_file" name="technician_file" class="filestyle"
+                                        data-iconName="glyphicon glyphicon-inbox">
+
+                                    <a target="_blank"
+                                        href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $technicain_report['technician_file']; ?>">
+                                        <?php echo $technicain_report['technician_file']; ?>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label for="diagnose_comment" class="control-label"
+                                        style="font-weight: unset;">Diagnose Comments *</label>
+                                    <textarea class="form-control" rows="2" id="diagnose_comment"
+                                        name="diagnose_comment"
+                                        required><?php echo $technicain_report['diagnose_comment']; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+
+                                <div class="col-md-12">
+                                    <label for="fixed_image" class="control-label" style="font-weight: unset;">Fixed
+                                        Image</label>
+                                    <input type="file" id="fixed_image" name="fixed_image" class="filestyle"
+                                        data-iconName="glyphicon glyphicon-inbox">
+
+                                    <a target="_blank"
+                                        href="<?php echo $baseurl; ?>uploads/fixed_image/<?php echo $technicain_report['fixed_image']; ?>">
+                                        <?php echo $technicain_report['fixed_image']; ?>
+                                    </a>
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label for="technician_comment" class="control-label"
+                                        style="font-weight: unset;">Technician Comments *</label>
+                                    <textarea class="form-control" rows="2" id="technician_comment"
+                                        name="technician_comment"
+                                        required><?php echo $technicain_report['technician_comment']; ?></textarea>
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label style="font-weight: unset;">Action Taken *</label>
+                                    <select name="problem_category" id="problem_category" class="form-control" required>
+                                        <option value="">Select Category</option>
+                                        <?php 
+                                        foreach ($problem_category as $tect) {
+                                            // Check if the current option should be selected
+                                            $selected = (isset($technicain_report['problem_category']) && $tect['id'] == $technicain_report['problem_category']) ? 'selected' : '';
+                                        ?>
+                                        <option value="<?php echo htmlspecialchars($tect['id']); ?>" <?php echo
+                                            $selected; ?>>
+                                            <?php echo htmlspecialchars($tect['action']); ?>
+                                        </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12" style="margin-top: 15px;">
+                                    <span class="save_button_technician">
+                                        <button type="submit" class="btn btn-success btn-sm pull-right">
+                                            <i class="fa fa-save"></i> Save
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="addupdateTechnicianTickets">
+                            <input type="hidden" name="technician_id" value="<?php echo $lia['id']; ?>">
+                            <input type="hidden" name="technicain_report_id"
+                                value="<?php echo $technicain_report['id']; ?>">
+                            <input type="hidden" name="ticketid" value="<?php echo $ticket['id']; ?>">
+                            <input type="hidden" name="routeid" value="<?php echo $ticket['id']; ?>">
+                            <input type="hidden" name="route" value="tickets/manage">
+                        </form><!-- /.form -->
+                        <?php }  else { ?>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Technician In Charge</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <?php echo $technician_name['name'] ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Model</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <?php echo $assetmodel; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Problem Image</label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <a target="_blank"
+                                        href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $technicain_report['technician_file']; ?>">
+                                        <?php echo $technicain_report['technician_file']; ?>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Diagnose Comments</label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p>
+                                        <?php echo $technicain_report['diagnose_comment']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Fixed Image</label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <a target="_blank"
+                                        href="<?php echo $baseurl; ?>uploads/fixed_image/<?php echo $technicain_report['fixed_image']; ?>">
+                                        <?php echo $technicain_report['fixed_image']; ?>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Technician Comments</label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p>
+                                        <?php echo $technicain_report['technician_comment']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="control-label">Problem Category</label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p>
+                                        <?php echo $technicain_report['problem_subject']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <?php } ?>
+
+
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+                <!-- End Technician -->
+
+
+                <div class="box box-primary">
+                    <form role="form" method="post">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Close Ticket</h3>
+                            <div style="float:right;"><strong>Updated By :</strong>
+                                <?php 
+							if($ticket['status']=='Closed')
+							{
+							?>
+
+                                <?php
+							$closed_by_name= getSingleValue("people", "name", $ticket['closed_by']);
+							$closed_email= getSingleValue("people", "email", $ticket['closed_by']);
+							echo "<b style='color:red;'>".$closed_by_name.'('.$closed_email.')</b>';
+							}
+							else
+							{
+							?>
+
+                                <?php
+							$closed_by_name= getSingleValue("people", "name", $ticket['closed_by']);
+							$closed_email= getSingleValue("people", "email", $ticket['closed_by']);
+							echo "<b style='color:red;'>".$closed_by_name.'('.$closed_email.')</b>';
+							}
+							?>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <textarea class="form-control summernote" rows="5" id="notes"
+                                    name="notes"><?php echo $ticket['notes']; ?></textarea>
+                            </div>
+                            <input type="hidden" name="updateTicketNotes">
+                            <input type="hidden" name="id" value="<?php echo $ticket['id']; ?>">
+                            <input type="hidden" name="closed_by" value="<?php echo $lia['id']; ?>">
+                            <input type="hidden" name="ticket_email" value="<?php echo $ticket['email']; ?>">
+                            <input type="hidden" name="ticket_contract" value="<?php echo $ticket['contractid']; ?>">
+                            <input type="hidden" name="route" value="tickets/manage">
+                            <input type="hidden" name="routeid" value="<?php echo $ticket['id']; ?>">
+
+                        </div>
+
+                        <div class="ms1 client_handle_mistakewrap">
+                            <div class="client_handle_mistake">
+
+                                <h4>Ticket Type</h4>
+                                <span class="ckh">
+                                    <input type="checkbox" class="checkboxxx" name="client_handle_mistake" value="1"
+                                        <?php if($ticket['client_handle_mistake']=='1' ){echo "checked= checked"
+                                        ;};?>></span>
+                                <label style="color: black !important;">Client Handling Mistake</label>
+
+                                <br>
+                                <span class="ckh">
+                                    <input type="checkbox" class="checkboxxx" name="technical_improvement" value="1"
+                                        <?php if($ticket['technical_improvement']=='1' ){echo "checked= checked"
+                                        ;};?>></span>
+                                <label style="color: black !important;">For technical improvement</label><br>
+                                <span class="ckh">
+                                    <input type="checkbox" class="checkboxxx" name="refill" value="1" <?php
+                                        if($ticket['refill']=='1' ){echo "checked= checked" ;};?>></span>
+                                <label style="color: black !important;">Refill & Preventive Maintenance</label>
+                                <br>
+                                <span class="ckh">
+                                    <input type="checkbox" class="checkboxxx" name="parsts_replacments" value="1" <?php
+                                        if($ticket['parsts_replacments']=='1' ){echo "checked= checked" ;};?>></span>
+                                <label style="color: black !important;">Parts Replacments</label><br>
+                                <span class="ckh">
+                                    <input type="checkbox" class="checkboxxx" name="ticketothers" value="1" <?php
+                                        if($ticket['ticketothers']=='1' ){echo "checked= checked" ;};?>></span><label
+                                    style="color: black !important;">Others</label>
+                            </div>
+                        </div>
+
+                        <div class="ms2 client_handle_mistakewrap">
+                            <div class="client_handle_mistake pmco">
+                                <div class="row">
+                                    <div class="col-md-7 col-sm-7"><label style="color: black !important;">Need Client's Help</label> </div>
+                                    <div class="col-md-5 col-sm-5"><label style="color: black !important;"> Cost <span>&nbsp;&nbsp;
+                                                &#8369;</span></label>
+
+
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-7 col-sm-7">
+                                        <select class="form-control select2 select2-hidden-accessible"
+                                            id="consumable_list_id" name="consumable_list_id" style="width: 100%;"
+                                            tabindex="-1" aria-hidden="true">
+                                            <option value="0">Select Parts Consumed</option>
+                                            <?php foreach ($consumable as $consum) { echo "<option value='".$consum['id']."'"; if($consum['id']==$ticket['consumable_list_id']) echo " selected"; echo ">".$consum['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5 col-sm-5">
+                                        <input type="text" name="consumable_cost" id="consumable_cost" class="cost"
+                                            value="<?php echo $ticket['consumable_cost']; ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7 col-sm-7">
+                                        <label style="    margin-top: -2px; color: black !important;">Short Comment*</label>
+                                        <input type="text" name="pmcon" class="pmcon"
+                                            value="<?php echo $ticket['pmcon']; ?>">
+                                    </div>
+                                    <?php 
+
+
+if($lia['role']== "admin" || $lia['role']== "owner"){?>
+                                    <div class="col-md-5 col-sm-5">
+                                        <label style="color: black !important;"> COG <span style="color: black !important;">&nbsp;&nbsp; &#8369;</span></label>
+                                        <input type="text" name="cog" id="cog" class="cog"
+                                            value="<?php echo $ticket['cog']; ?>" readonly>
+                                    </div>
+                                    <?php } ?>
+                                    <br>
+                                    <span class="save_button_daa">
+                                        <button type="submit" class="btn btn-success btn-sm pull-right"><i
+                                                class="fa fa-save"></i> Save</button> </span>
+                                </div> <br>
+                            </div>
+
+                        </div>
+
+                    </form><!-- /.form -->
+                </div>
+
+              
+
+                <!-- <label style="color:red;font-size:24px;"> Replies :</label> -->
+
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Replies : </h3>
+                    </div>
+                    <div class="box-body">
+                        <?php 
+                        foreach ($replies as $reply) { 
+                        ?>
+                                <div class="box box-solid">
+                                    <div class="box-header with-border">
+                                        <?php if ($reply['reply_u_id'] != 0) { 
+                                        //echo "hiii";?>
+                                        <img src="<?php echo getGravatar(getSingleValue(" people","email",$reply['reply_u_id']),"28");
+                                            ?>"
+                                        class="img-circle" />
+                                        <h3 class="box-title" style="vertical-align: middle;">
+                                            <?php echo getSingleValue("people","name",$reply['reply_u_id']); ?>&nbsp;<span title="Role"
+                                                style="color:#3c8dbc;font-weight:bold;text-transform:capitalize;">
+                                                <?php echo getSingleValue("people","role",$reply['reply_u_id']); ?>
+                                            </span>&nbsp;
+                                            <?php echo $reply['reply_u_id']. '|' .$reply['id']; ?> <small>
+                                                <?php echo $reply['timestamp']; ?>
+                                            </small>
+                                        </h3>
+                                        <?php }
+                                        else 
+                                        {						?>
+
+
+                                        <img src="<?php echo getGravatar($ticket['email']," 28"); ?>" class="img-circle" />
+                                        <h3 class="box-title" style="vertical-align: middle;">
+                                            <?php echo $ticket['email']; ?> [Not a registered user] <small>
+                                                <?php echo $reply['timestamp']; ?>
+                                            </small>
+                                        </h3>
+                                        <?php } ?>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <iframe src="ajax.php?quickAction=getTicketReply&id=<?php echo $reply['id']; ?>" frameborder="0"
+                                            scrolling="no" width="100%" onload="resizeIframe(this)">
+                                            <p>Your browser does not support iframes.</p>
+                                        </iframe>
+                                        <?php if($reply['file'] && file_exists($scriptpath . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR . $reply['file'])) {?>
+                                        <div>Attacthment: </div>
+                                        <ul class="todo-list list-inline" id="fileslist">
+                                            <li id="" style="width:45%;margin:10px;padding:12px;">
+                                                <div class="row">
+                                                    <div class="col-xs-1" style="vertical-align:middle"><i
+                                                            class="fa fa-<?php echo fileIcon($reply['file']); ?>"></i></div>
+                                                    <div class="col-xs-10">
+                                                        <?php echo $reply['filename'] . "<br><small>" . $reply['file'] . "</small>"; ?>
+                                                        <?php
+                                                        $fileExtention = pathinfo ( $reply['file'], PATHINFO_EXTENSION );
+                                                        if(in_array($fileExtention, array('jpg','jpeg','gif','png'))) {
+                                                        echo "<a class='btn btn-primary btn-xs preview ' data-toggle='lightbox' href='http://" . $_SERVER['SERVER_NAME']  . "/uploads/". $reply['file'] ."' >Preview</a>";
+                                                        }
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                                <div class="pull-right">
+                                                    <a data-toggle="tooltip" data-original-title="Download"
+                                                        href="<?php echo 'ajax.php?reply=1&download=' . $reply['fileid']; ?>"
+                                                        class='btn-right text-dark'><i class='fa fa-download'></i></a>&nbsp;
+                                                    <!--<a href="#" onClick='showM("ajax.php?modal=deleteContractFile&reroute=tickets/manage&routeid=<?php echo $ticket['id']; ?>&id=<?php echo $reply['fileid']; ?>&section=files");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>-->
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <?php } ?>
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                        <!-- /.box -->
+                        <?php } ?>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#consumable_list_id').change(function () {
+
+            $.ajax({
+                url: "index.php?route=consumable/get_consumable&id=" + $(this).val(),
+                dataType: "json",
+                success: function (responde) {
+                    $('#consumable_cost').val(responde.cost);
+                    $('#cog').val(responde.cog);
+
+                }
+            });
+        });
+        $("[id='message']").summernote({
+        }).on('summernote.keyup', function () {
+
+            var text = $("#summernote").summernote("code").replace(/&nbsp;|<\/?[^>]+(>|$)/g, "").trim();
+
+            if (text.length == 0) {
+                $("#reply12").attr("disabled", "disabled");
+            } else {
+                $("#reply12").removeAttr("disabled");
+            }
+        });
+    });
+</script>

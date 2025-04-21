@@ -1,0 +1,239 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Assets<small> Manage assets</small></h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li><a href="?route=assets">Assets</a></li><li class="active">Create</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <script type="text/javascript">
+            function doDelete(id) {
+                itemid = id;
+                document.getElementById("deleteValue").value = itemid;
+                $('#delModal').modal('show');
+            }
+        </script>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Create New Asset</h3></div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateAssetForm();">
+                                <div class="form-group">
+                                    <label for="clientid" class="col-sm-2 control-label">Client</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">Stock Warehouse</option>
+                                            <option value="999999">Dispose Or Repair</option>
+                                            <?php foreach ($clients as $client) { echo "<option value='".$client['id']."'>".$client['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="categoryid" class="col-sm-2 control-label">Asset Service Type *</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="categoryid" name="categoryid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <?php foreach ($categories as $category) { echo "<option value='".$category['id']."'>".$category['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tag" class="col-sm-2 control-label">Asset Tag *</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="tag" name="tag" value="<?php echo getConfigValue("asset_tag_prefix"); ?><?php echo nextAssetTag(); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="manufacturerid" class="col-sm-2 control-label">Asset Type</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="manufacturerid" name="manufacturerid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">None</option>
+                                            <?php foreach ($manufacturers as $manufacturer) { echo "<option value='".$manufacturer['id']."'"; echo ">".$manufacturer['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serial" class="col-sm-2 control-label">Serial Number *</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="serial" name="serial" required="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modelid" class="col-sm-2 control-label">Model *</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="modelid" name="modelid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">None</option>
+                                            <?php foreach ($models as $model) { echo "<option value='".$model['id']."'>".getSingleValue("manufacturers","name",$model['manufacturerid'])." ".$model['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="supplierid" class="col-sm-2 control-label">Supplier</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="supplierid" name="supplierid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">None</option>
+                                            <?php foreach ($suppliers as $supplier) { echo "<option value='".$supplier['id']."'>".$supplier['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="statusid" class="col-sm-2 control-label">Status *</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="statusid" name="statusid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <?php foreach ($labels as $label) { echo "<option value='".$label['id']."'>".$label['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="adminid" class="col-sm-2 control-label">Asset Admin</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="adminid" name="adminid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">None</option>
+                                            <?php foreach ($admins as $admin) { echo "<option value='".$admin['id']."'>".$admin['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="userid" class="col-sm-2 control-label">Asset User</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="userid" name="userid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">None</option>
+                                            <?php foreach ($users as $user) { echo "<option value='".$user['id']."'>".$user['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="purchase_date" class="col-sm-2 control-label">Purchase Date</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control datepicker-input" id="purchase_date" name="purchase_date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="warranty_months" class="col-sm-2 control-label">Warranty</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="warranty_months" name="warranty_months">
+                                            <span class="input-group-addon">months</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="warranty_expiry" class="col-sm-2 control-label">Warranty Expired Date</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control datepicker-input" id="warranty_expiry" name="warranty_expiry">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="invoice" class="col-sm-2 control-label">Invoice</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="invoice" name='invoice' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="warranty_card" class="col-sm-2 control-label">Warranty Card</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="warranty_card" name='warranty_card' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label">Notes</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control summernote" id="notes" name="notes"></textarea>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="addAsset">
+                                <input type="hidden" name="route" value="assets">
+                                <input type="hidden" name="routeid" value="">
+
+                                <div class="col-sm-2"></div><div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    function validateAssetForm() {
+        var modelid = $('#modelid').val();
+        //console.log(assetid);
+        if (modelid == '0') {
+            $('html, body').animate({
+                scrollTop: $("#modelid").offset().top
+            }, 2000);
+            $('#modelid').addClass('invalid');
+            alert('Please select Model!');
+            return false;
+        }
+        $('#modelid').removeClass('invalid');
+        return true;
+    }
+    $(document).ready(function () {
+        $('.summernote-modal').summernote({height: 200});
+        $('.bootstrap-slider').bootstrapSlider();
+
+        $(".sliderToggle").click(function () {
+            if (this.checked) {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("disable");
+            } else {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("enable");
+            }
+        });
+    });
+
+
+    $(function () {
+        $(".select2").select2();
+        /*$('#contract_expiry, #warranty_expiry', '#purchase_date').datepicker({
+            format: 'yyyy-mm-dd',
+            clearBtn: 'true',
+            weekStart: '<?php echo getConfigValue("week_start"); ?>',
+            autoclose: true
+        });*/
+    });
+    /*
+    $('input:file').change(
+            function (e) {
+                var files = e.originalEvent.target.files;
+                //console.log(files);
+                for (var i = 0, len = files.length; i < len; i++) {
+                    var n = files[i].name,
+                            s = files[i].size,
+                            t = files[i].type;
+
+                    if (s > 100) {
+                        console.log(t + 'Please deselect this file: "' + n + '," it\'s larger than the maximum filesize allowed. Sorry!');
+                    }
+                }
+            });
+*/
+</script>

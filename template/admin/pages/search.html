@@ -1,0 +1,94 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>Search<small> Search system wide</small></h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Search</li></ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-primary">
+          			<div class="box-header with-border"><h3 class="box-title"></h3></div><!-- /.box-header -->
+                    <div class="box-body">
+						<form role="form" method="get" action="" class="form-inline">
+							<div class="form-group" style="width:94%">
+								<input type="text" class="form-control input-lg" style="width:100%" id="query" name="q" placeholder="Search String..." value="<?php if(isset($_GET['q'])) echo $_GET['q']; ?>" required>
+							</div>
+
+							<input type="hidden" name="route" value="search">
+							<button type="submit" class="btn btn-primary btn-lg">Search</button>
+						</form>
+						<div class="clear"></div>
+
+						<?php if(!empty($assets)) { ?>
+							<div class="row">
+								<div class="col-xs-12"><h3>Assets</h3></div>
+								<?php foreach($assets as $asset) { ?>
+									<div class="col-xs-3"><div class="callout callout-gray">
+					                  <h4><a href="?route=assets/manage&id=<?php echo $asset['id']; ?>"><?php echo $asset['tag']; ?></a></h4>
+					                  <p><?php echo $asset['name']; ?></p>
+					                </div></div>
+								<?php } ?>
+							</div>
+						<?php } ?>
+
+						<?php if(!empty($licenses)) { ?>
+							<div class="row">
+								<div class="col-xs-12"><h3>Licenses</h3></div>
+								<?php foreach($licenses as $license) { ?>
+									<div class="col-xs-3"><div class="callout callout-gray">
+					                  <h4><a href="?route=licenses/manage&id=<?php echo $license['id']; ?>"><?php echo $license['tag']; ?></a></h4>
+					                  <p><?php echo $license['name']; ?></p>
+					                </div></div>
+								<?php } ?>
+							</div>
+						<?php } ?>
+
+						<?php if(!empty($projects)) { ?>
+							<div class="row">
+								<div class="col-xs-12"><h3>Projects</h3></div>
+								<?php foreach($projects as $project) { ?>
+									<div class="col-xs-3"><div class="callout callout-gray">
+					                  <h4><a href="?route=projects/manage&id=<?php echo $project['id']; ?>"><?php echo $project['tag']; ?></a></h4>
+					                  <p><?php echo $project['name']; ?></p>
+					                </div></div>
+								<?php } ?>
+							</div>
+						<?php } ?>
+
+						<?php if(!empty($clients)) { ?>
+							<div class="row">
+								<div class="col-xs-12"><h3>Clients</h3></div>
+								<?php foreach($clients as $client) { ?>
+									<div class="col-xs-3"><div class="callout callout-gray">
+					                  <h4><a href="?route=clients/manage&id=<?php echo $client['id']; ?>">ID: <?php echo $client['id']; ?></a></h4>
+					                  <p><?php echo $client['name']; ?></p>
+					                </div></div>
+								<?php } ?>
+							</div>
+						<?php } ?>
+
+						<?php if(!empty($tickets)) { ?>
+							<div class="row">
+								<div class="col-xs-12"><h3>Tickets</h3></div>
+								<?php foreach($tickets as $ticket) { ?>
+									<div class="col-xs-3"><div class="callout callout-gray">
+					                  <h4><a href="?route=tickets/manage&id=<?php echo $ticket['id']; ?>"># <?php echo $ticket['ticket']; ?></a></h4>
+					                  <p><?php echo $ticket['subject']; ?></p>
+					                </div></div>
+								<?php } ?>
+							</div>
+						<?php } ?>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

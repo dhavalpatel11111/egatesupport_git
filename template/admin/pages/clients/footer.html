@@ -1,0 +1,140 @@
+<style>
+footer.main-footer a {
+    color: #333;
+}
+</style>
+			  <footer class="main-footer">
+					<div class="pull-right hidden-xs">
+					<a href="http://www.smartoffice.com.ph/">
+					  <b>smartoffice.com.ph</b>
+					  </a>
+					</div>
+					&nbsp;
+			  </footer>
+
+			  <div class="modal fade" id="myModal">
+				  <form role="form" method="post" enctype="multipart/form-data">
+					  <div class="modal-dialog">
+						  <div class="modal-content">
+
+
+						  </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+				  </form><!-- /.form -->
+			  </div><!-- /.modal -->
+
+		</div><!-- ./wrapper -->
+
+		<!-- jQuery UI 1.11.4 -->
+		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+		<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+		<script>
+		  $.widget.bridge('uibutton', $.ui.button);
+		</script>
+		<!-- Bootstrap 3.3.2 JS -->
+		<script src="template/assets/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+		<!-- PACE -->
+		<!-- <script src="template/assets/plugins/pace/pace.min.js"></script> -->
+		<!-- Select2 -->
+	    <script src="template/assets/plugins/select2/select2.full.min.js"></script>
+		<!-- DataTables -->
+    	<script src="template/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    	<script src="template/assets/plugins/datatables/dataTables.bootstrap.min.js"></script>
+		<!-- datepicker -->
+		<script src="template/assets/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+		<!-- Bootstrap slider -->
+		<script src="template/assets/plugins/bootstrap-slider/bootstrap-slider.min.js"></script>
+		<!-- Summernote WYSIHTML5 -->
+		<script src="template/assets/plugins/summernote/summernote.min.js" type="text/javascript"></script>
+		<!-- bootstrap color picker -->
+		<script src="template/assets/plugins/colorpicker/bootstrap-colorpicker.min.js"></script>
+		<!-- Slimscroll -->
+		<script src="template/assets/plugins/slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+
+		<!-- jQuery Knob -->
+		<script src="template/assets/plugins/knob/jquery.knob.min.js"></script>
+		<!-- FastClick -->
+		<script src='template/assets/plugins/fastclick/fastclick.min.js'></script>
+		<!-- AdminLTE App -->
+		<script src="template/assets/dist/js/app.min.js" type="text/javascript"></script>
+
+
+		<script src="template/assets/app.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() {
+				// DATATABLES
+				$("#dataTablesFull, #dataTablesFull2, #dataTablesFull3, #dataTablesFull4").dataTable( { "pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, "columnDefs": [ { "orderable": false, "targets": -1 } ] } );
+				$("#dataTablesFullDesc,#dataTablesFullDesc6active, #dataTablesFullDesc2,#dataTablesFullDesc3,#dataTablesFullDesc4,#dataTablesFullDesc5,#dataTablesFullDesc6end").dataTable( { "order": [[ 0, "desc" ]],"pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, "columnDefs": [ { "orderable": false, "targets": -1 } ] } );
+
+					$("a[data-tab-destination]").on('click', function() {
+						var tab = $(this).attr('data-tab-destination');
+						$("#"+tab).click();
+					});
+
+				$('#purchase_date, #startDate, #endDate, #date, #contract_expiry, #warranty_expiry, .datepicker-input').datepicker({
+				
+					format: 'yyyy-mm-dd',
+					clearBtn: 'true',
+					weekStart: '<?php echo getConfigValue("week_start"); ?>',
+					autoclose: true,
+					
+				});
+                     $(".exp_sdate").on("change",function(){
+        var selected = $(this).val();
+        $("#export_cust_reprt").attr('data-sdate',selected);
+    });        
+	$(".exp_edate").on("change",function(){
+        var selected = $(this).val();
+		$("#export_cust_reprt").attr('data-edate',selected);
+       // alert(selected);
+    });            
+                                $(document).on('focus','.datepicker-input', function() {
+                                    $(this).datepicker({
+					format: 'yyyy-mm-dd',
+					clearBtn: 'true',
+					weekStart: '<?php echo getConfigValue("week_start"); ?>',
+					autoclose: true
+                                    });
+                                });
+                                
+                                
+                                
+                                var options = {aSep: ',', aDec: '.', mDec: 0};
+                                $('.autoNumeric').autoNumeric('init',options);
+								
+								
+
+			});
+                        $(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+                            event.preventDefault();
+                            $(this).ekkoLightbox();
+                        });
+						$('.cus_exp').on('change', function() {
+      var data = $(this).val();
+      $('#export_cust_reprt').attr('data-cid',data);
+    })
+
+						$("#export_cust_reprt").on('click', function() {
+						var sdate= $(this).attr('data-sdate');
+						var edate= $(this).attr('data-edate');
+						var edate= $(this).attr('data-edate');
+						var cid =$(this).attr('data-cid');
+						//alert(cid);
+						if(sdate=="")
+						{
+						alert("Please select start date");
+						
+						}
+						else if(edate=="")
+						{
+						alert("Please select end date");
+						}
+						else
+						{
+						window.location.href="http://egatesupport.com/?route=exp_reports&sdate="+sdate+"&edate="+edate+"&custom_id="+cid;
+						}
+					});
+		</script>
+    </body>
+</html>

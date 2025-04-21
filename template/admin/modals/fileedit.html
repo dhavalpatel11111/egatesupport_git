@@ -1,0 +1,42 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Edit File</h4></div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="name">File Name *</label>
+		
+		<?php
+           
+       $dpname = getTableFiltered("files", "id", $_GET['id']);
+	   foreach($dpname as $name){
+		?>
+        <input type="text" class="form-control" id="nameValue" name="name" value="<?php echo $name['name'] ; ?>" required>
+    </div>
+	<div class="form-group">
+        <label for="document_name"> Document Type  </label>
+		<?php $document_ty = getTable("document_type"); ?>
+       <select class="form-control select2 accessible" id="document_name" name="document_name" style="width: 100%;">
+	   <option value=" ">Select Document Type</option>
+        <?php foreach ($document_ty as $doctype) { echo "<option value='".$doctype['id']."'"; if($doctype['id']==$name['document_type']) echo " selected"; echo ">".$doctype['document_name']."</option>"; } ?>
+                                                </select> </div>
+		<div class="form-group">
+        
+		<span><label> Current File :</label> &nbsp; <?php echo $name['file']?></span></br>
+		<label for="file">File</label>
+        <input type="file" id="file" name="file"></div>
+	<div class="form-group">
+        <label for="document_memo">Document Memo </label>
+        <input type="text" class="form-control" id="document_memo" 
+		  name="document_memo"  value="<?php echo $name['document_memo'];?>" autocomplete="off">
+    </div>
+<?php } ?>
+    <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
+    <input type="hidden" name="fileEdit">
+	<input type="hidden" name="file_vlaues" value="<?php echo $name['file']?>">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>

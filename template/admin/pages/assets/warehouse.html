@@ -1,0 +1,304 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<style>
+.bbbbe {
+	margin-left: 5px;
+}
+.model_wrap {
+    min-width: 120px !important;
+    padding-right: 8px !important;
+}
+.dsdd select{ text-indent:3px;}
+.rm_bdr input{ border:1px solid #f5f5f5;}
+.rm_bdr{width:67px !important;}
+<!--
+.assest_type { min-width: 70px !important;}
+.asset_Categor { min-width: 97px !important;}
+.vendor_name {min-width: 88px !important;}
+.purchase_rec { min-width: 108px !important;}
+.aseset_sta {
+    min-width: 81px;
+}
+-->
+table#dataTablesFull tr th {
+    white-space: nowrap;
+}
+.btnst a.btn.btn-success {
+    font-size: 13px;
+    padding: 4px 9px 4px 9px;
+    font-weight: 700;
+    line-height: 1;
+}
+.model_wrap {
+    white-space: nowrap;
+}
+.pull-right.rrrrgf {min-width: 42px;}
+.bbnmane {
+    white-space: nowrap;
+}
+#Serial_no { position: relative;margin-left: 235px; width: 209px; height: 32px;
+ bottom: 30px;}
+ 
+ .error_msg1{
+font-size: 17px;
+    margin-left: 309px;
+   position: absolute;
+    margin-top: -32px;
+	color: #ed143d;
+   }
+
+</style>
+
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+     <section class="content-header" style="display: flex; justify-content: space-between; width: 100%; gap: 30px; overflow-x: auto; align-items: center;">
+        <span class="pull-left" style="font-size: 25px;text-wrap: nowrap;">
+            Assets
+            <small style="font-size: 16px; color: gray;">
+                Warehouse
+                <span title="This asset is pulled out from customer or newely added assets Before you deploye to customer . The asset should be registered at this list									
+so that you can select from this list When you pull out asset from customer , The asset location will be changed to this ware house	If asset is defective from customer . You need to repair then update asset memo" class="quest">
+                <img class="converzent_image" style="width:16px;margin-left: 5px;" src="uploads/if_Help.png"/>
+                <span>
+            </small>
+        </span>
+        <span class="customer" style="font-size: 18px;color: #3c8dbc; text-wrap: nowrap;">
+            Asset List is ready for deploy to customer with good condition
+        </span>
+        <span style="display: flex; gap: 10px; align-items: center;">
+            <span class="pull-right bbbbe"><a class="btn btn-primary btn-sm" href=""><i class="fa fa-print"></i>Print SKU</a></span>
+            <span class="pull-right"><a class="btn btn-primary btn-sm" href="?route=assets/create"><i class="fa fa-plus"></i> NEW ASSET</a></span>
+        </span>
+		
+		
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+					
+					<?php 
+      $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+
+					$msg = explode('=',$actual_link);
+					
+					$error_msg = $msg['3'];?>
+                        <div class="table-responsive">
+						<p style="margin-bottom: -15px;">Total No of Assets: <?php echo $assetstockwarehouseCount;?> </p>
+						<?php if($error_msg=='99'){?>
+						<label class="error_msg1">Duplicate serial number please try with diffrent serial number </label>
+					<?php } ?>
+						<div class="row spajj" style="width: 100%; padding-left: 30px;">
+					
+					<div class="col-md-1" style="padding-right:0px;">
+					<div style="">Warehouse Location</div>
+					</div>
+					<div class=" dsdd hidden-lg" style="margin-bottom: 40px; display: flex; flex-direction: column; gap: 10px;">
+					    <?php $warehoo = getTable('warehouse');?>
+				
+					    <select name="Warehouse" id="global_filterwear" style="min-width: 100%;" class="form-control">
+                            <option value="">All</option>
+                            <?php foreach($warehoo as $wer){ ?>
+						    <option value="<?= $wer['id'] ?>" <?= (($_GET['wh'] == $wer['id'])?"selected='selected'":"") ?> ><?= $wer['name'] ?> (<?php echo            countTableFiltered("assets", "status", "Available","warehouseid",$wer['id']) ?>)
+                            </option>
+					        <?php } ?>
+						</select>
+						
+						
+					    <select name="Serial_no" id="Serial_no" style=" margin-left: 0px; position: unset; min-width: 100%;" class="form-control">
+					        <option value="">All</option>
+                            <?php foreach($assets as $assT){ ?>
+                                
+                                <option value="<?= $assT['serial'] ?>" ><?= $assT['serial'] ?></option>
+                            <?php } ?>
+						</select>
+						
+					</div>
+                    <div class="col-md-3 dsdd hidden-xs" style="margin-bottom: 10px;">
+					    <?php $warehoo = getTable('warehouse');?>
+				
+					    <select name="Warehouse" id="global_filterwear" style="" class="form-control">
+                            <option value="">All</option>
+                            <?php foreach($warehoo as $wer){ ?>
+						    <option value="<?= $wer['id'] ?>" <?= (($_GET['wh'] == $wer['id'])?"selected='selected'":"") ?> ><?= $wer['name'] ?> (<?php echo            countTableFiltered("assets", "status", "Available","warehouseid",$wer['id']) ?>)
+                            </option>
+					        <?php } ?>
+						</select>
+						
+						
+					    <select name="Serial_no" id="Serial_no" style="" class="form-control">
+					        <option value="">All</option>
+                            <?php foreach($assets as $assT){ ?>
+                                
+                                <option value="<?= $assT['serial'] ?>" ><?= $assT['serial'] ?></option>
+                            <?php } ?>
+						</select>
+						
+					</div>
+					</div>
+                            <table id="dataTablesFull" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tag</th>
+										<th>SKU</th>
+                                        <th class="assest_type">Asset Type</th>
+                                        <th>Location</th>
+<th class="asset_Categor">Asset Category</th>
+                                        <th class="model_wrap" >Model</th>
+                                        <th>Serial No.</th>
+										<th>Case Serial</th>
+                                        <th class="vendor_name">Vendor Name</th>
+										<th class="purchase_rec">Purchase Receipt</th>
+<th class="warrantly_exp">Warranty Expired</th>
+                                        <th>Warranty</th>
+                                        <th class="aseset_sta">Asset Status</th>
+                                        <th class="aseset_mem">Asset Memo</th>
+										<th style="width:40px !important; ">Updated Date</th>
+                                      <th style="">A3(Color)</th>
+                                        <th style="">A3(Black)</th>
+                                        <th style="">A4(Color)</th>
+                                        <th style="">A4(Black)</th>
+                                        <th></th>
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+					
+                                    foreach ($assets as $asset) {
+                                    $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']);
+									
+								
+									
+                                    echo "<tr>";
+                                    echo "<td><a href='?route=assets/manage&id=".$asset['id']."'>".$asset['tag']."</a></td>";
+									echo "<td>".$asset['sku']."</td>";
+                                    echo "<td><span class='label' style='background-color:#FFF;color:".getSingleValue("assetcategories","color",$asset['categoryid']).";border:1px solid ".getSingleValue("assetcategories","color",$asset['categoryid'])."'>".getSingleValue("assetcategories","name",$asset['categoryid'])."</span></td>";
+									
+									 if($lia['role'] == 'admin'){ 
+                                    echo "<td><a href='#' onClick='showM(\"ajax.php?modal=assetlocationchange&reroute=assets&routeid=&id=".$asset['id']."&section=\");return false' style='margin-left:5px;' class='btn-right'>".getSingleValue("warehouse","name",$asset['warehouseid'])."</a></td>";
+									}else{
+									 echo "<td>".getSingleValue("warehouse","name",$asset['warehouseid'])."</td>";
+									
+									}
+									
+							
+									
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)."</td>";
+                                    echo "<td class='model_wrap'>".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modelid'])."</td>";
+                                    echo "<td>".$asset['serial']."</td>";
+									echo "<td>".$asset['caseserial']."</td>";
+                                    echo "<td class='bbnmane' >".getSingleValue("suppliers","name",$asset['supplierid'])."</td>";
+									
+									 $file = getTableFiltered("files", "assetid",$asset['id']); 
+									 
+									 foreach($file as $fil){
+									 
+									
+									 if($fil['name'] == "Invoice" && $fil['file'] != ""){
+									 $invo ="<a href='ajax.php?download=".$fil['id']."'  title='".$fil['file']."'><i class='fa fa-file'></i>Invoice<a><br>"; 
+									 }
+									 elseif($fil['file'] != ""){
+									 $wcard ="<a href='ajax.php?download=".$fil['id']."' title='".$fil['file']."'><i class='fa fa-file-pdf-o'></i>Warranty Card<a>";  
+									 } 
+									 }
+									 
+									echo "<td>".$invo.$wcard."</td>";
+									
+									echo "<td>".$asset['warranty_expiry']."</td>";
+						
+                                    //Calculate the remaining days
+                                        $str = (strtotime($asset['warranty_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($asset['warranty_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">X</span>';
+                                    echo "<td>".$str."</td>";
+									
+									echo "<td><span class='badge' style='background-color:".getSingleValue("labels","color",$asset['status'])."'>".$asset['status']."</span></td>";
+							
+								  echo "
+								  <td style=''>
+								  <a href='#' onClick='showM(\"ajax.php?modal=assetstatuschange&reroute=assets&routeid=&id=".$asset['id']."&section=\");return false' style='margin-left:5px;' class='btn-right'><span class='badge' style='background-color:".getSingleValue("labels","color",$asset['statusid'])."'>".getSingleValue("labels","name",$asset['statusid'])."</span>
+								</a></td>";
+									echo "<td class='rm_bdr'><input type='text' name='udate' value='".$asset['udate']."' style='width:100%;' readonly> </td>";
+									
+									echo "<td class='rm_bdr'><input type='text' name='A3clr' value='".number_format($asset['A3clr'])."' style='width:100%;text-align:right' readonly> </td>";
+									echo "<td class='rm_bdr'><input type='text' name='A3blk' value='".number_format($asset['A3blk'])."' style='width:100%;text-align:right' readonly> </td>";
+									
+									echo "<td class='rm_bdr'><input type='text' name='A4clr' value='".number_format($asset['A4clr'])."' style='width:100%;text-align:right' readonly> </td>";
+									echo "<td class='rm_bdr'><input type='text' name='A4blk' value='".number_format($asset['A4blk'])."' style='width:100%;text-align:right' readonly> </td>";
+									echo "<td class='btnst' style='width:25px !important;'>
+									<a title='Click to update Current Page Count When Asset is ready to use' href='#' onClick='showM(\"ajax.php?modal=assetUsageEdit&reroute=assets/warehouse&id=".$asset['id']."\");return false' class='btn btn-success'>Update</a></td>";
+								
+                                    echo "<td>
+                                    <div class='pull-right rrrrgf'>
+                                    <a href='?route=assets/manage&id=".$asset['id']."' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=assetDelete&reroute=assets&routeid=&id=".$asset['id']."&section=\");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+
+<script>
+$(document).ready(function () {
+
+setTimeout(function() { $(".error_msg1").hide(); }, 5000);
+$('#Serial_no').change( function(e) { 
+var letter = $(this).val();
+
+
+if (!letter) {
+$ ('tr').show ();
+}else{
+$("#dataTablesFull tr td:nth-child(7)").each(
+function(){
+if($(this).text() != letter){
+$(this).parent().hide();
+}
+else{
+$(this).parent().show();
+}
+});
+} 
+});
+
+
+$('#clientid option:not(:selected)').prop('disabled', true);
+
+  $("#global_filterwear").change(function() {
+	
+  var valsel= $(this).val();
+
+  if(valsel!="")
+  {
+	  
+	  
+	   window.location.href = "?route=assets/warehouse&wh="+valsel;
+	 // alert(valsel);
+	  
+	  
+	 //oTable.fnResetAllFilters(false)
+	
+  }
+  else
+  {
+	 window.location.href = "?route=assets/warehouse";
+  }
+ 
+})
+		
+});
+
+</script>
+

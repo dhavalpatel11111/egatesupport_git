@@ -1,0 +1,102 @@
+<aside class="right-side">
+    <section class="content-header">
+        <h1>User Guide Video</h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">User Guide Video</li>
+        </ol>
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <i class="fa fa-tag"></i>
+                        <h3 class="box-title">User Guide Video</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="user_guide_video_from" method="post" role="form">
+                                    <?Php 
+                                    //$user_guide_video_data = get_user_guide_video_data();
+                                    ?>
+                                    <!-- new design -->
+                                    <div class="row">
+
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <p style="font-size: 18px; margin-top: 25px;">1 How to Send Page Count</p>
+                                                </div>
+                                                <input type="hidden" name="how_to_send_page_count" value="1">
+                                                <div class="col-sm-4">
+                                                    <?php 
+                                                    $page_url_1 = get_user_guide_video_data('how_to_send_page_count' , 'page_url');
+                                                    ?>
+                                                    <label for="page_url">Page URL</label><br>
+                                                    <input type="text" id="page_url_1" name="page_url_1" class="form-control" value="<?php echo isset($page_url_1) && $page_url_1 != '' ? $page_url_1 : ''; ?>">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <?php 
+                                                    $video_url_1 = get_user_guide_video_data('how_to_send_page_count' , 'video_url');
+                                                    ?>
+                                                    <label for="video_url">Video URL</label><br>
+                                                    <input type="text" id="video_url_1" name="video_url_1" class="form-control" value="<?php echo isset($video_url_1) && $video_url_1 != '' ? $video_url_1 : ''; ?>">
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <p style="font-size: 18px; margin-top: 25px;">2 How to Upload 2307 Files</p>
+                                                </div>
+                                                <input type="hidden" name="how_to_upload_2307_files" value="2">
+                                                <div class="col-sm-4">
+                                                    <?php 
+                                                    $page_url_2 = get_user_guide_video_data('how_to_upload_2307_files' , 'page_url');
+                                                    ?>
+                                                    <label for="page_url">Page URL</label><br>
+                                                    <input type="text" id="page_url_2" name="page_url_2" class="form-control" value="<?php echo isset($page_url_2) && $page_url_2 != '' ? $page_url_2 : ''; ?>">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <?php 
+                                                    $video_url_2 = get_user_guide_video_data('how_to_upload_2307_files' , 'video_url');
+                                                    ?>
+                                                    <label for="video_url">Video URL</label><br>
+                                                    <input type="text" id="video_url_2" name="video_url_2" class="form-control" value="<?php echo isset($video_url_2) && $video_url_2 != '' ? $video_url_2 : ''; ?>">
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xs-12" style="margin-top: 25px;">
+                                            <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+                                        </div>
+
+                                    </div>
+                                    <!-- new design -->
+
+
+
+                                    <input type="hidden" name="save_user_guide_video">
+                                    <input type="hidden" name="route" value="user_guide_video">
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+<script>
+
+</script>

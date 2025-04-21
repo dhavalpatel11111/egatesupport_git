@@ -1,0 +1,117 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Edit Page Count Report</h4>
+</div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <?php
+         $date = isset($usageReport['date']) ? $usageReport['date'] : date('Y-m-d');
+        ?>
+        <input type="date" class="form-control" id="date" name="date"
+            value="<?php echo date('Y-m-d', strtotime($date)); ?>" required>
+
+    </div>
+
+    <div class="form-group">
+        <label for="department">Department</label>
+        <input type="text" class="form-control" id="department" name="department"
+            value="<?php echo $usageReport['department']; ?>" readonly>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-5">
+            <div class="form-group text-center">
+                <?php
+                    if($modelimage != ""){ ?>
+                <img style="display: inline-block;" width="100%" src="uploads/<?php echo $modelimage; ?>">
+                <?php } ?>
+            </div>
+        </div>
+
+        <div class="col-xs-7">
+            <div class="form-group">
+                <label for="modal_name">Model Name *</label>
+                <input type="text" class="form-control" id="modal_name" name="modal_name"
+                    value="<?php echo $usageReport['modal_name']; ?>" readonly>
+            </div>
+            <div class="form-group">
+                <label for="serial">Contract No *</label>
+                <input type="text" class="form-control" id="serial" name="serial"
+                    value="<?php echo $usageReport['serial']; ?>" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="A3clr" style="color: red;">A3 Color *</label>
+        <input type="text" class="form-control" id="A3clr" name="A3clr" value="<?php echo $usageReport['A3clr']; ?>"
+            required>
+    </div>
+
+    <div class="form-group">
+        <label for="A3blk">A3 Black *</label>
+        <input type="text" class="form-control" id="A3blk" name="A3blk" value="<?php echo $usageReport['A3blk']; ?>"
+            required>
+    </div>
+
+    <div class="form-group">
+        <label for="A4clr" style="color: red;">A4 Color *</label>
+        <input type="text" class="form-control" id="A4clr" name="A4clr" value="<?php echo $usageReport['A4clr']; ?>"
+            required>
+    </div>
+
+    <div class="form-group">
+        <label for="A4blk">A4 Black *</label>
+        <input type="text" class="form-control" id="A4blk" name="A4blk" value="<?php echo $usageReport['A4blk']; ?>"
+            required>
+    </div>
+
+    <div class="form-group">
+        <label for="image">File attachment</label>
+        <input type="file" class="form-control" id="image" name="image">
+        <?php
+        $host = $_SERVER['HTTP_HOST'];
+        $host_upper = strtoupper($host);
+        $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+        $baseurl = "http://" . $host . $path . "/";
+        $targetdir = $baseurl . 'uploads' . DIRECTORY_SEPARATOR . 'usage_report' . DIRECTORY_SEPARATOR; 
+        $imagePath = $targetdir . $usageReport['image'];
+        ?>
+        <a href="<?php echo $imagePath; ?>" target="_blank">
+            <?php echo $usageReport['image']; ?>
+        </a>
+    </div>
+
+    <div class="form-group">
+        <label for="remark">Remark</label>
+        <input type="text" class="form-control" id="remark" name="remark" value="<?php echo $usageReport['remark']; ?>" required>
+    </div>
+
+    <?php if($lia['role']== "admin"){?>
+    <div class="form-group">
+    <div>
+        <label style="color: red;" for="usage_confimed" class="control-label">Usage Confirmed</label>&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="usage_confimed" name="usage_confimed" <?php echo ($usageReport['usage_confimed'] == 1) ? 'checked' : ''; ?>>
+    </div>
+</div>
+
+    <?php } ?>
+
+
+    <input type="hidden" name="id" value="<?php echo $usageReport['id']; ?>">
+    <input type="hidden" name="editUsageReport">
+    <input type="hidden" name="modelid" value="<?php echo $usageReport['asset_id'];?>">
+    <input type="hidden" name="route" value="clients/manage">
+    <input type="hidden" name="routeid" value="<?php echo $usageReport['clientid'];?>">
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script type="text/javascript">
+    $(".select2").select2();
+</script>

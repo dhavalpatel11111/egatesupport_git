@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Create New Client</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="name">Name *</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+
+        <label for="tax_identification_number">Tax Identification Number</label>
+        <input type="text" class="form-control" id="tax_identification_number" name="tax_identification_number" required>
+
+		<label for="name">Contact Person *</label>
+        <input type="text" class="form-control" id="contact_person" name="contact_person" required>
+		<label for="name">Contact No. *</label>
+        <input type="text" class="form-control" id="contact_no" name="contact_no" required>
+        <label for="name"> IT MANGER EMAIL * </label>
+        <input type="email" class="form-control" id="it_manager_email" name="it_manager_email" >
+        <label for="name">PURC MANAGER EMAIL *</label>
+        <input type="email" class="form-control" id="purc_manager_email" name="purc_manager_email" >
+
+		<label for="name">Client Highlights *</label>
+        <input type="text" class="form-control" id="client_memo" name="client_memo" required>
+    </div>
+    <input type="hidden" name="addClient">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="">
+    <input type="hidden" name="section" value="">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+</div>

@@ -1,0 +1,55 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1 class="pull-left">Projects<small> Manage projects</small></h1>
+		<div class="pull-right"><a onClick='showM("ajax.php?modal=projectAdd&reroute=projects&routeid=&section=");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-lightbulb-o"></i> NEW PROJECT</a></div>
+		<div style="clear:both"></div>
+	</section>
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-default">
+                    <div class="box-body">
+						<div class="table-responsive">
+	                        <table id="dataTablesFullDesc" class="table table-striped table-hover">
+	                            <thead>
+	                                <tr>
+										<th style="max-width:30px;" class="no-sort"></th>
+										<th style="width:100px;">Tag</th>
+
+										<th>Name</th>
+										<th>Client</th>
+										<th class="text-right"></th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+									<?php foreach ($projects as $project) { ?>
+										<tr>
+											<td><input type="text" class="knob" value="<?php echo projectProgress($project['id']); ?>" data-thickness="0.2" data-width="40" data-height="40" data-fgColor="#00a65a" data-readonly="true"></td>
+											<td><a href='?route=projects/manage&id=<?php echo $project['id']; ?>'><?php echo $project['tag']; ?></a></td>
+
+											<td><a href='?route=projects/manage&id=<?php echo $project['id']; ?>'><?php echo $project['name']; ?></a></td>
+											<td><?php if($project['clientid'] != 0) echo "<a href='?route=clients/manage&id=".$project['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$project['clientid']) . "</span></a> "; ?></td>
+											<td>
+												<div class='pull-right'>
+												    <a href='?route=projects/manage&id=<?php echo $project['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+	  										    	<a href='#' onClick='showM("ajax.php?modal=projectEdit&reroute=projects&routeid=&id=<?php echo $project['id']; ?>&section=");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+	  											    <a href='#' onClick='showM("ajax.php?modal=projectDelete&reroute=projects&routeid=&id=<?php echo $project['id']; ?>&section=");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+	  										  	</div>
+											</td>
+										</tr>
+									<?php } ?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

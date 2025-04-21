@@ -1,0 +1,235 @@
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+
+    vertical-align: middle;
+}
+
+.main-footer {
+    padding: 5px 15px;
+}
+.text-dark {
+    color: #444;
+}
+.callout-gray {
+    background-color: #EEE;
+    border-left: 5px solid #DDD;
+}
+.callout-gray a {
+    color: #333;
+
+}
+.callout-gray a:hover {
+    color: #444;
+
+}
+
+.notopborder {border-top: 0px!important;}
+
+.whitetext {color: #FFF;}
+
+.dt-margin{
+margin-left:0px !important;
+margin-right:0px !important;
+}
+
+.todo-list {
+    min-height: 40px;
+}
+.onhover:hover > .hovertext {
+    display: block;
+    position: absolute;
+    background: #000;
+    color: #fff;
+    padding: 7px;
+    border-radius: 4px;
+    top: 0;
+    left: 62%;
+    z-index: 10;
+    min-width: 329px;
+    text-align: left;
+}
+.hovertext {
+    display: none;
+}
+
+td.onhover {  
+  position: relative;
+  }
+
+.no-sort::after { display: none!important; }
+
+.no-sort { pointer-events: none!important; cursor: default!important; }
+.datepicker{z-index:99999 !important;}
+.company-name {font-weight: 700;color: yellow !important;}
+.t-label {padding-left: 20px;color: #3c8dbc;font-size: 20px;}
+.t-label2 {padding-left: 50px;color: #3c8dbc;font-size: 20px;}
+.t-number {padding-left: 5px;font-size: 20px;color: #0000FF;}
+.products-list .product-info {
+    margin-left: 40px;
+    margin-top: 0;
+}.client_handle_mistake label{
+	margin-top: -10px;  
+	padding-right: 16px;
+color:#dd4b39; 
+font-size:18px	
+	}
+	.chm{	
+	display: block; 
+	margin-left: 10px !important;}
+
+.client_handle_mistake {    
+    padding-bottom: 12px;  
+	padding-left: 10px;  
+	padding-right: 10px;
+	border: 1px solid #ccc;
+padding-top: 21px;
+box-shadow: 2px 3px 6px #ccc;
+	}
+	
+.client_handle_mistake input{
+float:right;
+ padding-top: 10px;
+ width: 20px;
+  height: 20px;
+
+	}
+	
+	.client_handle_mistake .pmcon{
+float:left;
+ padding-top: 10px;
+ width: 100%;
+  height: 25px;
+
+	}
+	.client_handle_mistake.pmco {
+    margin-top: 12px;
+    min-height: 88px;
+}
+	
+	
+	.spajj select#global_filterclient { 
+	/*-webkit-appearance: none;  
+	-moz-appearance: none;  */
+	border: 1px solid #d2d6de;  
+	height: 30px;  
+	max-width: 217px;
+	min-width: 215px;
+	
+	}
+	
+	.spajj {
+	position: relative;  
+	top: 30px;  
+	width: 50%;}
+	
+.spajj select#global_filterwear { 
+	/*-webkit-appearance: none;  
+	-moz-appearance: none;  */
+	border: 1px solid #d2d6de;  
+	height: 30px;  
+	max-width: 217px;
+	min-width: 215px;
+}
+
+
+.usagedata{
+	text-align:right;
+}
+
+.plwidstyle{
+
+background: #eee;
+padding: 8px 6px 10px 7px;
+border: 1px solid #ccc;
+cursor:pointer;
+}
+
+.marh .form-group {    margin-bottom: 0px;}
+
+.marh select#tickettype {    height: 34px;    margin-top: 0px;    border-color: #d2d6de;}
+
+.kjuk .input-sm{
+height: 33px;
+margin: -3px 0 0 0;
+}
+
+.pulloutsq {
+    background: #84b8f8 none repeat scroll 0 0;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    padding: 1px 9px;
+}
+.badge {
+    border-radius: 4px;
+    color: #fff;
+    font-size: 13px;
+    padding: 4px 9px 4px 9px;
+}
+.maindtext{ border: 1px solid #bbb;
+margin: 0px;
+    margin-bottom: 0px;
+margin-bottom: 15px;}
+.maindtext h3{border-bottom: 1px solid #bbb;
+padding-bottom: 3px;
+padding-left: 15px;
+margin: 3px 0px;}
+.maindtext img {
+    max-width: 100%;
+}
+
+.maindtext p{ text-align:center;}
+
+.maindtext .updatedepart {
+    float: none; cursor:pointer;
+}
+.upcondep {
+    text-align: center;
+}
+.upcondep .textbox {
+    width: 100%;
+    margin-bottom: 5px;
+}
+.upcondep .submitbutton {
+    background: #e1e2e6;
+    border: 1px solid #bbb;
+}
+
+.img_box {
+    width: 90px;
+    height: 90px;
+    display: block;
+    line-height: 90px;
+    text-align: center;
+    float: none;
+    margin: auto; margin-bottom:10px;
+}
+span.imgf11 {
+    display: inline-block; margin-right:2px;
+}
+
+p.heading_line {
+    min-height: 40px;
+    margin-bottom: 5px;
+}
+.table-responsive th {
+    white-space: nowrap;
+}
+@media only screen and (max-width: 767px) {
+	
+.nav>li>a { padding: 10px 6px;}
+p.heading_line{ min-height:auto;}	
+.nav-tabs-custom>.nav-tabs { text-align: center;}
+.nav-tabs>li {float: none; display: inline-block;}
+.btn-group.pull-right a {float: none;}
+.content-header>h1{ text-align:center;}
+
+}
+table#dataTablesFull {
+    border-top: 1px #ddd solid !important;
+}
+
+
+
+
+
+

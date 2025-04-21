@@ -1,0 +1,324 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<style>
+.bookmark1 span:hover {color:#fff;}
+.bookmark1 span {
+    background: #3c8dbc;
+    color: #fff;
+    text-transform: capitalize;
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 0px 12px;
+    padding: 4px 9px 4px 9px;
+}
+.bookmark1wrap {position: relative;}
+.cont_none {
+    background: #fff;
+    float: left;
+    position: absolute;
+    width: 200px;
+       top: 2px;
+    left: 67px;
+    padding: 16px 15px 14px 15px;
+    border: 1px solid #bbb;
+  border-radius: 6px;
+   
+}
+.clodepops {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #55aee1;
+    color: #fff;
+    padding: 0px 4px;
+    cursor: pointer;
+}
+.bookmark1 {
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+    font-size: 15px;    text-align: center;
+    display: block;
+}
+.style_css {
+    margin-top: 16px;
+    color: #f39c12;
+    }
+.bookmark1 i { color: #ff6600;    }
+.oneline {    white-space: nowrap;}
+.dgft{ margin-right:5px;}
+</style>
+
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header" style="width: 100%; overflow-x: auto; display: flex; justify-content: space-between; align-items: center; gap: 30px;">
+
+        <span class="pull-left" style="font-size: 28px; text-wrap: nowrap;">Reopened Tickets</span>
+
+        <span class="pull-left" style="display: flex; justify-content: center; gap: 10px;">
+            <select name="tickettype" id="tickettype" style="height: 35px; min-width: 120px; max-width: 150px;" class="form-control">
+                <option value="">All Type</option>
+                <option value="client_handle_mistake" <?= (($_GET['tickettype'] == "client_handle_mistake")?"selected='selected'":"") ?> >
+                    Client Heandling Mistake
+                </option>
+                <option value="technical_improvement" <?= (($_GET['tickettype'] == "technical_improvement")?"selected='selected'":"") ?> >
+                    For Technical Improvment
+                </option>
+                <option value="refill" <?= (($_GET['tickettype'] == "refill")?"selected='selected'":"") ?> >
+                    Refill & Preventive Maintanace
+                </option>
+                <option value="parsts_replacments" <?= (($_GET['tickettype'] == "parsts_replacments")?"selected='selected'":"") ?> >
+                    Parts & Replacment 
+                </option>
+                <option value="ticketothers" <?= (($_GET['tickettype'] == "ticketothers")?"selected='selected'":"") ?> >Others</option>
+            </select>
+
+            <select name="companyname" id="companyname" style="height: 35px; min-width: 120px; max-width: 150px;" class="form-control">	
+                <option value=""> All Clients</option>
+                    <?php foreach($clients as $client){
+                    ?>
+                    <option value="<?php echo $client['id'];?>" <?= (($_GET['companyname'] == $client['id'])?"selected='selected'":"") ?> ><?php echo $client['name'];?></option>
+                <?php } ?>
+            </select>
+
+        </span>
+
+        <div class="pull-right" title="Disabled" style="color: orange; text-wrap: nowrap;">
+            <i class="fa fa-plus"></i> NEW TICKET
+        </div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="table-responsive">
+						
+								<div class="row spajj marh" style="width:89%;">
+					
+					
+					<!-- <div class="col-md-2">
+					<div class="form-group">
+							<label for="tickettype">Ticket Type</label>
+					
+					<select name="tickettype" id="tickettype" style="">
+					
+						<option value=""> All</option>
+						<option value="client_handle_mistake" <?= (($_GET['tickettype'] == "client_handle_mistake")?"selected='selected'":"") ?> >Client Heandling Mistake</option>
+						<option value="technical_improvement" <?= (($_GET['tickettype'] == "technical_improvement")?"selected='selected'":"") ?> >For Technical Improvment</option>
+						<option value="refill" <?= (($_GET['tickettype'] == "refill")?"selected='selected'":"") ?> >Refill & Preventive Maintanace</option>
+						<option value="parsts_replacments" <?= (($_GET['tickettype'] == "parsts_replacments")?"selected='selected'":"") ?> >Parts & Replacment </option>
+						<option value="ticketothers" <?= (($_GET['tickettype'] == "ticketothers")?"selected='selected'":"") ?> >Others</option>
+						</select>
+						</div>
+					</div> -->
+					
+					<!-- <div class="col-md-2">
+							<div class="form-group">
+							<label for="companyname">Company</label>
+							<select name="companyname" id="companyname" style="width:100%; height: 35px;">	
+						<option value=""> All</option>
+							<?php foreach($clients as $client){
+							?>
+							<option value="<?php echo $client['id'];?>" <?= (($_GET['companyname'] == $client['id'])?"selected='selected'":"") ?> ><?php echo $client['name'];?></option>	
+						<?php } ?>
+						</select>
+							</div>
+							</div> -->
+					
+					<!--div class="col-md-1">
+					<a href="?route=pdf/ticketsfil&sfdate=<?php //echo $_GET['sfdate']; ?>&efdate=<?php //echo $_GET['efdate']; ?>&companyname=<?php// echo $_GET['companyname'];?>">PDF</a>
+					</div>-->
+					
+					
+					</div>
+						
+						
+                            <table id="dataTablesFullTickets" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ticket #</th>
+										<th>Date</th>
+										<th></th>
+										<th>P</th>
+                                        <th>Subject</th>
+                                        <th>Assigned To</th>
+                                        <th>Related Entities</th>
+                                        <th style="text-align:center;    padding-right: 26px;
+    padding-left: 26px;" title="Asset Memo">Memo</th>
+                                        <th>Department</th>
+                                        <th>Username</th>
+                                    <!--    <th title="Client Handle Mistake">CHM</th>-->
+										
+                                        <!--th>Note</th-->
+										<th>Updated By</th>
+                                        <th>Status</th>
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($tickets as $ticket) {
+                            
+                                        if($ticket['status'] !='Closed'){
+
+
+									?>
+                                    <tr>
+                                        <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['id']; ?></a></td>
+                                        <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['ticket']; ?></a></td>
+										
+                                        <td class="oneline"><?php echo $ticket['timestamp']?></td>
+										<td><a href="#" onClick='showM("ajax.php?modal=getTicketAllReply&reroute=tickets&routeid=&id=<?php echo $ticket['id']; ?>&section=");return false' class='btn-right text-dark'>
+										<i class='fa fa-eye'></i></a>
+										 
+                                               </td>
+										<td><?php
+										$date1= $ticket['timestamp'];
+										$date2= date("Y/m/d");
+										$diff = strtotime($date2) - strtotime($date1); 
+      
+										// 1 day = 24 hours 
+										// 24 * 60 * 60 = 86400 seconds 
+										echo  abs(round($diff / 86400));
+										?></td>
+                                        <td class="oneline"><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo getSingleValue("ticketsubject","subject",$ticket['subject']); ?></a></td>
+                                        <td class="oneline"><?php if($ticket['adminid'] != 0) echo getSingleValue("people","name",$ticket['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?></td>
+                                        <td class="oneline"><?php
+                                            if($ticket['clientid'] != 0) echo "<a class='dgft' href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$ticket['clientid']) . "</span></a> ";
+                                            $assetid = getSingleValue("contract","assetid",$ticket['contractid']);
+                                            $assettag = getSingleValue("assets","tag",$assetid);
+                                            $modelid = getSingleValue("assets","modelid",$assetid);
+                                            $assetmodel = getSingleValue("models","name",$modelid);
+                                            if($ticket['contractid'] != 0) echo "<a class='rfrfr' href='?route=contract/manage&id=".$ticket['contractid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"> " . getSingleValue("contract","contractno",$ticket['contractid']) . " | " .$assettag .":" . $assetmodel . "</span></a> ";
+                                            ?></td>
+												<?php 
+				$assets_memo = getSingleValue("contract","notes",$ticket['contractid']); ?>
+							<td class="asste_note"><?php if($assets_memo){?>
+							<div class="bookmark1wrap">
+			<span class=" bookmark1" title="Asset Memo" onClick="bookmark1(this.id)" id="<?php echo $ticket['id']; ?>">
+							
+					<span class="btn">	memo</span>
+
+							</span>
+	<span class="cont_none" id="bookmark1<?php echo $ticket['id'];?>" style="display:none;">
+<span class="clodepops" ><i class="fa fa-times" aria-hidden="true"></i></span>							
+							
+							
+							<?php
+                                                              echo $assets_memo ; }?></span>
+															  
+															 </div> 
+															  </td>
+											<td><?php 
+  $dipartment_id = getSingleValue('contract', 'department', $ticket['contractid']);  
+          $dipartment_name = getSingleValue('department', 'name', $dipartment_id); 
+
+		if($ticket['clientid'] == 0) echo "<span class='text-muted'>None</span>";
+
+		 else echo $dipartment_name; ?></td>
+		 <td><?php echo $closed_by_name= getSingleValue("people", "name", $ticket['userid']);?></td>
+									<!--	<td class="chm">
+										<?//php if($ticket['client_handle_mistake']==1){echo "o";}?>
+										</td>-->
+										
+										<!--td><?php //echo $ticket['pmcon'];?></td-->
+										<td><?php
+										//echo $ticket['closed_by'];
+										$closed_by_name= getSingleValue("people", "name", $ticket['closed_by']);
+										$closed_email= getSingleValue("people", "email", $ticket['closed_by']);
+										if($closed_by_name !="" && $closed_email!="")
+										{
+											echo $closed_by_name;
+										}
+										?></td>
+                                        <td>
+                                            <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                            <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                            <?php if($ticket['status'] == "Followed Up") echo "<span class='badge bg-teal'>Followed Up</span>"; ?>
+                                            <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                           
+                                        </td>
+										
+                                        <td>
+                                            <div class='pull-right oneline'>
+                                                <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                                <a href="#" onClick='showM("ajax.php?modal=contractTicketEdit&reroute=tickets&routeid=&id=<?php echo $ticket['id']; ?>&section=");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                <a href="#" onClick='showM("ajax.php?modal=contractTicketDelete&reroute=tickets&routeid=&id=<?php echo $ticket['id']; ?>&section=");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php 
+									}
+									} ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script>
+    $(document).ready(function() {
+    $("#dataTablesFullTickets").dataTable( { "order": [[ 2, "desc" ], [0,"desc"]],"pageLength": <?php echo getConfigValue("table_records"); ?>, "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, 
+        "columnDefs": [ { "orderable": false, "targets": -1 }] });
+
+ $('#tickettype').change(function() {
+	   
+	   var vall = $(this).val();
+	   
+	//   alert(vall);
+	   
+	   window.location.replace("?route=pending_ticket&tickettype="+vall);
+	   
+	   
+	   });
+	 $('#companyname').change(function () {
+	 
+	var url = window.location.href;
+	 
+	 
+	 window.location.replace(url+"&companyname="+ $(this).val());
+	 
+           // $.ajax({
+           //    url: "index.php?route=tickets&companyname=" + $(this).val(),
+           //     dataType: "json",
+            //    success: function (responde) {
+                   
+                    
+            //   }
+           // });
+      
+		
+		
+		
+		
+		
+    });	
+		
+    });
+</script>
+
+<script>
+$(document).ready(function(){
+ 
+  $(".clodepops").click(function(){
+  $(".cont_none").hide();
+});
+});
+
+function bookmark1(id)
+{ 
+
+$(".cont_none").hide();
+
+ document.getElementById("bookmark1"+id).style.display="block";
+
+}
+</script>

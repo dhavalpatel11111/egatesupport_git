@@ -1,0 +1,103 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Edit Consumable</h4></div>
+<div class="modal-body">
+    <div class="form-group">     
+		<label for="consumable">Consumable description*</label> 
+		<select class="form-control select2" id="consumable" name="consumable" style="width: 100%;">	
+			<option value="0">None</option>		
+			<?php foreach ($consumable as $Subj) { ?>		
+				<option value='<?php echo $Subj['id']; ?>'<?php if($consumabledata['consumable_type']==$Subj['id']) echo "selected='selected'"; ?>><?php echo $Subj['name']; ?></option>		
+			<?php } ?>	
+		</select>  
+	</div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="clientid">Client</label>
+                <input type="hidden" value="<?php echo $consumabledata['client_id']; ?>" name="clientid" id="clientid" />
+                <input type="text" value="<?php echo getSingleValue('clients','name', $consumabledata['client_id']);?>" class="form-control" name="clientname" readonly="" />
+            </div>
+        </div>
+		<div class="col-xs-6">
+            <div class="form-group">
+                <label for="contractid">Contract</label>
+                <select class="form-control select2" id="contractid" name="contractid" style="width: 100%;">
+                    <option value="0">None</option>
+                    <?php foreach ($contracts as $contract) { ?>
+                        <option value='<?php echo $contract['id']; ?>'<?php if($consumabledata['contract']==$contract['id']) echo "selected='selected'"; ?>><?php echo $contract['contractno'] . " " . $contract['asset_tag'] . ":" . $contract['asset_model'] . " " . $contract['department']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    </div>
+	<div class="row">
+        <div class="col-xs-3">
+            <div class="form-group">
+                <label for="cyan">Cyan</label>
+                <input type="text" class="form-control" id="cyan" name="cyan" value="<?= $consumabledata['cyan'] ?>">
+            </div>
+        </div>
+		<div class="col-xs-3">
+            <div class="form-group">
+                <label for="magenta">Magenta</label>
+                <input type="text" class="form-control" id="magenta" name="magenta" value="<?= $consumabledata['magenta'] ?>">
+            </div>
+        </div>
+		<div class="col-xs-3">
+            <div class="form-group">
+                <label for="yellow">Yellow</label>
+                <input type="text" class="form-control" id="yellow" name="yellow" value="<?= $consumabledata['yellow'] ?>">
+            </div>
+        </div>
+		<div class="col-xs-3">
+            <div class="form-group">
+                <label for="black">Black</label>
+                <input type="text" class="form-control" id="black" name="black" value="<?= $consumabledata['black'] ?>">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="adminid">Serviced By</label>
+                <select class="form-control select2 select2-hidden-accessible" id="adminid" name="adminid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">Nobody</option>
+                    <?php foreach ($admins as $admin) { ?>
+                        <option value='<?php echo $admin['id']; ?>' <?php if($consumabledata['servced'] == $admin['id']) echo "selected"; ?>><?php echo $admin['name']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="others">Others</label>
+                <input type="text" class="form-control" id="others" name="others" value="<?= $consumabledata['others'] ?>">
+            </div>
+        </div>
+    </div>
+
+	<div class="form-group">
+        <label for="message" class="control-label">Message</label>
+        <textarea class="form-control summernote-modal" id="message" name="message"><?= $consumabledata['msg'] ?></textarea>
+    </div>
+
+    
+
+    <input type="hidden" name="id" value="<?php echo $consumabledata['id']; ?>">
+    <input type="hidden" name="edtcontractconsum">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+   <input type="hidden" name="assetid" value="<?php echo $consumabledata['assetid']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+</div>
+
+<script type="text/javascript">
+        $(function() {
+            $(".select2").select2();
+        });
+</script>

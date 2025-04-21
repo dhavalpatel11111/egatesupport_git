@@ -1,0 +1,1775 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<style>
+    .onhoverfile:hover > .hovertextfile {
+    display: block;
+    position: absolute;
+    background: #000;
+    color: #fff;
+    padding: 7px;
+    border-radius: 4px;
+    /* top: 0; */
+    /* left: 62%; */
+    z-index: 10;
+    min-width: 329px;
+    text-align: left;
+}
+.hovertextfile {
+    display: none;
+}
+
+td.onhoverfile {  
+  position: relative;
+  }
+.control-label {
+    margin-top: 10px;
+}
+
+.receive_btn{
+    display: none;
+}
+
+/* Initially hide the span inside the td */
+.receive_btn_hover span {
+        display: none;
+    }
+
+/* Show the span when the td is hovered */
+.receive_btn_hover:hover span {
+    display: inline-block;
+}
+
+/* .table-hover tbody tr:hover {
+    background-color: #DFDFEC; 
+  } */
+
+.defult_hide{
+    display: none;
+}
+</style>
+
+
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header" style="display: flex;">
+
+        <span style="width: 100%;">
+            <!-- dhaval -->
+            <div class="row" style="width: 100%; margin-left: 7px; margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+
+                <!-- 1 -->
+                    <select id="client_status" class="form-control select2" style="width: 8%;">
+                        <?php 
+                        $client_status = isset($_GET['client_status']) ? $_GET['client_status'] : '';
+                        ?>
+                        <option value="active" <?php echo !isset($client_status) || $client_status == 'active'  ? 'selected' : ''; ?> >Active</option>
+                        <option value="inactive" <?php echo $client_status == 'inactive' ? 'selected' : ''; ?> >Inactive</option>
+                        <option value="all" <?php echo $client_status == 'all' ? 'selected' : ''; ?>>All</option>
+                    </select>
+                <!-- 1 -->
+                <!-- 2 -->
+                    <select id="client_type" class="form-control select2" style="width: 8%;">
+                        <option selected value="all">Select Type</option>
+                        <?php 
+                        if(isset($filter_type_data)){
+                            foreach($filter_type_data as $type){ 
+                                if(isset($_GET['client_type'])){
+                                    $selected_client_type = $_GET['client_type'];
+                                }
+                                if(isset($selected_client_type) && $selected_client_type == $type['id']){ ?>
+                                    <option value="<?php echo $type['id']; ?>" selected><?php echo $type['name']; ?></option>
+                                <?php }else{ ?>
+
+                                    <option value="<?php echo $type['id']; ?>"><?php echo $type['name']; ?></option>
+                                <?php      }
+                                
+                            }
+                        }
+                        ?>
+                    </select>
+                <!-- 2 -->
+                <!-- 3 -->
+                    <select id="payment_status" class="form-control select2" style="width: 8%;">
+                        <?php 
+                        $payment_status = isset($_GET['payment_status']) ? $_GET['payment_status'] : '';
+                        ?>
+                        <option value="unpaid" <?php echo $payment_status == 'unpaid' ? 'selected' : ''  ?> >
+                            Unpaid (<?php echo countWithConditionAndJoin('invoice'); ?>)
+                        </option>
+                        <option value="paid" <?php echo $payment_status == 'paid' ? 'selected' : ''  ?> >Paid</option>
+                        <option value="all" <?php echo $payment_status == 'all' ? 'selected' : ''  ?> >
+                            All (<?php echo countwithAllInvoice('invoice'); ?>)
+                        </option>
+                        <option value="pending_tax_file" <?php echo $payment_status == 'pending_tax_file' ? 'selected' : ''  ?> >
+                            Pending Tax File (<?php echo countwithconditiontextfileAllForInvoice('invoice'); ?>)
+                        </option>
+                    </select>
+                <!-- 3 -->
+                <?php    
+                $is_show = false;
+                if(isset($_GET['date_received_from']) || isset($_GET['date_received_to'])){
+                    $is_show = true;
+                }
+                    if($payment_status == 'paid' || $is_show){ ?> 
+                        <span style="display: flex;">
+                            <?php 
+                                $date_received_from = isset($_GET['date_received_from']) ? $_GET['date_received_from'] : '';
+                            ?>
+                            <input type="text" style="display: inline-block; margin-right: 10px; width: 100px; margin-left: 5px;" class="form-control DateFilter" id="date_received_from" name="date_received_from" required placeholder="From" value="<?php echo $date_received_from; ?>">
+
+                            <?php 
+                                $date_received_to = isset($_GET['date_received_to']) ? $_GET['date_received_to'] : '';
+                            ?>
+                            <input type="text" style="display: inline-block; margin-right: 10px; width: 100px;" class="form-control DateFilter" id="date_received_to" name="date_received_to" placeholder="To" value="<?php echo $date_received_to; ?>">
+
+                            <button type="button" id="date_received_reset" class="btn btn-primary">Reset</button>
+                            <?php 
+                                $get = $_GET;
+                                if(isset($get['route'])){
+                                    unset($get['route']);
+                                }
+                                
+                                $filter_string = '';
+                                foreach ($get as $key => $value) {
+                                    $filter_string .= $key . '__' . $value . '&';
+                                }
+            
+                                $filter_string = rtrim($filter_string, '&');
+                            ?>
+
+                            <button type="button" id="date_received_export" class="btn btn-primary" data-filter="<?php echo isset($filter_string) ? $filter_string : ''; ?>" style="margin-left: 5px;">Export</button>
+                        </span>
+                <?php } ?>
+
+                <!-- 4 -->
+                <select id="client" class="form-control select2" style="width: 15%;">
+                    <option value="">Select Client</option>
+                    <?php 
+                    $client_id = 0;
+                    if(isset($_GET['client'])){
+                        $client_id = $_GET['client'];
+                    }
+                    if(isset($filter_client_data)){
+                    foreach($filter_client_data as $client){ 
+                        if($client['id'] == $client_id){ ?>
+                            <option value="<?php echo $client['id']; ?>" selected><?php echo $client['name']; ?></option>
+                        <?php }else{ ?>
+                            <option value="<?php echo $client['id']; ?>"><?php echo $client['name']; ?></option>
+                        <?php }    
+                    }
+                    }
+
+                    ?>
+                </select>
+                <!-- 4 -->
+
+                <select id="clear_status" class="form-control select2" style="width: 5%;">
+                    <?php 
+                    $clear_status = isset($_GET['clear_status']) ? $_GET['clear_status'] : '';
+                    ?>
+                    <option value="all" <?php echo $clear_status == 'all' ? 'selected' : ''  ?> >All</option>
+                    <option value="1" <?php echo $clear_status == '1' ? 'selected' : ''  ?> >Cleared</option>
+                    <option value="0" <?php echo $clear_status == '0' ? 'selected' : ''  ?> >Pending</option>
+                </select>
+
+                <select id="file_status" class="form-control select2" style="width: 6%;">
+                    <?php 
+                    $file_status = isset($_GET['file_status']) ? $_GET['file_status'] : '';
+                    ?>
+                    <option value="all" <?php echo $file_status == 'all' ? 'selected' : ''  ?> >All</option>
+                    <option value="attached" <?php echo $file_status == 'attached' ? 'selected' : ''  ?> >2307 Attached</option>
+                    <option value="not_attached" <?php echo $file_status == 'not_attached' ? 'selected' : ''  ?> >Not Attached</option>
+                </select>
+                
+                <input type="text" style="display: inline-block; margin-right: 10px; width: 100px; margin-left: 5px;" class="form-control DateFilter" id="from" name="from" required placeholder="From">
+                <input type="text" style="display: inline-block; margin-right: 10px; width: 100px;" class="form-control DateFilter" id="to" name="to" placeholder="To">
+                <input class="form-control" type="text" id="ref_no_filter" value="<?php echo isset($_GET['ref_no']) ? $_GET['ref_no'] : ''; ?>" style="width: 6%;" placeholder="202501">
+                <button type="button" id="resetButton" class="btn btn-primary">Reset</button>
+                <?php
+                echo "<a class='btn btn-success' style='margin-left: 5px;' target='_blank' id='print_invoice'>Invoice</a>";
+                ?>
+                <?php 
+                    $get = $_GET;
+                    if(isset($get['route'])){
+                        unset($get['route']);
+                    }
+                    
+                    $filter_string = '';
+                    foreach ($get as $key => $value) {
+                    $filter_string .= $key . '__' . $value . '&';
+                    }
+
+                    $filter_string = rtrim($filter_string, '&');
+                ?>
+                <button type="button" id="exp_page_count" class="btn btn-primary" data-filter="<?php echo isset($filter_string) ? $filter_string : ''; ?>">Export</button>
+
+                
+            </div>
+            <!-- dhaval -->
+        </span>
+
+        <!-- <span style="width: 10%;">
+            <ol class="breadcrumb" style="background: none;">
+                <li>
+                    <a href="?route=dashboard">
+                        <i class="fa fa-dashboard"></i> Home
+                    </a>
+                </li>
+                <li class="active">Invoice</li>
+            </ol>
+        </span> -->
+
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div style="position: absolute; z-index: 999; top: 12px; display: flex; justify-content: end; width: 100%; right: 13%; gap: 10px;" class="hidden-xs">
+
+                            <!-- <div class="col-md-2 col-xs-6" style="cursor: pointer;">
+                                 <span style="font-size: 16px;color: #238C00;">
+                                     <span class="badge"
+                                         style="background: #238C00; font-size: 15px;padding: 6px 7px;">
+                                         <?php echo countwithAllInvoice('invoice'); ?>
+                                     </span>
+                                     All Invoice
+                                 </span>
+                             </div>
+                             <div class="col-md-2 col-xs-6" style="cursor: pointer;" >
+                                 <span style="font-size: 16px;color: red;"><span class="badge" style="background: red; font-size: 15px;padding: 6px 9px;"><?php echo countWithConditionAndJoin('invoice'); ?></span> Unpaid invoice</span>
+                             </div>
+                             <div class="col-md-2 col-xs-7" style="cursor: pointer;" >
+                                 <span style="font-size: 16px;color: #3c8dbc;"><span class="badge" style="background: #3c8dbc; font-size: 15px;padding: 6px 9px;"><?php echo countwithconditiontextfileAllForInvoice('invoice'); ?></span> Pending Tax File ( 2307)</span>
+                             </div> -->
+ 
+                             <span style="width: max-content;">
+                                <button class="btn btn-danger" id="process_payment_btn" style="display: none;">Receive Payment</button>
+                             </span>
+ 
+                             <span style="width: max-content;">
+                                <span style="font-size: 16px;color: burlywood;">Total Receivable : </span>
+                                <span style="font-size: 16px;color: blue;">
+                                <?php echo isset($totle_balance) ? number_format($totle_balance) : '' ; ?>
+                                </span>
+                             </span>
+ 
+                             <span style="width: max-content;">
+                                 <span style="font-size: 16px;color: red;">
+                                     <span style="color: black;">Total Amount : </span>
+                                     <?php 
+                                        echo isset($total_amount) ? number_format($total_amount) : 0;
+                                     ?>
+                                 </span>
+                             </span>
+
+                             <span style="width: max-content;">
+                                <span style="font-size: 16px;color: red;">
+                                    <span style="color: black;">Total Paid : </span>
+                                    <?php 
+                                        echo isset($total_paid) ? number_format($total_paid) : 0;
+                                    ?>
+                                </span>
+                            </span>
+
+                            <span style="width: max-content;">
+                                <span style="font-size: 16px;color: red;">
+                                    <span style="color: black;">Total Tax : </span>
+                                    <?php 
+                                        echo isset($total_tax) ? number_format($total_tax) : 0;
+                                    ?>
+                                </span>
+                            </span>
+
+                            <span style="width: max-content;">
+                                <span style="font-size: 16px;color: red;">
+                                    <span style="color: black;">Receivable : </span>
+                                    <?php 
+                                        echo isset($total_rec) ? number_format($total_rec) : 0;
+                                    ?>
+                                </span>
+                            </span>
+ 
+
+                         </div>  
+                        <div class="row">
+
+
+                        <div class="col-sm-12 hidden-lg" style="margin-top: 10px;">
+
+                            <div class="col-md-2 col-xs-6" style="cursor: pointer;" >
+                                 <span style="font-size: calc(46% + 12px);color: #238C00;">
+                                     <span class="badge"
+                                         style="background: #238C00; font-size: 15px;padding: 6px 7px;">
+                                         <?php echo countwithAllInvoice('invoice'); ?>
+                                     </span>
+                                     View All Invoice
+                                 </span>
+                             </div>
+                             <div class="col-md-2 col-xs-6" style="cursor: pointer;" >
+                                 <span style="font-size: calc(46% + 12px);color: red;"><span class="badge" style="background: red; font-size: 15px;padding: 6px 9px;"><?php echo countWithConditionAndJoin('invoice'); ?></span>Unpaid invoice</span>
+                             </div>
+                             <div class="col-md-3 col-xs-7" style="cursor: pointer;" >
+                                 <span style="font-size: calc(46% + 12px);color: #3c8dbc;"><span class="badge" style="background: #3c8dbc; font-size: 15px;padding: 6px 9px;"><?php echo countwithconditiontextfileAllForInvoice('invoice'); ?></span> Pending Tax File ( 2307)</span>
+                             </div>
+                             <div class="col-md-2 col-xs-12">
+                                 <span style="font-size: calc(46% + 12px);color: burlywood;">Total Balance:</span>
+                                 <span class="t-number autoNumeric animated-number" style="font-size: calc(45% + 12px);color: #Balance;"><?php echo getTotalAmountAll('invoice','balance');?></span>
+                             </div>
+ 
+                         </div>  
+
+                            <div class="clearfix"></div>
+                            <div class="clearfix"></div>
+                            <div class="clearfix"></div>
+
+                        
+
+                            <div class="table-responsive" id="invoiceTable" style="padding: 20px !important; width: 99%;margin-left: 5px; padding-top: 0px !important;">
+                                 <div class="AllinvoiceTableContainer">
+                                    <table id="search_invoice_table" class="table table-responsive table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Date</th>
+                                            <th class="text-center" title="Applied Month">M</th>
+                                            <th class="text-center" title="If Multiple Payment Then it will show M">G</th>
+                                            <th class="text-center" title="Checked Mark means Duplicated Invoice">D</th>
+                                            <th class="text-center">INV Ref No</th>
+                                            <th class="text-center">Client</th>
+                                            <th class="text-center" title=" Actuall Invoice No - Red ( Not Paid ) / Blue ( Paid but Tax is not cleared ) / Gray ( Paid & Cleared )">INV #</th>
+                                            <th class="text-center" title=" Actuall Invoice Amount">AMT</th>
+                                            <th class="text-center">Invoice</th>
+                                            <th class="text-center" title="Date Payment Received">Date Received</th>
+                                            <th class="text-center">Pay Ref #</th>
+                                            <th class="text-center" title="Received Amount">R-AMT</th>
+                                            <th class="text-center">Tax</th>
+                                            <th class="text-center">Balance</th>
+                                            <th class="text-center" title="Red font color indicates that a single official receipt covers payments for multiple invoices.">O.R No.</th>
+                                            <th class="text-center" title="Payment File">Paid</th>
+                                            <th class="text-center" title="Official Receipt File">OR</th>
+                                            <th class="text-center" title="With Holding Tax File ( 2307 )">Tax</th>
+
+                                            <!-- <th class="text-center">Paid Amt</th> -->
+
+                                            <!-- <th class="text-center">Remarks</th> -->
+                                            <!-- <th class="text-center">Sent</th> -->
+                                            <th class="text-center">Paid</th>
+                                            <th class="text-center">CLR</th>
+                                            <th class="text-center">Payment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="overflow: scroll;">
+                                        <?php foreach ($invoices as $invoice) {
+                                            //echo "<pre>";
+                                            //print_r($invoices);
+                                            //die;
+                                            $is_duplicate = check_dup_invoice($invoices , $invoice['ref_no'] , $invoice['clintid'] , $invoice['month'] , $invoice['id'] , $invoice['date']);
+                                            if($is_duplicate){
+                                                    $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                                            <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                                          </svg>
+                                                    </span>";
+                                            }else{
+                                                    $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                                            }
+                                            ?>
+                                        <tr>
+                                            <input type="hidden" name="hidinvoice[]" value='<?php echo $invoice['id']; ?>' >
+                                            <!-- 1 -->
+                                           <td style="text-wrap: nowrap;"><?php echo date('Y - m - d', strtotime($invoice['date'])); ?></td>
+                                            <!-- 1 -->
+                                            <?php 
+                                                $month_name = "";
+                                                if($invoice['month']==1) {
+                                                    $month_name = "Jan";
+                                                } elseif($invoice['month']==2) {
+                                                    $month_name = "Feb";
+                                                } elseif($invoice['month']==3) {
+                                                    $month_name = "Mar";
+                                                }  elseif($invoice['month']==4) {
+                                                    $month_name = "Apr";
+                                                }  elseif($invoice['month']==5) {
+                                                    $month_name = "May";
+                                                }  elseif($invoice['month']==6) {
+                                                    $month_name = "Jun";
+                                                } elseif($invoice['month']==7) {
+                                                    $month_name = "Jul";
+                                                } elseif($invoice['month']==8) {
+                                                    $month_name = "Aug";
+                                                } elseif($invoice['month']==9) {
+                                                    $month_name = "Sep";
+                                                } elseif($invoice['month']==10) {
+                                                    $month_name = "Oct";
+                                                } elseif($invoice['month']==11) {
+                                                    $month_name = "Nov";
+                                                } elseif($invoice['month']==12) {
+                                                    $month_name = "Dec";
+                                                } 
+                                            ?>
+                                            <!-- 2 -->
+                                            <td class="text-center"><?php echo $month_name; ?></td>
+                                            <!-- 2 -->
+                                             <!-- 3 -->
+                                            <td title="This Payment is Part of a Larger Payment Applied Across Multiple Invoices" class="text-center">
+                                                <?php
+                                                    if($invoice['multiple_payment'] == 1){
+                                                        echo "M";
+                                                    }
+                                                ?>
+                                            </td>
+                                            <!-- 3 -->
+                                             <!-- 4 -->
+                                            <?php $client = getSingleValue("clients", "name", $invoice['clintid']); ?>
+                                            <td class="text-center"><?php echo $dup_html; ?></td>
+                                            <!-- 4 -->
+                                             <!-- 5 -->
+                                            <td class="text-right"><?php echo $invoice['ref_no']; ?></td>
+                                            <!-- 5 -->
+                                           
+                                            <?php 
+                                            if (strlen($client) > 10) {
+                                                $client_formated = substr($client, 0, 15) . '...';
+                                            } else {
+                                                $client_formated = $client;
+                                            }
+                                            ?>
+                                           <td><a href='?route=clients/manage&id=<?php echo $invoice['clintid']; ?>&tab=invoice'><?php echo $client_formated; ?></a></td>
+                                            <?php 
+                                            $paid_amt = $invoice['paid'];
+                                            $payment_font_color = 'red';
+                                            if($paid_amt > 0){
+                                                $payment_font_color = '#6262FF';
+                                            }
+                                            $cleared = $invoice['cleared'];
+                                            if($cleared == 1){
+                                                $payment_font_color = 'black';
+                                            }
+                                            ?>
+                                           
+                                            <td class="text-right" style="color: <?php echo $payment_font_color; ?>;"><?php echo $invoice['invoiceno']?></td>
+
+                                            <td class="text-right"><?php echo number_format($invoice['amount'], 0, '.', ','); ?></td>
+                                            
+                                           <td class="text-right">
+                                                        <?php
+                                                        if ($invoice['attachment'] != "") {
+                                                            echo "<a  href='javascript:void(0);' onClick=\"window.open('?route=invoiceTPdf&id={$client['id']}&invoice_id={$invoice['id']}', '_blank')\"><i title='System Generated Invoice' class='fa fa-picture-o' aria-hidden='true'></i></a>&nbsp;&nbsp;<a class='onhoverfile invoice_attechment_img' data-img_src='uploads" . DIRECTORY_SEPARATOR . $invoice['attachment'] . "'><i style='color: orange;' class='fa fa-picture-o' aria-hidden='true'></i></a><br>";
+                                                        } else {
+                                                            echo "<a href='javascript:void(0);' onClick=\"window.open('?route=invoiceTPdf&id={$client['id']}&invoice_id={$invoice['id']}', '_blank')\"><i class='fa fa-picture-o' aria-hidden='true'></i></a>&nbsp;";
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    
+                                                    <td style="text-align: center;">
+                                                        <?php 
+                                                            if($invoice['date_payment_receive'] != '0000-00-00' && $invoice['date_payment_receive'] != NULL){
+                                                                echo $invoice['date_payment_receive'];
+                                                            }
+                                                        ?>
+                                                    </td>
+                                            <td class="text-right"><?php
+                                                if($invoice['payment_ref_no'] != ''){
+                                                    $payment_ref_no_html = '<span title="Payment Detail" id="payment_ref_no_td" style="color: blue; cursor: pointer;" data-invoice_id="'.$invoice['id'].'"> - '.$invoice['payment_ref_no'].'</span>';
+                                                }else{
+                                                    $payment_ref_no_html = '';
+                                                }
+                                                if ($invoice['payment_method']) {
+                                                    if(is_numeric($invoice['payment_method'])){
+                                                        $payment_method = get_payment_method_name($invoice['payment_method']);
+                                                        echo $payment_method . $payment_ref_no_html;
+                                                    }else{
+                                                        echo $invoice['payment_method'] . $payment_ref_no_html;
+                                                    }
+                                                }
+                                                 ?></td>
+                                            <!-- <td title="Payment Detail" class="text-right" id="payment_ref_no_td" style="color: blue; cursor: pointer;" data-invoice_id="<?php echo $invoice['id']; ?>"><?php echo $invoice['payment_ref_no']; ?></td> -->
+
+                                            <td class="text-right">
+                                                <?php
+                                                $paid_amt = $invoice['paid'];
+                                                 if($paid_amt != "0" || $paid_amt != 0){
+                                                    echo number_format($invoice['paid'], 0, '.', ',');
+                                                 }
+                                                 ?>
+                                            </td>
+                                            <td class="text-right">
+                                                <?php
+                                                $tax_amt = $invoice['tax_amount'];
+                                                 if($tax_amt != "0" || $tax_amt != 0){
+                                                    echo number_format($tax_amt);
+                                                 }
+                                                 ?>
+                                            </td>
+
+
+
+                                            <td class="text-right"><?php echo number_format($invoice['balance'], 0, '.', ','); ?></td>
+                                            <td class="text-right">
+                                                <?php
+
+                                                 if($invoice['ornumber'] != "0" || $invoice['ornumber'] != 0){
+                                                    if($invoice['multiple_payment'] == 1){
+                                                        echo '<span style="color: red;">'.$invoice['ornumber'].'</span>';
+                                                    }else{
+                                                        echo $invoice['ornumber'];
+                                                    }
+                                                 }
+                                                 ?>
+                                            </td>
+
+                                            
+                                            <?php
+                                            $invo_paid = "";
+                                            if($invoice['paid_file']!= ""){
+                                            $invo_paid ="<a target='_blank' class='onhoverfile' href='ajax.php?invoicefile=".$invoice['paid_file']."&show=true'><i class='fa fa-picture-o' aria-hidden='true'></i><span class='hovertextfile'>" . $invoice['paid_file'] . "</span><a><br>"; 
+                                            }
+                                            ?>
+
+                                            <td class="text-right"><?php echo $invo_paid?></td>
+                                           
+                                            <?php
+                                            $invo_or = "";
+                                            if($invoice['or_file']!= ""){
+                                            $invo_or ="<a target='_blank' class='onhoverfile'  href='ajax.php?invoicefile=".$invoice['or_file']."&show=true' ><i class='fa fa-picture-o' aria-hidden='true'></i><span class='hovertextfile'>" . $invoice['or_file'] . "</span><a><br>"; 
+                                            }
+                                            ?>
+                                            <td class="text-right"><?php echo $invo_or?></td>
+
+                                            <?php
+                                            $invo_tax = "";
+                                            if(!empty($invoice['tax_file_2307'])) {
+                                            $invo_tax = "<a target='_blank' class='onhoverfile' href='ajax.php?invoicetaxfile=".$invoice['tax_file_2307']."&show=true'  ><i class='fa fa-picture-o' aria-hidden='true'></i><span class='hovertextfile'>" . $invoice['tax_file_2307'] . "</span></a><br>"; 
+                                            
+                                            }
+                                            ?>
+
+                                            <td class="text-right"><?php echo $invo_tax?></td>
+                                            <td style="text-align: center;">
+                                                <?php 
+                                                $paid_amt = $invoice['paid'];
+                                                if($paid_amt > 0): ?>
+                                                <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 4px;">Yes</a>
+                                                <?php else: ?>
+                                                <a style="background-color:red;color: white;padding: 3px;border-radius: 4px;">No</a>
+                                                <?php endif; ?>
+                                                <?php 
+                                                $is_paid = $invoice['is_paid'] != '' || $invoice['is_paid'] != NULL ? $invoice['is_paid'] : 0;
+                                                if($is_paid == 0){ ?>
+                                                <!-- <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 4px;">Yes</a> -->
+                                                <?php }else{ ?>
+                                                <!-- <a style="background-color:red;color: white;padding: 3px;border-radius: 4px;">No</a> -->
+                                                <?php } ?>
+                                            </td>
+                                            
+                                            <!-- <td class="text-right"><?php echo $invoice['remark']?></td> -->
+                                            <!-- <td class="text-right onhover" style="cursor: pointer;">
+                                                <a href='#'>
+                                                    <?php echo countTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "", "") ?>
+                                                </a>
+                                                <?php  
+                                                    $email_history = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id']);
+                                                    if (!empty($email_history)) {
+                                                ?>
+                                                <span class='hovertext'>
+                                                    <?php 
+                                                        foreach ($email_history as $record) {
+                                                            echo date('Y-m-d', strtotime($record['date'])) . "<br>";
+                                                        }
+                                                    ?>
+                                                </span>
+                                                <?php 
+                                                    }
+                                                ?>
+                                            </td> -->
+
+                                          
+
+                                            <td style="text-align: center;">
+                                                <!-- cleared -->
+                                                <?php if($invoice['cleared'] == 0): ?>
+                                                <a style="background-color:#3C8DBC;color: white;padding: 3px;border-radius: 4px;">No</a>
+                                                <?php else: ?>
+                                                <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 4px;">Yes</a>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td style="text-align: center;" class="receive_btn_hover">
+                                                <?php 
+                                                $get = $_GET;
+                                                if(isset($get['route'])){
+                                                    unset($get['route']);
+                                                }
+                                                
+                                                $pera = '';
+                                                foreach ($get as $key => $value) {
+                                                $pera .= $key . '__' . $value . '*';
+                                                }
+                            
+                                                $pera = rtrim($pera, '*');
+                                                ?>
+
+                                                <?php 
+                                                if($invoice['multiple_payment'] == 1){ ?>
+                                                    <span class="btn btn-sm btn-primary multiple_payment_receive_btn" style="width: 50px; padding: 3px; line-height: normal;" type="button" data-invoice_id="<?php echo $invoice['id']; ?>">Receive</span>
+                                               <?php }else{ ?>
+                                                    <span class="btn btn-sm btn-primary receive_btn" style="width: 50px; padding: 3px; line-height: normal;" type="button" onClick='showM("ajax.php?modal=editinvoice_payment&reroute=invoice&routeid=<?php echo $invoice['clintid']; ?>&id=<?php echo $invoice['id']; ?>&section=invoice&pera=<?php echo $pera; ?>");return false'>Receive</span>
+                                                <?php }
+                                                ?>
+
+
+                                            </td>
+                                            <!-- <td>
+                                                <div>
+                                                    <a href="?route=clients/editinvoice&id=<?php echo $invoice['id']; ?>&reroute=invoice"><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=invoiceDelete&reroute=clients/manage&routeid=<?php echo  $invoice['clintid']; ?>&id=<?php echo $invoice['id']; ?>&section=invoice");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>&nbsp;
+                                                   
+                                                    
+                                                        <?php 
+                                                       
+                                                           echo "<a href='?route=invoiceTemplateEmail&id=" . $invoice['clintid'] . "&amp;invoice_id=" . $invoice['id'] . "&amp;view=1'><i class='fa fa-envelope-o'></i></a>";
+                                                        ?>  
+                                            </td> -->
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+
+<div class="modal fade" id="all_invoice_image_view_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body">
+
+            <img id="all_invoice_image_view" src="" style="width: 100%; height: 100%;">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<input type="hidden" value="<?php echo $pera ?>" id="redirect_url_pera">
+
+
+<div class="modal fade" id="bulk_invoice_payment_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width: 70% !important;">
+        <div class="modal-content">
+            <form action="" method="post" role="form" id="bulk_invoice_payment" onsubmit="return false;" enctype="multipart/form-data">
+                <input type="hidden" name="bulk_invoice_payment">
+                <div class="modal-header">
+                    <h4 style="display: inline;">Invoice Payment</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                     <div class="paid_msg" style="text-align: center; font-size: 18px;">
+                        All Invoice are Paid
+                     </div>
+
+
+                    <div class="row invoice_modal_body">
+                        <div class="col-sm-12">
+                            <div style="display: flex; justify-content: space-evenly; align-items: center;">
+                                <p style="font-size: 16px;">Total Balance : <span id="total_bal_modal" style="color: red;"></span></p>
+                            </div>
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="checkall_inv"></th>
+                                        <th>Date</th>
+                                        <th>D</th>
+                                        <th>M</th>
+                                        <th>INV Ref No</th>
+                                        <th>Client</th>
+                                        <th>INV</th>
+                                        <th>AMT</th>
+                                        <th>INV File</th>
+                                        <th class="defult_hide">Paid Amount</th>
+                                        <th class="defult_hide">Tax</th>
+                                        <th class="defult_hide">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bulk_invoice_payment_tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-6">
+                            <!-- form element -->
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="payment_method" class="control-label">Payment Method</label>
+                                <select id="payment_method" name="payment_method" class="form-control" style="width:100%;display:inline;">
+                                    <?php 
+                                    $payment_method_data = get_payment_method_data();
+                                    if(!empty($payment_method_data)){
+                                        foreach($payment_method_data as $payment_method){
+                                            if($payment_method['id'] == $invoice['payment_method']){ ?>
+                                                <option value="<?php echo $payment_method['id']; ?>" selected>
+                                                    <?php echo $payment_method['name']; ?>
+                                                </option>
+                                            <?php }else{ ?>
+                                                <option value="<?php echo $payment_method['id']; ?>">
+                                                    <?php echo $payment_method['name']; ?>
+                                                </option>
+                                            <?php }
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="payment_ref_no" class="control-label">Payment Ref No / Check No <span style="color: red;">*</span> </label>
+                                <div>
+                                    <input type="text" class="form-control" id="payment_ref_no" name="payment_ref_no">
+                                </div>
+                                <span class="payment_ref_no_error"></span>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="ornumber" class="control-label">O.R Number <span style="color: red;">*</span> </label>
+                                <div>
+                                    <input type="text" class="form-control" id="ornumber" name="ornumber">
+                                    <span class="ornumber_error"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="paid" class="control-label">
+                                    <span style="font-size: 16px;">Invoice Amount : <span style="color: red;" id="invoice_amt_modal"></span> </span><br>
+                                    Received Amount 
+                                </label>
+                                <div>
+                                    <input type="text" class="form-control" id="paid" name="paid">
+                                    <input type="hidden" id="total_amount_to_pay" name="total_amount_to_pay">
+                                    <span id="paid_amount_error"></span>
+                                    <span class="paid_error"></span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <input type="hidden" id="tax" name="tax">
+                                <span style="font-size: 17px;"> 2037 Balance or Discount : <span id="total_tax" style="color: red;"></span> </span>
+                            </div>
+
+                            <div id="invoice_check_error"></div>
+                        </div>
+
+                        <div class="col-sm-6">
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="amount" class="control-label">Date Payment Receive</label>
+                                <div>
+                                    <input type="text" class="form-control DateFilter" id="date_payment_receive" name="date_payment_receive" value="" required="">
+                                </div>
+                            </div>
+
+                            
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="or_file" class="control-label">Official Reciept</label>
+                                <div>
+                                    <input type="file" id="or_file" name="or_file" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="paid_file" class="control-label">Payment Proof</label>
+                                <div>
+                                    <input type="file" id="paid_file" name="paid_file" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="tax_file_2307" class="control-label">Tax Payment Proof</label>
+                                <div>
+                                    <input type="file" id="tax_file_2307" name="tax_file_2307" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="payment_detail row" style="text-align: center;">
+                        <div class="col-sm-8">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="checkall_inv"></th>
+                                        <th>Date</th>
+                                        <th>D</th>
+                                        <th>M</th>
+                                        <th>INV Ref No</th>
+                                        <th>Client</th>
+                                        <th>INV</th>
+                                        <th>AMT</th>
+                                        <th>INV File</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bulk_invoice_payment_info_tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-4">
+                            <!-- form element -->
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="payment_method" style="text-align: left; width: 100%;" class="control-label">Payment Method</label>
+                                <input type="text" id="payment_method_info" class="form-control" style="width:100%;display:inline;" readonly>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="payment_ref_no" style="text-align: left; width: 100%;" class="control-label">Payment Ref No</label>
+                                <div>
+                                    <input type="text" class="form-control" id="payment_ref_no_info" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label class="control-label" style="text-align: left; width: 100%;">O.R Number</label>
+                                <div>
+                                    <input type="text" class="form-control" id="ornumber_info" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <label for="paid" class="control-label" style="width: 100%; text-align: left;">
+                                    <span style="font-size: 16px; ">Invoice Amount : <span style="color: red;" id="invoice_amt_modal_info"></span> </span><br>
+                                    Received Amount 
+                                </label>
+                                <div>
+                                    <input type="text" class="form-control" id="paid_info" readonly>
+                                </div>
+                            </div>
+
+                            <div style="width: 100%; text-align: left;">
+                                <input type="hidden" id="tax" name="tax">
+                                <span style="font-size: 17px;"> 2037 Balance or Discount : <span id="total_tax_info" style="color: red;"></span> </span>
+                            </div>
+                            <div id="invoice_check_error"></div>
+
+                        </div>
+                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="save_bulk_btn">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- multiple_payment modal -->
+<div class="modal fade" id="multiple_payment_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width: 70% !important;">
+        <div class="modal-content">
+            <form action="" method="post" role="form" id="multiple_payment" onsubmit="return false;" enctype="multipart/form-data">
+                <input type="hidden" name="multiple_payment">
+
+                <div class="modal-header">
+                    <h4 style="display: inline;">Invoice Payment</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-sm-12">
+                            <p style="font-size: 16px; text-align: center;">Total Balance : <span id="total_bal_modal_1" style="color: red;"></span></p>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" checked disabled></th>
+                                        <th>Date</th>
+                                        <th>D</th>
+                                        <th>M</th>
+                                        <th>INV Ref No</th>
+                                        <th>Client</th>
+                                        <th>INV</th>
+                                        <th>AMT</th>
+                                        <th>INV File</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="multiple_payment_tbody">
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <!-- form element -->
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="payment_method" class="control-label">Payment Method</label>
+                                        <select id="payment_method_m" name="payment_method" class="form-control" style="width:100%;display:inline;">
+                                            <option value="">Select Payment Method</option>
+                                            <?php 
+                                            $payment_method_data = get_payment_method_data();
+                                            if(!empty($payment_method_data)){
+                                                foreach($payment_method_data as $payment_method){ ?>
+                                                    <option value="<?php echo $payment_method['id']; ?>">
+                                                        <?php echo $payment_method['name']; ?>
+                                                    </option>
+                                               <?php  }
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+        
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="payment_ref_no" class="control-label">Payment Ref No / Check No <span style="color: red;">*</span> </label>
+                                        <div>
+                                            <input type="text" class="form-control" id="payment_ref_no_m" name="payment_ref_no">
+                                        </div>
+                                        <span class="payment_ref_no_error"></span>
+                                    </div>
+                                    
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="ornumber" class="control-label">O.R Number <span style="color: red;">*</span> </label>
+                                        <div>
+                                            <input type="text" class="form-control" id="ornumber_m" name="ornumber">
+                                            <span class="ornumber_error"></span>
+                                        </div>
+                                    </div>
+        
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="paid" class="control-label">
+                                            <!-- <span style="font-size: 16px;">Invoice Amount : <span style="color: red;" id="invoice_amt_modal"></span> </span><br> -->
+                                            Received Amount 
+                                        </label>
+                                        <div>
+                                            <input type="text" class="form-control" id="paid_m" name="paid" readonly>
+                                            <input type="hidden" id="total_amount_to_pay" name="total_amount_to_pay">
+                                            <span id="paid_amount_error"></span>
+                                            <span class="paid_error"></span>
+                                        </div>
+                                    </div>
+        
+                                    <!-- <div>
+                                        <input type="hidden" id="tax" name="tax">
+                                        <span style="font-size: 17px;"> 2037 Balance or Discount : <span id="total_tax" style="color: red;"></span> </span>
+                                    </div> -->
+                                    
+                                    <div id="invoice_check_error"></div>
+                                </div>
+        
+                                <div class="col-sm-6">
+        
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="amount" class="control-label">Date Payment Receive</label>
+                                        <div>
+                                            <input type="text" class="form-control DateFilter" id="date_payment_receive_m" name="date_payment_receive" value="" required="">
+                                        </div>
+                                    </div>
+        
+                                    
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="or_file" class="control-label">Official Reciept</label>
+                                        <div>
+                                            <input type="file" id="or_file_m" name="or_file" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+        
+        
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="paid_file" class="control-label">Payment Proof</label>
+                                        <div>
+                                            <input type="file" id="paid_file_m" name="paid_file" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+        
+        
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <label for="tax_file_2307" class="control-label">Tax Payment Proof</label>
+                                        <div>
+                                            <input type="file" id="tax_file_2307_m" name="tax_file_2307" class="filestyle form-control" data-iconname="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+        
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="save_bulk_btn">Save changes</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+<!-- multiple_payment modal -->
+
+
+
+
+<script>
+
+
+
+
+
+function getMultipleInputValues(inputName) {
+    var values = [];
+    $('input[name="' + inputName + '"]').each(function() {
+        values.push($(this).val());
+    });
+    $("#result").text(values.length);
+    return values;
+}
+
+$(document).ready(function() {
+    $(".payment_ref_no_error").hide();
+    $(".ornumber_error").hide();
+    $(".paid_error").hide();
+    $(".paid_amount_error").hide();
+    $("#invoice_check_error").hide();
+    
+    $("#checkall_inv").on('click' , function(){
+        let totalAmt = 0;
+        if ($(this).prop('checked')) {
+            $(".inv_check").prop('checked', true);
+            $(".inv_check").trigger('change');
+              $(".inv_check").each(function () {
+                let amtValue = parseFloat($(this).closest('tr').find('.amt').text()) || 0;
+                totalAmt += amtValue; 
+            });
+        }else{
+            $(".inv_check").prop('checked', false);
+            $(".inv_check").trigger('change');
+            totalAmt = 0;
+        }
+        $("#total_amount_to_pay").val(totalAmt);
+        var formated_paid = totalAmt.toLocaleString("en-US"); 
+        $("#paid").val(formated_paid).trigger("change");
+    })
+    
+
+    $(document).on('change', '.inv_check', function() {
+        let totalCheckboxes = $('.inv_check').length;
+        let checkedCheckboxes = $('.inv_check:checked').length;
+        if (totalCheckboxes === checkedCheckboxes) {
+            totalAmt = 0;
+            $("#checkall_inv").prop('checked', true);
+            $(".inv_check").each(function () {
+                let amtValue = parseFloat($(this).closest('tr').find('.amt').text()) || 0;
+                totalAmt += amtValue;
+            });
+        }else{
+            $("#checkall_inv").prop('checked', false);
+        }
+
+        let amtValue = $(this).closest('tr').find('.amt').text();
+        amtValue = parseFloat(amtValue);
+        var paid = $("#total_amount_to_pay").val();
+        const row = $(this).closest('tr');
+        if ($(this).is(':checked')) {
+            if (paid != '') {
+                paid = parseFloat(paid);
+            }else{
+                paid = 0;
+            }
+            paid += amtValue;
+            $("#total_amount_to_pay").val(paid);
+            var formated_paid = paid.toLocaleString("en-US"); 
+            $("#paid").val(formated_paid).trigger("change");
+
+            
+            row.find('.defult_hide').show();
+            $('th.defult_hide').each(function (index) {
+                if ($(`tbody tr td:nth-child(${index + 1}):visible`).length > 0) {
+                    $(this).show();
+                }
+            });
+
+        }else{
+            row.find('.defult_hide').hide();
+
+            var paid_formattedValue = $("#paid").val();
+            var paid_input_val = parseInt(paid_formattedValue.replace(/,/g, ""), 10);
+            paid = 0;
+            if (paid_input_val != '') {
+                if (paid_input_val > amtValue) {
+                    paid = paid_input_val - amtValue;
+                }
+            }
+            $("#total_amount_to_pay").val(paid);
+            var formated_paid = paid.toLocaleString("en-US"); 
+            $("#paid").val(formated_paid).trigger("change");
+            row.find('.defult_hide').hide();
+
+            // Check if all rows for a column are hidden, and hide the `th` if needed
+            $('th.defult_hide').each(function (index) {
+                if ($(`tbody tr td:nth-child(${index + 1}):visible`).length === 0) {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param); // Returns the value of the parameter or null if not found
+    }
+
+    $(document).on('keyup change' , '#paid' , function(){
+        var paid_val = $(this).val();
+        paid_val_formeted = parseInt(paid_val.replace(/,/g, ""), 10);
+        var total_amount_to_pay = $("#total_amount_to_pay").val();
+
+        if (parseFloat(total_amount_to_pay) < parseFloat(paid_val_formeted)) {
+            $("#paid_amount_error").html("<span style='color: red;'> Paid Amount is now more then "+ total_amount_to_pay +" </span>");
+        }else{
+            var discount = parseFloat(total_amount_to_pay) - parseFloat(paid_val_formeted);
+            $("#total_tax").html(discount);
+            $("#tax").val(discount);
+            
+        }
+    })
+
+    // Check if 'client' parameter exists
+    const clientValue = getQueryParam('client');
+
+     if (clientValue) {
+         $("#process_payment_btn").show();
+         $("#process_payment_btn").attr("data-clientid" , clientValue);
+     }
+
+    $("#process_payment_btn").on('click' , function(){
+        $('.defult_hide').hide();
+        var client_id = $(this).data('clientid');
+        $.ajax({
+            url: "ajax.php?get_invoice_by_clientid=''",
+            data : {
+                'client_id' : client_id
+            },
+            type : "POST",
+            success: function(res){
+            var data = JSON.parse(res);
+                if (data.res ?.status == 1) {
+                    var invoices = data.res ?.tbody;
+                    $(".bulk_invoice_payment_tbody").html(invoices);
+                    $(".invoice_modal_body").show();
+                    $(".paid_msg").hide();
+                    $(".payment_detail").hide();
+                    $("#save_bulk_btn").show();
+                    $("#bulk_invoice_payment_modal").modal('show');
+                    var totle_balance = data.res ?.totle_balance;
+                    $("#total_bal_modal").html(totle_balance.toLocaleString("en-US"));
+                    var totle_amount = data.res ?.totle_amount;
+                    $("#invoice_amt_modal").html(totle_amount.toLocaleString("en-US"));
+                }else{
+                    $(".invoice_modal_body").hide();
+                    $(".paid_msg").show();
+                    $(".payment_detail").hide();
+                    $("#save_bulk_btn").hide();
+                    $("#bulk_invoice_payment_modal").modal('show');
+                }
+            }
+        })
+    })
+
+    $("#bulk_invoice_payment_modal").on("hidden.bs.modal" , function(){
+        $("#bulk_invoice_payment #paid").val('');
+        $(".payment_ref_no_error").hide();
+        $(".ornumber_error").hide();
+        $(".paid_error").hide();
+        $(".paid_amount_error").hide();
+        $("#checkall_inv").prop('checked', false);
+    })
+
+    $(document).on("click", "#payment_ref_no_td", function () {
+        let payment_ref_no_td = $(this).text().trim(); // Get the text inside the td
+        if (payment_ref_no_td !== '') {
+            var invoice_id = $(this).data('invoice_id');
+            $.ajax({
+            url: "ajax.php?get_invoice_by_invoice_id=''",
+            data : {
+                'invoice_id' : invoice_id
+            },
+            type : "POST",
+            success: function(res){
+            var data = JSON.parse(res);
+                console.log('data:', data)
+                if (data.res ?.status == 1) {
+                    var invoice = data.res ?.data;
+                    $(".payment_detail #paid_info").val(invoice.paid);
+                    $(".payment_detail #payment_ref_no_info").val(invoice.payment_ref_no);
+                    $(".payment_detail #ornumber_info").val(invoice.ornumber);
+                    $(".payment_detail #payment_method_info").val(invoice.payment_method_info);
+                    $(".invoice_modal_body").hide();
+                    $(".paid_msg").hide();
+                    $(".payment_detail").show();
+                    $("#save_bulk_btn").hide();
+                    $(".bulk_invoice_payment_info_tbody").html(data.res ?.tbody);
+                    var totle_amount = data.res ?.totle_amount;
+                    $("#invoice_amt_modal_info").html(totle_amount.toLocaleString("en-US"));
+                    var discount = totle_amount - invoice.paid;
+                    $("#total_tax_info").html(discount);
+                    $("#bulk_invoice_payment_modal").modal('show');
+                }
+            }
+        })
+        }
+    });
+
+    // $("#bulk_invoice_payment").submit(function () {
+    //     var checkedInvoices = $('.inv_check:checked').map(function() {
+    //         return $(this).data('invoice_id');
+    //     }).get();
+        
+    //     var checkedInvoices_length = checkedInvoices.length;
+    //     var payment_ref_no = $("#payment_ref_no").val();
+    //     var paid = $("#paid").val();
+    //     var ornumber = $("#ornumber").val();
+    //     if (payment_ref_no != '' && paid != '' && ornumber != '') {
+    //         $.ajax({
+    //             url: "ajax.php?bulk_invoice_payment=''",
+    //             type: "POST",
+    //             data: {
+    //                 'invoice_ids': checkedInvoices,
+    //                 'payment_method' : $("#payment_method").val(),
+    //                 'payment_ref_no' : $("#payment_ref_no").val(),
+    //                 'ornumber' : $("#ornumber").val(),
+    //                 'paid' : $("#paid").val(),
+    //                 'tax' : $("#tax").val(),
+    //                 'total_amount_to_pay' : $("#total_amount_to_pay").val()
+    //             },
+    //             success: function (res) {
+    //                 var data = JSON.parse(res);
+    //                 if (data.res ?.status == 2) {
+    //                     $("#invoice_check_error").html("<span style='color: red; font-size: 17px;'> "+ data.res ?.msg +" </span>");
+    //                     $("#invoice_check_error").show();
+    //                 }else{
+    //                     $("#bulk_invoice_payment_modal").modal("hide");
+    //                     window.location.reload();
+    //                 }
+    //             }
+    //         })
+    //     }else{
+    //         if (payment_ref_no == "") {
+    //             $(".payment_ref_no_error").html("<span style='color: red;'> Payment Refrence No is Required </span>");
+    //             $(".payment_ref_no_error").show();                
+    //         }
+
+    //         if (paid == "") {
+    //             $(".paid_error").html("<span style='color: red;'> Paid Amount is Required </span>");
+    //             $(".paid_error").show();                
+    //         }
+
+    //         if (ornumber == "") {
+    //             $(".ornumber_error").html("<span style='color: red;'> OR Number is Required </span>");
+    //             $(".ornumber_error").show();                
+    //         }
+            
+
+
+    //     }
+            
+
+    // })
+
+    $("#bulk_invoice_payment").submit(function (e) {
+    e.preventDefault(); // Prevent the default form submission behavior.
+
+    var formData = new FormData(); // Create a FormData object.
+
+    // Collect checked invoice IDs.
+    var checkedInvoices = $('.inv_check:checked').map(function() {
+
+        return $(this).data('invoice_id');
+    }).get();
+    console.log('checkedInvoices' , checkedInvoices);
+     checkedInvoices.forEach(function (invoiceId) {
+        var paidValue = $(`input[name="paid_${invoiceId}"]`).val();
+        var taxValue = $(`input[name="tax_${invoiceId}"]`).val();
+        var balanceValue = $(`input[name="balance_${invoiceId}"]`).val();
+
+        formData.append(`paid_${invoiceId}`, paidValue);
+        formData.append(`tax_${invoiceId}`, taxValue);
+        formData.append(`balance_${invoiceId}`, balanceValue);
+    });
+    
+    formData.append('invoice_ids', JSON.stringify(checkedInvoices));
+
+    // Collect other form inputs.
+    formData.append('payment_method', $("#payment_method").val());
+    formData.append('payment_ref_no', $("#payment_ref_no").val());
+    formData.append('ornumber', $("#ornumber").val());
+    formData.append('paid', $("#paid").val());
+    formData.append('tax', $("#tax").val());
+    formData.append('total_amount_to_pay', $("#total_amount_to_pay").val());
+    formData.append('date_payment_receive', $("#date_payment_receive").val());
+
+    var fileInputs = ['#or_file', '#paid_file', '#tax_file_2307'];
+    fileInputs.forEach(function(selector, index) {
+        var file = $(selector)[0].files[0];
+        if (file) {
+            formData.append(selector, file);
+        }
+    });
+
+    // Validate required fields.
+    var payment_ref_no = $("#payment_ref_no").val();
+    var paid = $("#paid").val();
+    var ornumber = $("#ornumber").val();
+
+    if (payment_ref_no && paid && ornumber) {
+        // Perform the AJAX call.
+        $.ajax({
+            url: "ajax.php?bulk_invoice_payment=''", // Target URL.
+            type: "POST",
+            data: formData,
+            contentType: false, // Required for FormData.
+            processData: false, // Prevent jQuery from processing the data.
+            success: function (res) {
+                var data = JSON.parse(res);
+                if (data?.res?.status == 2) {
+                    $("#invoice_check_error").html("<span style='color: red; font-size: 17px;'> "+ data.res?.msg +" </span>");
+                    $("#invoice_check_error").show();
+                } else {
+                    $("#bulk_invoice_payment_modal").modal("hide");
+                    window.location.reload();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    } else {
+        // Display errors for missing fields.
+        if (!payment_ref_no) {
+            $(".payment_ref_no_error").html("<span style='color: red;'> Payment Reference No is Required </span>").show();
+        }
+        if (!paid) {
+            $(".paid_error").html("<span style='color: red;'> Paid Amount is Required </span>").show();
+        }
+        if (!ornumber) {
+            $(".ornumber_error").html("<span style='color: red;'> OR Number is Required </span>").show();
+        }
+    }
+});
+
+
+    $('#client_status').change(function() {
+            var v = $(this).val();
+            switch(v) {
+                case 'all' :
+                    window.location = '?route=invoice&client_status=all';
+                    break;
+                case 'active' :
+                    window.location = '?route=invoice&client_status=active';
+                    break;
+                case 'inactive' :
+                    window.location = '?route=invoice&client_status=inactive';
+                    break;
+				
+            }
+        });
+
+        $('#client_type').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice&client_type=' + v;
+        });
+        
+        $('#payment_status').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice&payment_status=' + v;
+        });
+
+        
+        $('#client').change(function() {
+            var v = $(this).val();
+            var payment_status = $("#payment_status").val();
+            window.location = '?route=invoice&client=' + v + '&payment_status=' + payment_status;
+        });
+
+        $('#clear_status').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice&clear_status=' + v;
+        });
+
+        $('#file_status').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice&file_status=' + v;
+        });
+
+        $("#exp_page_count").on('click', function () {
+            var filter = $(this).data('filter');
+            console.log('filter:', filter);
+            var filte_expload = filter.split('__');
+            window.location.href = "?route=exp_invoice&" + filte_expload[0] + "=" + filte_expload[1];
+        });
+
+        ref_no_filter
+        $("#ref_no_filter").change(function(){
+            var ref_no = $("#ref_no_filter").val();
+            if (ref_no != '') {
+                window.location.href = "?route=invoice&ref_no=" + ref_no;
+            }else{
+                alert('Please Fill the field');
+            }
+        })
+
+        $('.DateFilter').datepicker({ format: 'yyyy-mm-dd', autoclose: true});
+
+        $('#resetButton').click(function () {
+            $("#from").val('');
+            $("#to").val('');
+            $("#client_status").val('active').prop('checked');
+
+            $("#client_type").val('all').prop('checked');
+            $("#payment_status").val('unpaid').prop('checked');
+            $("#clear_status").val('all').prop('checked');
+            $("#client").val('').prop('checked');
+            $("#file_status").val('all').prop('checked');
+            $("#ref_no_filter").val('');
+            window.location.href = "?route=invoice";
+            
+            $('.DateFilter').trigger('change');
+        });
+
+        getMultipleInputValues('hidinvoice[]');
+        
+        $('#print_invoice').click(function () {
+            var hidinvoiceValues = [];
+            var invoiceno = [];
+            var hidinvoiceValues = getMultipleInputValues('hidinvoice[]');
+            var invoiceno = hidinvoiceValues; 
+            $("#checkInvoiceids").html("");
+
+            var id = invoiceno.join(',');
+            var url = "?route=pdf/allinvoice&invoice_id=" + id;
+            window.open(url, '_blank');
+            
+            // $.ajax({
+            //     url: "index.php?route=pdf/allinvoice",
+            //     type: "POST",
+            //     data: {
+            //         invoiceid: invoiceno,
+            //     },
+            //     success: function (response) {
+            //         if(response > 0 ) {
+            //             $("#checkInvoiceids").html('<p style="color:red;">Invoice Id is already Exists</p>');
+            //             $("#countinvoice").val(response);
+            //         }
+            //         else{
+            //             $("#countinvoice").val('');
+            //         }
+            //     }
+            // });
+        });
+
+         $("#viewAllInvoiceButton").click(function(e) {
+            var table = $('#dataTablesFullDesc').DataTable();
+            $.fn.dataTable.ext.search = [];
+            table.draw();
+        });
+
+
+        $("#unpaid_invoice").click(function(e) {
+            var table = $('#dataTablesFullDesc').DataTable();
+            $.fn.dataTable.ext.search = [];
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var balance = parseFloat(data[14]);
+                if (balance > 0) {
+                    return true;
+                }
+                return false; 
+            });
+            table.draw();
+        });
+
+        $("#view_pending_tax_file").click(function(e) {
+            var table = $('#dataTablesFullDesc').DataTable();
+            $.fn.dataTable.ext.search = [];
+
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var balance = parseFloat(data[14]);
+                var taxFile = data[10];
+
+                if (balance > 0 && (taxFile === '' || taxFile === null)) {
+                    return true;
+                }
+                return false;
+            });
+
+            table.draw(); 
+        });
+    
+        $('.DateFilter').change(function(e) {
+            var from = $('#from').val();
+            var to = $('#to').val();
+    
+            var table = $('#dataTablesFullDesc').DataTable();
+            
+            $.fn.dataTable.ext.search = [];
+    
+            // Apply new range filter
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                var category = data[9]; 
+                console.log('category:', category)
+                var categoryDate = new Date(category);
+                console.log('categoryDate:', categoryDate)
+                var fromDate = from ? new Date(from) : null;
+                console.log('fromDate:', fromDate)
+                var toDate = to ? new Date(to) : null;
+                console.log('toDate:', toDate)
+    
+                if ((fromDate === null || categoryDate >= fromDate) && (toDate === null || categoryDate <= toDate)) {
+                    return true;
+                }
+                return false;
+            });
+            getMultipleInputValues('hidinvoice[]');
+            table.draw();
+        });
+    });
+
+    // const url = new URL(window.location.href);
+    // const params = new URLSearchParams(url.search);
+    // const isModalOpen = params.get('is_modal_open');
+    // console.log('isModalOpen:', isModalOpen);
+    // const invoice_id = params.get('invoice_id');
+    // console.log('invoice_id:', invoice_id);
+    // if (isModalOpen === 'true') {
+    //     // Open the modal
+    //     openModal(); // Replace with your modal open function
+    // }
+
+    // // Function to open the modal
+    // function openModal() {
+    //     // Your modal opening logic here
+    //     var redirect_url_pera = $("#redirect_url_pera").val();
+    //     $('#myModal .modal-content').empty().load('ajax.php?modal=editinvoice_payment&reroute='+redirect_url_pera+'&id='+invoice_id+'&section=invoice' , function(){
+            
+    //     });
+    //     $('#myModal').modal('show');
+
+
+    // }
+    $(document).on("change",".paid_amt_input" , function(){
+        var paid = parseFloat($(this).val()) || 0;
+        var row = $(this).closest('tr');
+        var balance = parseFloat(row.find('.balance_amt_input').data("balance_amt")) || 0;
+        var tax = balance - paid;
+        var tax_input = row.find('.tax_amt_input');
+        var balance_amt_input = row.find('.balance_amt_input');
+        if (tax < 0) {
+            alert('Paid Amount are not more then' + balance);
+        }else{
+            tax_input.val(tax);
+            var totalPaid = 0;
+            $('.paid_amt_input').each(function() {
+                totalPaid += parseFloat($(this).val()) || 0; 
+            });
+            $("#paid").val(totalPaid);
+            var final_balance = balance - paid - tax;
+            balance_amt_input.val(final_balance);
+        }
+    })
+
+
+    $(document).on("change",".tax_amt_input" , function(){
+        var tax = parseFloat($(this).val()) || 0;
+        var row = $(this).closest('tr');
+        var balance = parseFloat(row.find('.balance_amt_input').data("balance_amt")) || 0;
+        var paid = row.find('.paid_amt_input').val();
+        var tax_calculated = balance - paid;
+        var new_balance = balance - tax - paid;
+        var balance_amt_input = row.find('.balance_amt_input');
+        if (tax > tax_calculated) {
+            alert('Tax amount are not more then ' + tax_calculated);
+            $(this).val('');
+        }else{
+            balance_amt_input.prop('disabled', false);
+            balance_amt_input.val(new_balance);
+            balance_amt_input.prop('disabled', true);
+        }
+    })
+
+    $(document).on("click" , ".multiple_payment_receive_btn" , function(){
+        var invoice_id = $(this).data("invoice_id");
+        $.ajax({
+            url : "ajax.php?get_multiple_payment_receive_data=''",
+            method : "POST",
+            data : {
+                invoice_id : invoice_id
+            },
+            success : function(res){
+                var data = JSON.parse(res);
+                if (data.res ?.status == 1) {
+                    var invoices = data.res ?.tbody;
+                    $(".multiple_payment_tbody").html(invoices);
+                    $("#multiple_payment_modal").modal('show');
+                    var totle_balance = data.res ?.totle_balance;
+                    $("#total_bal_modal_1").html(totle_balance.toLocaleString("en-US"));
+                    var invoices_detail = data.res ?.invoice_form_data;
+                    $("#date_payment_receive_m").val(invoices_detail.date_payment_receive_m);
+                    $("#ornumber_m").val(invoices_detail.ornumber_m);
+                    $("#payment_method_m").val(invoices_detail.payment_method_m);
+                    $("#payment_ref_no_m").val(invoices_detail.payment_ref_no_m);
+                    var total_paid = data.res ?.total_paid;
+                    $("#paid_m").val(total_paid.toLocaleString("en-US"));
+                    
+
+                }else{
+                    // $(".invoice_modal_body").hide();
+                    // $(".paid_msg").show();
+                    // $(".payment_detail").hide();
+                    // $("#save_bulk_btn").hide();
+                    // $("#bulk_invoice_payment_modal").modal('show');
+                }
+            }
+        })
+    })
+
+
+    $("#multiple_payment").submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData();
+
+        var checkedInvoices = $('.inv_check:checked').map(function() {
+            return $(this).data('invoice_id');
+        }).get();
+        
+        formData.append('invoice_ids', JSON.stringify(checkedInvoices));
+        formData.append('payment_method', $("#payment_method_m").val());
+        formData.append('payment_ref_no', $("#payment_ref_no_m").val());
+        formData.append('ornumber', $("#ornumber_m").val());
+        formData.append('date_payment_receive', $("#date_payment_receive_m").val());
+
+        var fileInputs = ['#or_file_m', '#paid_file_m', '#tax_file_2307_m'];
+        fileInputs.forEach(function(selector, index) {
+            var file = $(selector)[0].files[0];
+            if (file) {
+                formData.append(selector, file);
+            }
+        });
+
+        var payment_ref_no = $("#payment_ref_no_m").val();
+        var ornumber = $("#ornumber_m").val();
+
+        if (payment_ref_no && ornumber) {
+            $.ajax({
+                url: "ajax.php?multiple_payment=''",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    var data = JSON.parse(res);
+                    if (data?.res?.status == 2) {
+                        $("#invoice_check_error").html("<span style='color: red; font-size: 17px;'> "+ data.res?.msg +" </span>");
+                        $("#invoice_check_error").show();
+                    } else {
+                        $("#multiple_payment_modal").modal("hide");
+                        window.location.reload();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                }
+            });
+        } else {
+            // Display errors for missing fields.
+            if (!payment_ref_no) {
+                $(".payment_ref_no_error").html("<span style='color: red;'> Payment Reference No is Required </span>").show();
+            }
+            if (!ornumber) {
+                $(".ornumber_error").html("<span style='color: red;'> OR Number is Required </span>").show();
+            }
+        }
+    });
+
+    // date_received_from
+    $(document).on("change" , "#date_received_from" , function(){
+        var date_received_from = $(this).val();
+        var date_received_to = $("#date_received_to").val();
+        var payment_status = $("#payment_status").val();
+        
+        if (date_received_from != '' && date_received_to != '') {
+            window.location.href = "?route=invoice&date_received_from=" + date_received_from + "&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else if(date_received_from != ''){
+            window.location.href = "?route=invoice&date_received_from=" + date_received_from + "&payment_status=" + payment_status;
+        }else if(date_received_to != ''){
+            window.location.href = "?route=invoice&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else{
+            alert('Please Fill the field');
+        }
+    })
+
+    $(document).on("change" , "#date_received_to" , function(){
+        var date_received_to = $(this).val();
+        var date_received_from = $("#date_received_from").val();
+        var payment_status = $("#payment_status").val();
+        if (date_received_from != '' && date_received_to != '') {
+            window.location.href = "?route=invoice&date_received_from=" + date_received_from + "&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else if(date_received_from != ''){
+            window.location.href = "?route=invoice&date_received_from=" + date_received_from + "&payment_status=" + payment_status;
+        }else if(date_received_to != ''){
+            window.location.href = "?route=invoice&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else{
+            alert('Please Fill the field');
+        }
+    })
+
+    $(document).on('click', "#date_received_reset" , function(){
+        window.location.href = "?route=invoice";
+    })
+
+    // date_received_export
+    $(document).on('click', "#date_received_export" , function(){
+        var date_received_to = $("#date_received_to").val();
+        var date_received_from = $("#date_received_from").val();
+        if (date_received_from != '' && date_received_to != '') {
+            window.location.href = "?route=date_received_export_invoice&date_received_from=" + date_received_from + "&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else if(date_received_from != ''){
+            window.location.href = "?route=date_received_export_invoice&date_received_from=" + date_received_from + "&payment_status=" + payment_status;
+        }else if(date_received_to != ''){
+            window.location.href = "?route=date_received_export_invoice&date_received_to=" + date_received_to + "&payment_status=" + payment_status;
+        }else{
+            alert('Please Fill the field');
+        }
+    })
+
+$(document).on('click' , ".invoice_attechment_img" , function(e){
+    e.preventDefault();
+    var img_src = $(this).data('img_src'); // Get the image source
+    $("#all_invoice_image_view").attr('src', img_src); // Set the correct src without extra quotes
+    $("#all_invoice_image_view_modal").modal('show');
+})
+</script>
+
+    

@@ -1,0 +1,347 @@
+<style>
+div.dataTables_filter label{
+float: left;
+margin-top: 7px;
+}
+</style>
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Replace Asset<small></small></h1>
+        
+        <div style="clear:both"></div>
+    </section>
+	
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="table-responsive">
+							<div class="col-xs-6">
+								<div class="col-xs-6 spaceone" style="font-size:30px">Available Assets</div>
+								<div class="col-xs-6" style="padding-top: 8px;">
+									<span>Location</span>
+									<span>
+										<select id="location" style="height: 30px; width: 150px; margin-left: 7px;">
+											<option value="">All</option>
+											<?php $warehouse = getTable("warehouse");
+											foreach($warehouse as $wer){ ?>
+											<option value="<?= $wer['id'] ?>" <?= (($_GET['wh'] == $wer['id'])?"selected='selected'":"") ?> ><?= $wer['name'] ?></option>
+											<?php } ?>
+										</select>
+									</span>
+								</div>
+							</div>
+                            <table id="dataTablesFullDesc" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width:50px;">Tag</th>
+										<th>SKU</th>
+                                        
+                                        <th>Location</th>
+                                        <th style="min-width:100px;">Asset Type</th>
+                                        <th style="min-width:150px;">Model</th>
+                                        <th>Serial No.</th>
+                                        <th>Asset Status</th>
+                                        <th>Service Status</th>
+                                        <th>Updated Date</th>
+                                        <th>A3(Color)</th>
+                                        <th>A3(Black)</th>
+                                        <th>A4(Color)</th>
+                                        <th>A4(Black)</th>
+										<th></th>
+                                        <th class="text-right">Replace</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($assets as $asset) {
+                                    $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']);
+                                    echo "<tr id='rid".$asset['id']."'>";
+                                    echo "<td><a href='?route=assets/manage&id=".$asset['id']."'>".$asset['tag']."</a></td>";
+									echo "<td>".$asset['sku']."</td>"; 
+                                    echo "<td>".getSingleValue("warehouse","name",$asset['warehouseid'])."</td>";
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)."</td>";
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modelid'])."</td>";
+                                    echo "<td>".$asset['serial']."</td>";
+                                    
+									echo "<td><span class='badge' style='background-color:".getSingleValue("labels","color",$asset['status'])."'>".$asset['status']."</span></td>";
+									
+                                    echo "<td><span class='badge' style='background-color:".getSingleValue("labels","color",$asset['statusid'])."'>".getSingleValue("labels","name",$asset['statusid'])."</span></td>";
+									
+									echo "<td><input type='text' name='udate' id='udate' value='".$asset['udate']."' style='width:100%;' readonly> </td>";
+									
+									echo "<td><input type='text' name='A3clr' id='A3clr' value='".$asset['A3clr']."' style='width:100%; text-align:right' readonly></td>";
+									echo "<td><input type='text' name='A3blk' id='A3blk' value='".$asset['A3blk']."' style='width:100%; text-align:right' readonly></td>";
+									
+									echo "<td><input type='text' name='A4clr' id='A4clr' value='".$asset['A4clr']."' style='width:100%; text-align:right' readonly></td>";
+									echo "<td><input type='text' name='A4blk' id='A4blk' value='".$asset['A4blk']."' style='width:100%; text-align:right' readonly></td>";
+									echo "<td><a href='#' onClick='showM(\"ajax.php?modal=assetUsageEdit&reroute=contract/replaceassets&id=".$asset['id']."&cid=".$_GET['cid']."&oaid=".$_GET['oaid']."&coid=".$_GET['coid']."\");return false' class='btn btn-success hdiv'>Update</a></td><td>";
+									?>
+									
+									<div class="popstyl popmodal text-center" id="mod<?= $asset['id']; ?>">
+									
+<button type="reset" id="reset" class="clode234 reset" ><i class="fa fa-times" aria-hidden="true"></i></button>
+									
+									<div class="boxstyle">
+<div class="text-center"><h2>New Asset Information</h2></div>
+										
+										<div>
+											<div class="row12">
+												<input type="text"value="<?= $asset['sku']; ?>" style="" disabled>
+												
+												<span class="btn1">
+												SKU
+												</span>
+											</div>
+											<div class="row12">
+												<input type="text"value="<?= getSingleValue("models","name",$asset['modelid']); ?>" style="" disabled>
+												
+												<span class="btn1">
+												Model
+												</span>
+											</div>
+										</div>
+										</div>
+										<div class="boxstyle">
+										<div class="text-center" style="">
+<h2>Input Memo to Old Asset</h2></div>
+										<div class="row12">
+											<select style="" name="reson" id="reson<?= $asset['id']; ?>" required>
+												<option value="">select</option>
+												<?php
+												$lables = getTable("labels");
+												foreach($lables as $labl)
+												{ ?>
+												<option value="<?= $labl['id']; ?>"><?= $labl['name']; ?></option>
+												<?php }
+												?>
+											</select>
+											
+												<button type="submit" class="btn btn-success refreshs" id="<?= $asset['id']; ?>" style="">Replace</button>
+											
+										</div>
+										
+										<div style="margin-top:5px">
+										<!--	<div style="width:50%;float:left;">
+												<button type="reset" id="reset" class="btn btn-danger reset" style="width:90px">Cancel</button>
+											</div>-->
+											<div style="width:50%;float:left;">
+											
+											</div>
+										</div>
+										<div style="clear:both"></div>
+									</div>
+									</div>
+									
+									<?php
+                                    echo "
+                                    <div class='newonee' style='text-align:center;cursor:pointer;'>	<span class='btn btn-primary show replce1 hdiv' id='".$asset['id']."'>Replace</span>
+
+										
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+									
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	<form method="post">
+	<input type="hidden" name="udatee" id="udatee" value="">
+	<input type="hidden" name="A3blkk" id="A3blkk" value="">
+	<input type="hidden" name="A3clrr" id="A3clrr" value="">
+	<input type="hidden" name="A4blkk" id="A4blkk" value="">
+	<input type="hidden" name="A4clrr" id="A4clrr" value="">
+	<input type="hidden" name="resson" id="resson" value="">
+		
+	<input type="hidden" name="oaid" id="oaid" value="<?php echo $_GET['oaid']; ?>">		
+    <input type="hidden" name="cid" id="cid" value="<?php echo $_GET['cid']; ?>">
+	<input type="hidden" name="coid" id="coid" value="<?php echo $_GET['coid']; ?>">		
+    <input type="hidden" name="replaceasset">
+    <input type="hidden" class="assetid" name="assetid" value="">
+    <input type="text" name="reroute" value="<?= $refurl ?>">
+		
+	
+    <button style="display:none;" type="submit" id="sumn" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>	
+	</form>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script>
+ $(document).ready(function () {
+	$(".popmodal").hide();
+
+		$(".show").click(function(){
+			$(".popmodal").hide();
+			var sel= $(this).attr('id');
+			$("#mod"+sel).toggle();
+		}); 
+
+$("#location").change(function() {
+	
+  var valsel= $(this).val();
+  var oaid= $('#oaid').val();
+  var cid= $('#cid').val();
+  var coid= $('#coid').val();
+  
+  <!-- alert(oaid); -->
+  <!-- alert(cid); -->
+  <!-- alert(coid); -->
+
+  if(valsel!="")
+  {
+	   window.location.href = "?route=contract/replaceassets&wh="+valsel+"&cid="+cid+"&oaid="+oaid+"&coid="+coid;
+	 // alert(valsel);
+	  
+	  
+	 //oTable.fnResetAllFilters(false)
+	
+  }
+  else
+  {
+	 window.location.href = "?route=contract/replaceassets&cid="+cid+"&oaid="+oaid+"&coid="+coid;
+  }
+ 
+});
+
+ 
+ 
+ 
+		$(".refreshs").click(function(){
+		
+			var valsel= $(this).attr('id');
+			var udate= $('#udate').val();
+			var A3blk= $('#rid'+valsel+' #A3blk').val();
+			var A3clr= $('#rid'+valsel+' #A3clr').val();
+			var A4blk= $('#rid'+valsel+' #A4blk').val();
+			var A4clr= $('#rid'+valsel+' #A4clr').val();
+			var reson= $('#reson'+valsel+' option:selected').val();
+		
+			$('.assetid').val(valsel);
+			$('#udatee').val(udate);
+			$('#A3blkk').val(A3blk);
+			$('#A3clrr').val(A3clr);
+			$('#A4blkk').val(A4blk);
+			$('#A4clrr').val(A4clr);
+			$('#resson').val(reson);
+			
+			// alert(valsel);
+		if(A3blk || A3clr || A4blk || A4clr != "")
+		{
+			if(reson != ""){
+				$( "#sumn" ).trigger( "click" );
+			}else{
+				alert("Select & Input asset memo to old asset to be replaced");
+			}
+		}else{
+			alert("Milage not be blank, Pls Insert Milage first....");
+		}
+		});
+		
+		$(".reset").click(function(){
+			$(".popmodal").hide();
+		});
+		
+});
+
+
+</script>
+
+<style>
+.badge {
+    border-radius: 2px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 14px;
+}
+.hdiv {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    float: right;    border-radius: 2px;
+}
+table#dataTablesFullDesc input {
+    padding-right: 7px;
+}
+.replce1 {margin-left: 4px;}
+.row12 .refreshs {
+    float: right;
+    height: 25px;
+    text-align: center;
+    margin-left: 15px;
+    line-height: 100%;
+    border-radius: 0px;
+    font-weight: 600;
+}
+button.clode234.reset {
+    position: absolute;
+    top: 0;
+    right: 1px;
+    background: #fff;
+    color: #ff0000;
+    border: none;
+    font-size: 19px;
+}
+span.btn1 {
+background: #3c8dbc;
+    color: #fff;
+    float: right;
+    border: 1px solid #3c8dbc;
+    width: 72px;
+    height: 25px;
+    text-align: center;
+    margin-left: 15px;
+    font-weight: 600;
+}
+
+.row12 input {
+    width: 69%;
+    height: 25px;
+    background: #fff;
+    padding: 0px 5px;
+    margin-bottom: 8px;
+    border: 1px solid #bbb;
+}
+.popstyl {
+    background: #fff;
+    padding: 16px 15px 0px 15px;
+    border: 1px solid #bbb;
+    text-align: left;
+    padding-top: 30px;
+    border-radius: 2px;
+}
+.row12 select {
+    height: 25px;
+}							
+.boxstyle {    padding-top: 0px;
+    float: left;
+    width: 100%;
+    border: 1px solid #bdbcbc;
+    margin-bottom: 18px;
+    padding: 15px; padding-top:0px;
+    border-radius: 5px;
+}
+.boxstyle h2 {
+    font-size: 16px;
+        color: #3487b7;
+    text-align: left;
+}
+
+.popmodal {     width: 353px;
+position: absolute;
+right: 70px;
+z-index: 99999;}
+.refreshs {  cursor: pointer;}
+.spaceone{min-height:150px;}
+</style>

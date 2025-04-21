@@ -1,0 +1,21 @@
+
+<?php
+# APP LOADER
+require($scriptpath . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'loader.php');
+
+if($route == "login") {
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template'. DIRECTORY_SEPARATOR .$route.'.html');
+}
+elseif($route == "forgot") {
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template'. DIRECTORY_SEPARATOR . $route.'.html');
+}
+elseif($route == "reports/view") {
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR .$lia['type']. DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $route.'.html');
+}
+else {
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . $lia['type'] . DIRECTORY_SEPARATOR . 'header.html');
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . $lia['type'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $route . '.html');
+    require($scriptpath . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . $lia['type'] . DIRECTORY_SEPARATOR . 'footer.html');
+}
+
+?>

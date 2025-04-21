@@ -1,0 +1,140 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+        <h1 class="pull-left">Banner List<small> </small></h1>
+       
+		
+		<div class="pull-right" style="margin-right:15px;margin-left:15px">
+			<a  href="?route=banner/new" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add New Banner</a>
+		</div>
+		
+        <div style="clear:both"></div>
+    </section>
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+
+		<div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+
+                    <div class="box-body">
+                        <div class="row" style="margin-bottom: 15px;">
+							<div class="col-md-3">
+								<strong>View</strong>
+								<select id="view-options" class="form-control select2" style="width:auto;display:inline;">
+									<option value="all">All</option>
+									<option selected="" value="Active">Active</option>
+									<option value="Inactive">Inactive</option>
+								</select>
+							</div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="dataTablesFu" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        
+                                        <th>Banner Name</th>
+                                        
+                                        <th>Linked URL</th>
+                                        <th>Image</th>
+                                        <th>Status</th>
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+									//echo"<pre>";
+									//print_r($clients);
+									$cout = 1;
+                                    foreach ($clients as $client) {
+									
+                                    echo "<tr>";
+                                    echo "<td>".$cout."</td>";
+									
+									 echo "<td>".$client['slidenm']."</td>";
+                                    echo "<td>".$client['lurl']."</td>";
+                                    echo "<td><img src='uploads/banner/".$client['image']."' width='50px'></td>";
+									
+									if($client['active'] == 1){
+                                    echo "<td>Active</td>";
+									}else{
+									echo "<td>Inactive</td>";
+									}
+                                    echo "<td>
+                                    <div class='pull-right'>
+                                    <!-- <a href='?route=clients/manage&id=".$client['id']."' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp; -->
+                                    <a href='?route=banner/edit&id=".$client['id']."' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=bannerDelete&reroute=slide&id=".$client['id']."\");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+									$cout++;
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function() {
+	
+		var letter = $('#view-options').val();
+			if (letter === 'all') {
+				$ ('tr').show ();
+			}
+			else {
+				$("table tr td:nth-child(5)").each(
+					function(){
+						if($(this).html() != letter){
+							$(this).parent().hide();
+						}
+						else{
+							$(this).parent().show();
+						}
+					});
+				}
+	
+        $('#view-options').change(function() {
+           var letter = $(this).val();
+     if (letter === 'all') {
+         $ ('tr').show ();
+     }
+     else {
+         $("table tr td:nth-child(5)").each(
+		   function(){
+			   if($(this).html() != letter){
+				   $(this).parent().hide();
+			   }
+			   else{
+				   $(this).parent().show();
+			   }
+		   });
+     }
+        });
+		
+		$("#dataTablesFu").dataTable( { "order": [[ 0, "asc" ]],"pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, "columnDefs": [ { "orderable": false, "targets": -1 } ] } );
+		
+			
+	$(".autoNumeric1").text( $(".autoNumeric1").text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+							
+    });
+</script>
+<style>
+#dataTablesFu tr {
+    display: block !important;
+	}
+	#dataTablesFu th ,td {
+    width: 21% !important;
+
+}
+</style>

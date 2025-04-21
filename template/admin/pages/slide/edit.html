@@ -1,0 +1,105 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<?php // nextContractTag(); die();?>
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Slide<small> Manage Slide</small></h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li><a href="?route=slide">Slide</a></li><li class="active">Edit</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Edit Slide</h3></div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateContractForm()">
+								<?php $client = $clients[0]; ?>
+								<div class="form-group">
+                                     <label for="group" class="col-sm-2 control-label">Group Name </label>
+                                    <div class="col-sm-8">
+									<?php $grpnm = getRowById("slider_group",$client['groupnum']);?>
+									
+									   
+                                        <select class="form-control" id="group" name="group" required>
+											<Option value="">Select Group</Option>
+											<?php
+										
+											$assets = getTable("slider_group");
+											 foreach ($assets as $category) { echo "<option value='".$category['id']."'"; echo(($category['groupnum'] == $client['groupnum'])? "selected='selected'":'');  echo ">".$category['groupnm']."</option>"; } ?>
+											
+											</select>  </div></div>
+                                    <div class="form-group">
+                                    <label for="slide" class="col-sm-2 control-label">Slide Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="slide" name="slide" value="<?= $client['slidenm'] ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="youtube_url" class="col-sm-2 control-label">Youtube Url</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="youtube_url" name="youtube_url" value="<?= $client['youtube_url'] ?>">
+                                    </div>
+                                </div>  
+                                <div class="form-group">
+                                    <label for="lurl" class="col-sm-2 control-label">Linked URL</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="lurl" name="lurl" value="<?= $client['lurl'] ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="file" class="col-sm-4 control-label">Image</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <input type="file" id="file" name='file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+									<div class="col-sm-4">
+										<img src="uploads/slide/<?= $client['image'] ?>" width="50px">
+									</div>
+                                </div>
+								<div class="form-group col-sm-6">
+                                    <label for="active" class="col-sm-4 control-label">Active Status</label>
+                                    <div class="col-sm-8">
+                                        <input type="checkbox" id="active" style="zoom:1.5;-moz-transform:scale(1.5)" name="active" value="1"<?php if ($client['active'] == 1){?> checked="checked" <?php } ?>>
+                                    </div>
+									
+                                </div>
+								<div style="clear:both"></div>
+                                <div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label">Discription</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control summernote" id="notes" name="notes"><?= $client['notes'] ?></textarea>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="editslide">
+                                <input type="hidden" name="route" value="slide">
+                                <input type="hidden" name="id" value="<?= $client['id'] ?>">
+                                <input type="hidden" name="image" value="<?= $client['image'] ?>">
+
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Update</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function () {
+	
+    });
+</script>

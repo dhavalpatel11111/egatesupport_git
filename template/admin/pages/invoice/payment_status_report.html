@@ -1,0 +1,457 @@
+<style>
+    table.dataTable th, 
+  table.dataTable td {
+      white-space: nowrap; /* Prevent text wrapping */
+  }
+</style>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Payment Status Report</h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Payment Status Report</li>
+        </ol>
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <i class="fa fa-tag"></i>
+                        <h3 class="box-title">Payment Status Report</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <div class="col-sm-12 col-md-8 col-lg-8"
+                                style="display: flex;  align-items: center; margin-bottom: 10px; gap: 10px;">
+                                <div style="width: 25%;">
+                                     <select id="client_status" class="form-control select2" style="width: 100%;">
+                                        <?php 
+                                        $client_status = isset($_GET['client_status']) ? $_GET['client_status'] : '';
+                                        ?>
+                                        <option value="active" <?php echo !isset($client_status) || $client_status == 'active'  ? 'selected' : ''; ?> >Active</option>
+                                        <option value="inactive" <?php echo $client_status == 'inactive' ? 'selected' : ''; ?> >Inactive</option>
+                                        <option value="all" <?php echo $client_status == 'all' ? 'selected' : ''; ?>>All</option>
+
+                                     </select>
+                                </div>
+                                <div style="width: 25%;">
+                                    <select id="client_type" class="form-control select2" style="width: 100%;">
+                                        <option selected value="all">Select Type</option>
+                                        <?php 
+                                        if(isset($filter_type_data)){
+                                            foreach($filter_type_data as $type){ 
+                                                if(isset($_GET['client_type'])){
+                                                    $selected_client_type = $_GET['client_type'];
+                                                }
+                                                if(isset($selected_client_type) && $selected_client_type == $type['id']){ ?>
+                                                    <option value="<?php echo $type['id']; ?>" selected><?php echo $type['name']; ?></option>
+                                                <?php }else{ ?>
+
+                                                    <option value="<?php echo $type['id']; ?>"><?php echo $type['name']; ?></option>
+                                                <?php      }
+                                                
+                                            }
+                                         }
+                                        ?>
+
+                                    </select>
+                               </div>
+                               <div style="width: 25%;">
+                                <select id="payment_status" class="form-control select2" style="width: 100%;">
+                                    <?php 
+                                    $payment_status = isset($_GET['payment_status']) ? $_GET['payment_status'] : '';
+                                    ?>
+                                    <option value="unpaid" <?php echo $payment_status == 'unpaid' ? 'selected' : ''  ?> >Unpaid</option>
+                                    <option value="paid" <?php echo $payment_status == 'paid' ? 'selected' : ''  ?> >Paid</option>
+                                    <option value="all" <?php echo $payment_status == 'all' ? 'selected' : ''  ?> >All</option>
+                                </select>
+                               </div>
+
+                               <div style="width: 25%;">
+                                <select id="client" class="form-control select2" style="width: 100%;">
+                                    <option value="">Select Client</option>
+                                    <?php 
+                                    $client_id = 0;
+                                    if(isset($_GET['client'])){
+                                        $client_id = $_GET['client'];
+                                    }
+                                    if(isset($filter_client_data)){
+                                       foreach($filter_client_data as $client){ 
+                                        if($client['id'] == $client_id){ ?>
+                                            <option value="<?php echo $client['id']; ?>" selected><?php echo $client['name']; ?></option>
+                                        <?php }else{ ?>
+                                            <option value="<?php echo $client['id']; ?>"><?php echo $client['name']; ?></option>
+                                        <?php }    
+                                      }
+                                    }
+
+                                    ?>
+                                </select>
+                               </div>
+                            </div>
+
+
+                            <?php 
+                                if(isset($payment_status_reports)){ 
+                                //echo "<pre>";
+                                //print_r($payment_status_reports);
+                                //die;
+                                ?>
+                                <table id="dataTablesFull" class="table table-striped table-hover">
+                                    <thead>
+                                        <th class="text-center">Id</th>
+                                        <th class="text-center" title="Tax Type">T</th>
+                                        <th class="text-center">Client(Location)</th>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center" title="Applied Month">M</th>
+                                        <th class="text-center" title="Checked Mark means Duplicated Invoice">D</th>
+                                        <th class="text-center">Ref No</th>
+                                        <th class="text-center" title="Invoice number">INV#</th>
+                                        <th class="text-center" title="Invoice Amount">AMT</th>
+                                        <th class="text-center" title="Invoice Related Action">Action</th>
+                                        <th class="text-center" title="Paid Amount">Paid</th>
+                                        <th class="text-center" title="Office  Receipt File">OR</th>
+                                        <th class="text-center" title="2307 Withholding Tax File">Tax</th>
+                                        <th class="text-center" title="Invoice Remaining Balance">Bal</th>
+                                        <th class="text-center">Ref No</th>
+                                        <th class="text-center">Remarks</th>
+                                        <th class="text-center">Paid</th>
+                                        <th class="text-center">Clear</th>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($payment_status_reports as $invoice) {  
+                                            //echo "<pre>";
+                                            //print_r($invoice);
+                                            //die;
+                                            $is_duplicate = check_dup_invoice($payment_status_reports , $invoice['ref_no'] , $invoice['clintid'] , $invoice['month'] , $invoice['id'] , $invoice['date']);
+                                            if($is_duplicate){
+                                                    $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                                            <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                                          </svg>
+                                                    </span>";
+                                            }else{
+                                                    $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                                            }
+                                            ?>
+                                        <tr>
+                                            <td><?php echo $invoice['id']; ?></td>
+                                            <td><?php echo getSingleValue("clienttype","name",$invoice['clienttypes']);; ?></td>
+                                            <td><a href="?route=clients/manage&id=<?php echo $invoice['clintid']; ?>&tab=invoice"><?php echo strlen($invoice['name']) > 10 ? substr($invoice['name'], 0, 15) . '...' : $invoice['name'] ; ?></a></td>
+                                            <td><?php echo format_date_to_ymd($invoice['date']); ?></td>
+                                            <?php 
+                                                $month_name = "";
+                                                if($invoice['month']==1) {
+                                                    $month_name = "Jan";
+                                                } elseif($invoice['month']==2) {
+                                                    $month_name = "Feb";
+                                                } elseif($invoice['month']==3) {
+                                                    $month_name = "Mar";
+                                                }  elseif($invoice['month']==4) {
+                                                    $month_name = "Apr";
+                                                }  elseif($invoice['month']==5) {
+                                                    $month_name = "May";
+                                                }  elseif($invoice['month']==6) {
+                                                    $month_name = "Jun";
+                                                } elseif($invoice['month']==7) {
+                                                    $month_name = "Jul";
+                                                } elseif($invoice['month']==8) {
+                                                    $month_name = "Aug";
+                                                } elseif($invoice['month']==9) {
+                                                    $month_name = "Sep";
+                                                } elseif($invoice['month']==10) {
+                                                    $month_name = "Oct";
+                                                } elseif($invoice['month']==11) {
+                                                    $month_name = "Nov";
+                                                } elseif($invoice['month']==12) {
+                                                    $month_name = "Dec";
+                                                } 
+                                            ?>
+                                            <td><?php echo $month_name; ?> </td>
+                                            <td class="text-center"><?php echo $dup_html; ?></td>
+                                            <td><?php echo $invoice['ref_no']; ?> </td>
+                                            <td><?php echo $invoice['invoiceno']; ?></td>
+                                            <td class="text-right"><?php echo number_format($invoice['amount']); ?></td>
+
+
+                                            <!-- 7 -->
+                                            <td class="text-right">
+                                                <?php  
+                                                    $email_history = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "type", "all");
+                                                    $countSentMail = countTableFiltered('invoicesentmailhistory', 'invoiceid', $invoice['id'], 'type', 'all');
+                                            
+                                                    if ($invoice['attachment'] != "" AND $invoice['cleared'] != 1) {
+                                                        echo "<a href=''>
+                                                                <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMail . "
+                                                                    <span class='hoverfile'>";
+                                                        if (!empty($email_history)) {
+                                                            foreach ($email_history as $record) {
+                                                                echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                            }
+                                                        }
+                                                        echo "      </span>
+                                                                </span>
+                                                            </a>
+                                                            &nbsp;";
+                                                    } else {
+                                                        if ($invoice['cleared'] != 1) {
+                                                            echo "<a href=''>
+                                                                    <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMail . "
+                                                                        <span class='hoverfile'>";
+                                                            if (!empty($email_history)) {
+                                                                foreach ($email_history as $record) {
+                                                                    echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                                }
+                                                            }
+                                                            echo "</span>
+                                                                </span>
+                                                            </a>&nbsp;";
+                                                        }
+                                                        
+                                                    }
+                                            
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clientinvoiceTemplate&id=8&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>";
+                                                    }
+                                            
+                                                    echo "&nbsp;&nbsp;<a href='javascript:void(0);' onClick=\"window.open('?route=invoiceTPdf&id={$invoice['clintid']}&invoice_id={$invoice['id']}', '_blank')\"><i class='fa fa-picture-o' aria-hidden='true'></i></i></a>&nbsp;&nbsp;";
+                                            
+                                                    if ($invoice['attachment'] != "") {
+                                                        echo "<a class='onhoverfile' href='ajax.php?invoicefile=" . $invoice['attachment'] . "'><i class='fa fa-file'></i><span class='hovertextfile'>" . $invoice['attachment'] . "</span></a><br>";
+                                                    } else {
+                                                        echo "<br>";
+                                                    }
+                                                ?>
+                                            </td>
+                                            <!-- 7 -->
+
+                                            <!-- 8 -->
+                                            <td class="text-right">
+                                                <?php 
+                                                $email_history_paid = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "type", "paid");
+                                                $countSentMailpaidfile = countTableFiltered('invoicesentmailhistory', 'invoiceid', $invoice['id'], 'type', 'paid');
+                                                $paid_amount =  number_format($invoice['paid'], 0, '.', ',');
+                                            
+                                                if ($invoice['cleared'] != 1 && $invoice['paid_file'] != "") {
+                                                    echo "<a href=''>
+                                                            <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMailpaidfile . "
+                                                                <span class='hoverfile'>";
+                                                    if (!empty($email_history_paid)) {
+                                                        foreach ($email_history_paid as $record) {
+                                                            echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                        }
+                                                    }
+                                                    echo "</span>
+                                                        </span>
+                                                    </a>&nbsp;&nbsp;";
+                                                }
+                                            
+                                                if ($invoice['paid_file'] != "") {
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clienttaxpaidFileTemplate&id=7&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    echo "$paid_amount&nbsp;&nbsp;<a class='onhoverfile' href='ajax.php?invoicefile=" . $invoice['paid_file'] . "'><i style='color: #F97C00;' class='fa fa-file'></i><span class='hovertextfile'>" . $invoice['paid_file'] . "</span></a>&nbsp;&nbsp;";
+                                                } else {
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href=''>
+                                                                <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMailpaidfile . "
+                                                                    <span class='hoverfile'>";
+                                                        if (!empty($email_history_paid)) {
+                                                            foreach ($email_history_paid as $record) {
+                                                                echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                            }
+                                                        }
+                                                        echo "</span>
+                                                            </span>
+                                                        </a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clienttaxpaidFileTemplate&id=7&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    echo "$paid_amount";
+                                                }
+                                                ?>
+                                            </td>
+                                             <!-- 8 -->
+
+                                            <!-- 9 -->
+                                            <td class="text-right">
+                                                <?php
+                                                $invo_or = "";
+                                                $email_history_orfile = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "type", "orfile");
+                                                $countSentMailorfile = countTableFiltered('invoicesentmailhistory', 'invoiceid', $invoice['id'], 'type', 'orfile');
+                                            
+                                                if ($invoice['cleared'] != 1) {
+                                                    if (!empty($email_history_orfile)) {
+                                                        echo "<a href=''>
+                                                                <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMailorfile . "
+                                                                    <span class='hoverfile'>";
+                                                        foreach ($email_history_orfile as $record) {
+                                                            echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                        }
+                                                        echo "</span>
+                                                            </span>
+                                                        </a>&nbsp;";
+                                                    } else {
+                                                        echo "<a href=''>
+                                                                <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMailorfile . "</span>
+                                                            </a>&nbsp;";
+                                                    }
+                                                }
+                                            
+                                                if ($invoice['or_file'] != "") {
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clientOrFileTemplate&id=16&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    echo "<a class='onhoverfile' href='ajax.php?invoicefile=" . $invoice['or_file'] . "'><i style='color: #238C00;' class='fa fa-file'></i><span class='hovertextfile'>" . $invoice['or_file'] . "</span></a><br>";
+                                                } else {
+                                                    if ($invoice['cleared'] != 1 && empty($email_history_orfile)) {
+                                                        echo "";
+                                                    }
+                                            
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clientOrFileTemplate&id=16&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>";
+                                                    }
+                                            
+                                                    echo "<br>";
+                                                }
+                                                ?>
+                                            </td>
+                                             <!-- 9 -->
+                                            
+                                            <!-- 10 -->
+                                            <td class="text-right">
+                                                <?php
+                                                $email_history_taxfile = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "type", "taxfile");
+                                                $countSentMailTaxFile = countTableFiltered('invoicesentmailhistory', 'invoiceid', $invoice['id'], 'type', 'taxfile');
+                                            
+                                                if ($invoice['cleared'] != 1 && !empty($email_history_taxfile)) {
+                                                    echo "<a href=''>
+                                                            <span class='onhoverfile' style='color: #FF0000;'>" . $countSentMailTaxFile . "
+                                                                <span class='hoverfile'>";
+                                                    foreach ($email_history_taxfile as $record) {
+                                                        echo date('Y-m-d H:i:s', strtotime($record['date'])) . "<br>";
+                                                    }
+                                                    echo "</span>
+                                                        </span>
+                                                    </a>&nbsp;&nbsp;";
+                                                }
+                                            
+                                                if (!empty($invoice['tax_file_2307'])) {
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clienttaxFileTemplate&id=9&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    echo $invoice['tax_amount'] . "&nbsp;&nbsp;<a class='onhoverfile' href='ajax.php?invoicetaxfile=" . $invoice['tax_file_2307'] . "'><i style='color: #7F00FF;' class='fa fa-file'></i><span class='hovertextfile'>" . $invoice['tax_file_2307'] . "</span></a>&nbsp;&nbsp;";
+                                                } else {
+                                                    if ($invoice['cleared'] != 1 && empty($email_history_taxfile)) {
+                                                        echo "<br>";
+                                                    }
+                                            
+                                                    if ($invoice['cleared'] != 1) {
+                                                        echo "<a href='#' onclick=\"showM('ajax.php?modal=clienttaxFileTemplate&id=9&client_id={$invoice['clintid']}&invoice_id={$invoice['id']}&reroute=system/settings&section=templates'); return false;\"><i style='color: #FF0000;' class='fa fa-envelope-o'></i></a>&nbsp;&nbsp;";
+                                                    }
+                                            
+                                                    echo $invoice['tax_amount'];
+                                                }
+                                                ?>
+                                            </td>
+                                            <!-- 10 -->
+
+                                            <td class="text-right"><?php echo number_format($invoice['balance']); ?></td>
+
+                                            <td class="text-left">
+                                                <?php
+                                                if ($invoice['payment_ref_no']) {
+                                                    echo "<span>" . $invoice['payment_ref_no'] . "</span>&nbsp;/&nbsp;&nbsp;";
+                                                }
+                                                if ($invoice['payment_method']) {
+                                                    if ($invoice['payment_method']) {
+                                                        if(is_numeric($invoice['payment_method'])){
+                                                            $payment_method = get_payment_method_name($invoice['payment_method']);
+                                                            echo "<span style='color:red;'>" .$payment_method . "</span>&nbsp;/&nbsp;&nbsp;";
+                                                        }else{
+                                                            echo "<span style='color:red;'>" .$invoice['payment_method'] . "</span>&nbsp;/&nbsp;&nbsp;";
+                                                        }
+                                                    }
+                                                }
+                                                if ($invoice['ornumber']) {
+                                                    echo "<span>" . $invoice['ornumber'] . "</span>&nbsp;&nbsp;";
+                                                }
+                                                ?>
+                                            </td>
+
+                                            <td class="text-left"><?php echo $invoice['remark']; ?></td>
+	
+                                            <td>
+                                                    <?php if($invoice['paid'] < 0): ?>
+                                                    <a style="background-color:red;color: white;padding: 3px;border-radius: 11px;">No</a>
+                                                    <?php else: ?>
+                                                    <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 11px;">Yes</a>
+                                                    <?php endif; ?>
+                                            </td>
+	
+											<td>
+                                                <?php if($invoice['cleared'] == 1): ?>
+                                                    <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 11px;">Yes</a>
+                                                <?php else: ?>
+                                                    <a style="background-color:red;color: white;padding: 3px;border-radius: 11px;">No</a>
+                                                <?php endif; ?>
+											</td>
+                                            
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                        <?php
+                            }
+                        ?>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+<script>
+        $('#client_status').change(function() {
+            var v = $(this).val();
+            switch(v) {
+                case 'all' :
+                    window.location = '?route=invoice/payment_status_report&client_status=all';
+                    break;
+                case 'active' :
+                    window.location = '?route=invoice/payment_status_report&client_status=active';
+                    break;
+                case 'inactive' :
+                    window.location = '?route=invoice/payment_status_report&client_status=inactive';
+                    break;
+				
+            }
+        });
+
+        $('#client_type').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice/payment_status_report&client_type=' + v;
+        });
+        
+        $('#payment_status').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice/payment_status_report&payment_status=' + v;
+        });
+
+        
+        $('#client').change(function() {
+            var v = $(this).val();
+            window.location = '?route=invoice/payment_status_report&client=' + v;
+        });
+</script>

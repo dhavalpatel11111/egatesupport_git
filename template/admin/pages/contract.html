@@ -1,0 +1,102 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Contract<small> Manage contract</small></h1>
+        <div class="pull-right"><a class="btn btn-primary btn-sm" href="?route=contract/create&reroute=contract&routeid=&section="><i class="fa fa-plus"></i> NEW CONTRACT</a></div>
+        <div style="clear:both"></div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table style="border-top:1px #ddd solid !important" id="dataTablesFullDesc" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Contract No.</th>
+                                        <th>Service Type</th>
+                                        <th>Status</th>
+                                        <th>Client ( Location )</th>
+                                        <th>Asset</th>
+                                        <!--<th>Model</th>
+                                        <th>Serial No.</th>-->
+                                        <th>Amount</th>
+                                        <th>Contract End</th>
+                                        <th>D-Day</th>
+                                        <th>Total Milage</th>
+                                        <!--<th>Status</th>-->
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($contracts as $contract) {
+                                    //updatedContractDate($contract);
+                                    //$manufacturerid = getSingleValue("models","manufacturerid",$contract['modelid']);
+                                    echo "<tr>";
+                                    echo "<td><a href='?route=contract/manage&id=".$contract['id']."&reroute=contract&routeid=&contractid=".$contract['id']."&section=contract'>".$contract['contractno']."</a></td>";
+                                    echo "<td><span class='label' style='background-color:#FFF;color:".getSingleValue("assetcategories","color",$contract['categoryid']).";border:1px solid ".getSingleValue("assetcategories","color",$contract['categoryid'])."'>".getSingleValue("assetcategories","name",$contract['categoryid'])."</span></td>";
+                                    $status = ($contract['is_end'] == 1) ? "<span class='label label-success' >End</span>" : "";
+                                    echo "<td>".$status."</td>";
+                                    echo "<td><a href='?route=clients/manage&id=".$contract['clientid']."'>".getSingleValue("clients","name",$contract['clientid'])."</a></td>";
+									
+									if($contract['is_end']=='0'){
+									$modelid = getSingleValue("assets","modelid",$contract['assetid']);
+									$modelname = getSingleValue("models","name",$modelid);
+                                                                        $asset_serial = getSingleValue("assets","serial",$contract['assetid']);
+                                    echo "<td><a href='?route=assets/manage&id=".$contract['assetid']."'>".getSingleValue("assets","tag",$contract['assetid']). " : " . $modelname . " : " . $asset_serial ."</a></td>";
+									
+									
+									}else{
+									
+									 echo "<td>".$contract['endasset']."</td>";
+									}
+									
+									
+									
+									
+                                    echo "<td class='text-right'><span class='autoNumeric'>".$contract['contract_amount']."</span></td>";
+                                    $expiry = ($contract['contract_expiry'] == '0000-00-00' || $contract['contract_expiry'] == null) ? '' : $contract['contract_expiry'];
+                                        echo "<td>".$expiry."</td>";
+                                        //Calculate the remaining days
+                                        $str = (strtotime($contract['contract_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($contract['contract_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">X</span>';
+                                        echo "<td>".$str."</td>";
+                                    echo "<td class='text-right'><span class='autoNumeric'>".getTotalAmount('contract_usages','month_mileage','contractid',$contract['id'])."</span></td>";      
+                                    //echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)."</td>";
+                                    //echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$contract['modelid'])."</td>";
+                                    //echo "<td>".$contract['serial']."</td>";
+                                    //echo "<td>".getSingleValue("suppliers","name",$contract['supplierid'])."</td>";
+                                    //Calculate the remaining days
+                                    //    $str = (strtotime($contract['warranty_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($contract['warranty_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">X</span>';
+                                    //echo "<td>".$str."</td>";                                    
+                                    //echo "<td><span class='badge' style='background-color:".getSingleValue("labels","color",$contract['statusid'])."'>".getSingleValue("labels","name",$contract['statusid'])."</span></td>";
+
+                                    echo "<td>
+                                    <div class='pull-right'>
+                                    <a href='#' onClick='showM(\"ajax.php?modal=contractUsageAdd&reroute=contract&routeid=&contractid=".$contract['id']."&section=contract\");return false' class='btn-right text-red'><img src='template/assets/dist/img/counter-reset.png' /></a>
+                                    <a href='?route=contract/manage&id=".$contract['id']."&reroute=contract&routeid=&contractid=".$contract['id']."&section=contract' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=contractDelete&reroute=contract&routeid=&id=".$contract['id']."&section=\");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script>
+
+   $("#dataTablesFull9").dataTable({ "order": [[0, "desc"]], "pageLength": <?php echo getConfigValue("table_records"); ?> , "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "Search" }, "columnDefs": [ { "orderable": false, "targets": - 1 } ] });
+</script>

@@ -1,0 +1,66 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Edit Client</h4></div>
+<div class="modal-body">
+    <div class="form-group">
+
+        <label for="name">Name *</label>
+        <input type="text" class="form-control" id="name" name="name" value="<?php echo $client['name']; ?>" required>
+
+        <label for="tax_identification_number">Tax Identification Number</label>
+        <input type="text" class="form-control" id="tax_identification_number" name="tax_identification_number" value="<?php echo $client['tax_identification_number']; ?>" required>
+
+        <!-- <label for="name">Contact Person *</label>
+        <input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $client['contact_person']; ?>" required> -->
+        
+        <label for="name">Client Type *</label>
+        <select class="form-control select2 select2-accessible" id="clienttypes" name="clienttypes" style="width: 100%;" tabindex="-1" aria-hidden="true">
+            <option value="0">Select Client Type</option>
+            <?php foreach ($clienttypes as $clienttype) { 
+                $selected = ($client['clienttypes'] == $clienttype['id']) ? 'selected' : '';
+                echo "<option value='" . $clienttype['id'] . "' $selected>" . $clienttype['name'] . "</option>";
+            } ?>
+        </select>
+
+        <label for="name">Default Payment Mode</label>
+        <select class="form-control select2 select2-accessible" id="default_payment_mode" name="default_payment_mode" style="width: 100%;" tabindex="-1" aria-hidden="true">
+            <option value="">Select Payment Mode</option>
+            <?php foreach ($payment_methods as $payment_method) {
+                $selected = ($client['default_payment_mode'] == $payment_method['id']) ? 'selected' : '';
+                echo "<option value='" . $payment_method['id'] . "' $selected>" . $payment_method['name'] . "</option>";
+            } ?>
+        </select>
+        
+        <label for="name">Contact Person *</label>
+        <input type="text" class="form-control" id="contact_person" name="contact_person" value="<?php echo $client['contact_person']; ?>" required>
+        <label for="name"> IT MANGER EMAIL * </label>
+        <input type="email" class="form-control" id="it_manager_email" name="it_manager_email" value="<?php echo $client['it_manager_email']; ?>">
+        <label for="name">PURC MANAGER EMAIL *</label>
+        <input type="email" class="form-control" id="purc_manager_email" name="purc_manager_email" value="<?php echo $client['purc_manager_email']; ?>">
+        <label for="technician_name"> Technician in Charge *</label>
+		<?php $people = getTable("people");?>
+		 <select class="form-control select2 select2-accessible" id="technician_name" name="technician_name" style="width: 100%;" tabindex="-1" aria-hidden="true"><option value="0">Select Technician</option>
+		 
+         <?php foreach ($people as $peop) {if($peop['role']=='technician'){ 
+			echo "<option value='".$peop['id']."'"; echo(($peop['id'] == $client['tech_incharge'])? "selected='selected'":'');  echo ">".$peop['name']."</option>"; } }?></select>
+				<label for="name">Client Highlights *</label>
+        <textarea  class="form-control summernote" id="client_memo" name="client_memo"> <?php echo $client['client_memo']; ?> </textarea>
+    </div><?php   $client_contract_data = getTableFiltered("contract", "is_end", "0","clientid",$client['id']);  $count;
+	foreach($client_contract_data as $client_contract){$count++;}	
+?> 
+    <div class="form-group">
+        <div class="checkbox"><label>
+                <input type="checkbox" <?php echo ($client['is_active']==1) ? 'checked' : '' ?> name="is_active"> Active
+            </label></br>
+            
+            <?php echo "Pls Void Contract & Pull out asset before you make this client as (Inactive)";
+	?>
+        </div>
+    </div> <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+    <input type="hidden" name="editClient">   
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="">
+    <input type="hidden" name="section" value="">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div><script>$(document).ready(function () { $('#client_memo').summernote({height: 100});  });</script>

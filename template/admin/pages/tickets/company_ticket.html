@@ -1,0 +1,133 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<style>
+section.content-header {
+    padding-left: 30px;
+}
+.main_div_box .box.box-primary {margin-left: 0px;margin-right: 0px;width: 50%;}
+#dataTablesFullr td.note_css { width: 95%; display: block; padding: 10px 0px 10px 10px;
+    margin: 0px 5px;}
+#dataTablesFullr td {
+    display: inline-block;
+    border: 1px solid #cecdcd;
+    margin: 0px 2px 10px 2px;
+    padding: 4px 10px;
+}
+#dataTablesFullr .all_tickets { color: yellow;    border: 1px solid #3c8dbc;}
+
+td.company_name a {color: yellow;}
+td.company_name {
+    background: #3c8dbc;
+    
+}
+#dataTablesFullr td.company_name {
+    border: 1px solid #3c8dbc;
+}
+.main_div_box .box.box-primary{border:none!important;width:45%;float:left;min-height:100px;margin:4px 15px 19px;padding:10px}
+.all_tickets{background:#333;color:#fff;border-radius:3px;margin-left:30px;cursor:pointer}
+.tickets{cursor:pointer;padding:4px;}.company_name{border:2px solid #3c8dbc;padding:2px;border-radius:3px;text-transform:capitalize;cursor: pointer;}
+
+#company_value {margin-left: 25px;  border-radius: 4px;  border: none;}
+#dataTablesFullr_filter label {
+    display: inline-block;
+    float: left;
+    margin-top: -43px;
+    margin-left: 293px;
+}
+@media only screen and (max-width: 767px) {
+
+.main_div_box .box.box-primary {
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+#dataTablesFullr td.company_name{ display:block;}
+.top label {
+    position: static;
+    margin: 0px !important;
+    width: 100%;
+}
+
+}
+
+
+</style>
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>Ticket by Company</h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Ticket by Company</li></ol>
+		
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		
+		<div class="row">
+		
+			<div class="col-md-12 main_div_box">
+			<table id="dataTablesFullr" class="table table-striped table-hover">
+			<thead>
+                                    
+									<?php foreach ($clients as $clientt){
+									 $coutnt = countTableFiltered("tickets", "clientid", $clientt['id'],"status[!]", "Closed");
+									 	if(!empty($coutnt)){
+									?>
+                                        <tr style="display:none;">
+										<th class="company_name" title="Company Name"><a href="?route=clients/manage&id=<?php echo $client['id'];?>&tab=department"><?php echo $clientt['name']; ?></a></th>
+					<th title="All Active Tickets" class="all_tickets tickets"><?php echo countTableFiltered("tickets", "clientid", $clientt['id'],"status[!]", "Closed");?></th>
+					<th title="All In Progress Tickets" class="In Progress tickets"><?php echo countTableFiltered("tickets", "clientid", $clientt['id'],"status", "In Progress");?></th>
+					<th title="All Open Tickets" class="Open tickets"><?php echo countTableFiltered("tickets", "clientid", $clientt['id'],"status", "Open");?></th>
+					<th title="Reopened Tickets" class="Reopened tickets"><?php echo countTableFiltered("tickets", "clientid", $clientt['id'],"status", "Reopened");?></th>
+					<th title="Followed Up Tickets" class="Followed_Up tickets"><?php echo countTableFiltered("tickets", "clientid", $clientt['id'],"status", "Followed Up");?></th>
+					
+					<th>Note : <span></span></th>
+          			
+										
+										  </tr>
+                                     <?php 
+									 } 
+									}
+									 ?>
+                                  
+                                </thead>
+			<tbody>
+		
+			<?php 
+			
+		foreach ($clients as $client){
+		
+	        $coutn = countTableFiltered("tickets", "clientid", $client['id'],"status[!]", "Closed");
+		if(!empty($coutn)){
+		
+		?>
+		
+			<tr class="box box-primary">
+			
+          			<td class="company_name" title="Company Name"><a href="?route=clients/manage&id=<?php echo $client['id'];?>&tab=department"><?php echo $client['name']; ?></a></td>
+					<td title="All Active Tickets" class="all_tickets tickets"><?php echo countTableFiltered("tickets", "clientid", $client['id'],"status[!]", "Closed");?></td>
+					<td title="All In Progress Tickets" class="In Progress tickets"><?php echo countTableFiltered("tickets", "clientid", $client['id'],"status", "In Progress");?></td>
+					<td title="All Open Tickets" class="Open tickets"><?php echo countTableFiltered("tickets", "clientid", $client['id'],"status", "Open");?></td>
+					<td title="Reopened Tickets" class="Reopened tickets"><?php echo countTableFiltered("tickets", "clientid", $client['id'],"status", "Reopened");?></td>
+					<td title="Followed Up Tickets" class="Followed_Up tickets"><?php echo countTableFiltered("tickets", "clientid", $client['id'],"status", "Followed Up");?></td>
+				
+					<td class="note_css">Note : <span>For Example While typing t keyword I receive ajax result and while typing te I receive ajax result when ajax time delay between two keyup sometime makes a serious issue.</span></td>
+				</tr>
+				<?php }
+				
+				}?>
+				
+				</tbody>
+			
+				</table>
+			</div>
+         
+		</div>
+	<script type="text/javascript">
+
+	  $(document).ready(function() {
+	 $("#dataTablesFullr").dataTable( { "order": [[ 1, "asc" ]],"pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oSearch": {"bSmart": true}, "columnDefs": [ { "orderable": false, "targets": -1 } ] } );
+		});
+	
+	</script>
+</section><!-- /.content -->
+</aside><!-- /.right-side -->

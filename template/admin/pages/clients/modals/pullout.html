@@ -1,0 +1,184 @@
+
+
+
+
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title"><label>Put memo to this asset before transfering to warehouse</label></h4></div>
+<div class="modal-body">
+
+<div class="form-group">
+
+          <label for="tmemo">Transaction Memo *</label>
+		  <p class="pull-right wrhuse">Total No of Warehouse: <strong><?php echo $warehousetotalCount; ?> </strong></p>
+		  <?php 
+		 // echo'<pre>';
+		//  print_r($_GET['oaid']);
+		 // print_r($_GET['cid']);
+		 // print_r($_GET['coid']);
+		 // echo'</pre>';
+		  ?>
+		  
+
+          <input type="text" ng-model="text" id="tmemo" style="z-index:2252525;" name="tmemo" value="<?php echo" Pulled Out";?> " class="form-control" readonly>
+		</div>
+			
+			
+
+
+
+<?php $refurl =  $_SERVER['HTTP_REFERER']; ?>
+    <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+						<div class="col-xs-5" style="padding-left:0px;color:red; line-height: 26px;">
+							Select Asset Memo from the list :
+						</div>
+						<div class="col-xs-6">
+							<select name="serstats" class="" id="serstatsss" style="width:100%;height:25px" onchange="getselval(this.value);">
+								<option value="">Select</option>
+								<?php foreach($labels as $labl){ ?>
+									<option value="<?=$labl['id']; ?>"><?=$labl['name']; ?></option>
+								<?php } ?>
+							</select>
+						</div>
+						<div style="clear:both"></div>
+					
+                        <div class="table-responsive">
+							
+						
+					  <div class="tablebox">
+                            <table id="dataTablesFull" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+
+                                        <th style="min-width:60px;">Name</th>
+										<th>Code</th>
+                                    
+                                      <th class="" style="text-align:right;">Transer Asset</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="cursor:pointer">
+                                    <?php
+                                    foreach ($warehouses as $warehouse) {
+                                   
+                                    echo "<tr>";
+									    
+                                    echo "<td>".$warehouse['name']."</a></td>";
+									echo "<td>".$warehouse['code']."</td>";
+                                     echo "<td>
+                                    <div class=' newonee'>
+									
+									
+             <i class='moveto  refreshs ' id='".$warehouse['id']."'>Move Asset</i></a>&nbsp;                       
+
+
+									
+                                    </div>
+                                    </td>";
+                              
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                                </table>
+                                </div>
+								  <div class="tablebox">
+ <table id="dataTablesFull" class="table table-striped table-hover">
+								<thead>
+                                    <tr>
+							
+                                        <th style="min-width:60px;">Status</th>
+										<th>Code</th>
+                                      <th style="text-align:right;" class="">Transer Asset</th>
+                                    </tr>
+                                </thead>
+								<tbody style="cursor:pointer">
+									<tr>
+										
+										<td>For Repair</td>
+										<td>For Repair</td>
+									<td>
+<div class=" newonee">
+				
+											
+		<i class="moveto refreshs" id="repair">Move Asset</i>									
+											</div>
+										</td>
+									</tr>
+									<tr>
+									
+										<td>For disposal</td>
+										<td>For disposal</td>
+										<td>
+											<div class=" newonee">
+											
+<span class="moveto refreshs" id="repair"> Move Asset</span>			
+											</div>
+										</td>
+									</tr>
+								</tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+	
+	<input type="hidden" name="oaid" value="<?php echo $_GET['oaid']; ?>">	
+    <input type="hidden" name="cid" value="<?php echo $_GET['cid']; ?>">
+	<input type="hidden" name="coid" value="<?php echo $_GET['coid']; ?>">		
+    <input type="hidden" name="pullout">
+    <input type="hidden" class="assetid" name="assetid" value="">
+    <input type="hidden" class="assetmemo" name="assetmemo" value="">
+    <input type="hidden" name="reroute" value="<?= $refurl ?>">
+</div>
+<div class="modal-footer">
+  <!--  <button  type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+ -->   <button style="display:none;" type="submit" id="sumn" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script>
+
+ 
+		$('i.refreshs').on('click', function() {
+		//alert("hiii");
+		 var valsel= $(this).attr('id');
+		// alert(valsel);
+		 var valselll= $("#serstats").val();
+		 
+		 
+		 //alert(valselll);
+		 $('.assetid').val(valsel);
+		// $('.servisstats').val(valselll);
+		// alert(valselll);
+			
+		 $( "#sumn" ).trigger( "click" );
+		 
+		});
+		
+		function getselval(selval)
+		{
+		//alert(selval);
+		$('.assetmemo').val(selval);
+		}
+		
+
+</script>
+
+
+<style>
+
+.wrhuse { padding-right: 15px;}
+.refreshs {  cursor: pointer;}
+.moveto {background: #3c8dbc; color: #fff; padding: 3px 8px;
+    border-radius: 2px; float:right;}
+.tablebox td:nth-child(1) {width:200px;}
+.tablebox {border: 1px solid #bdbcbc;padding: 15px;
+    border-radius:5px;    margin: 10px 0px;    float: left;
+    width: 100%;}
+.modal-footer{ padding:0px;}
+.wrhuse strong { color: #3c8dbc;}
+
+</style>

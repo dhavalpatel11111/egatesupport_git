@@ -1,0 +1,1259 @@
+<style>
+    .css_sty{cursor:pointer;}
+    .style_css {
+        margin-left: 88%;
+        color: #3c8dbc;
+        font-weight: 700;
+    }
+    .valuone{border:1px solid #f60;display:inline;padding:.2em .6em .3em;font-weight:700;line-height:1;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;text-transform:capitalize;margin-left:3px;font-size:9px}.hd_dsktp{display:none}.onhgy{display:none}span.frmobile{display:none}@media only screen and (max-width:767px){.texttt{display:none!important}.hd_dsktp{display:inline-block;margin-left:0!important}.hd_mb{display:none}.bhjk{float:right;margin-right:0;width:76px}.frmobile{display:block;width:100%;margin:4px 0 4px 0}ul.todo-list.ui-sortable li{position:relative;padding:5px 7px}.todo-list>li:hover .tools{bottom:7px;position:absolute;right:7px}span.frmobile{display:inline-block}.todo-list>li .text{margin-left:0}}
+    
+    @media (max-width: 765px) { 
+    
+        .infoblockmobile {
+            display: block !important;
+        }
+    
+        .infoblock {
+            display: none !important;
+        }
+    
+    }
+    </style>
+    
+    
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>Dashboard</h1>
+            <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Dashboard</li></ol>
+        </section>
+    
+        <!-- Main content -->
+        <section class="content">
+            <?php if(!empty($statusmessage)): ?>
+            <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+            <?php endif; ?>
+            <?php if(file_exists("install") == 1): ?>
+            <div class="row"><div class='col-md-12'><div class="alert alert-danger" role="alert"><b>Plese delete the "install" directory!</b></div></div></div>
+            <?php endif; ?>
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+                <div class="col-lg-3 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3><?php echo $sumContract; ?></h3>
+                            <p>Contract</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-book"></i>
+                        </div>
+                        <a href="?route=contract" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6 infoblock">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4">
+                                    <h3><?php echo $sumAssets; ?></h3>
+                                    <p>Assets</p>
+                                </div>
+                                <div class="col-md-8 col-sm-8 text-center">
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-6">
+                                            <h3 class="css_sty" title="Assets On Hold"><?php echo $sumonhold; ?></h3> <p>On Hold</p>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <h3 class="css_sty" title="Assets For PullOut"><?php echo $sumpulloutasst; ?></h3>
+                                            <p>For Pull Out</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="?route=assets" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-2 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3><?php echo $sumLicenses; ?></h3>
+                            <p>Licenses</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-certificate"></i>
+                        </div>
+                        <a href="?route=licenses" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-2 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-navy">
+                        <div class="inner">
+                            <h3><?php echo $sumProjects; ?></h3>
+                            <p>Projects</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-lightbulb-o"></i>
+                        </div>
+                        <a href="?route=projects" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-2 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-red">
+                        <div class="inner">
+                            <h3><?php echo $sumClients; ?></h3>
+                            <p>Active Clients</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-briefcase"></i>
+                        </div>
+                        <a href="?route=clients/active" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+    
+                <!-- ./mobile block -->
+                <div class=" col-xs-12 infoblockmobile" style="display: none;">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <div class="row container" style="display: flex; justify-content: center;">
+                                <div class="col-md-4 col-sm-4" style="width: 100%;">
+                                    <h3><?php echo $sumAssets; ?></h3>
+                                    <p>Assets</p>
+                                </div>
+                                <div class="col-md-4 col-sm-4" style="width: 100%;">
+                                    <h3 class="css_sty" title="Assets On Hold"><?php echo $sumonhold; ?></h3>
+                                    <p>On Hold</p>
+                                </div>
+                                <div class="col-md-4 col-sm-4" style="width: 100%;">
+                                    <h3 class="css_sty" title="Assets For PullOut"><?php echo $sumpulloutasst; ?></h3>
+                                    <p>For Pull Out</p>
+                                </div>
+                               
+                            </div>
+                        </div>
+                      <a href="?route=assets" class="small-box-footer">View all <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+    
+            </div>
+            <!-- /.row -->
+    
+    
+            <div class="row">
+                <div class="col-md-8">
+    
+                    <?php if ($lia['role'] == 'technician') { ?>
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <i class="fa fa-tasks"></i>
+                                <h3 class="box-title">My assigned Pending Ticket</h3>
+                            </div>
+                  
+                            <div class="box-body">
+                  
+                                <div class="col-xs-12">
+                                    <div class="table-responsive">
+                                        <table id="dataTablesFullTickets" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ticket #</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                    <th>P</th>
+                                                    <th>Subject</th>
+                                                    <th>Related Entities</th>
+                                                    <th>Department</th>
+                                                    <th>Username</th>
+                                                    <th style="text-align:center;padding-right: 26px;padding-left: 26px;" title="Asset Memo">Memo</th>
+                                                    <th>Date</th>
+                                                    <th>Assigned To</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($assigntickets as $ticket) {
+                                                      if ($ticket['status'] != 'Closed') { ?>
+                                                        <tr>
+                                                            <td>
+                                                                <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>
+                                                                    <?php echo $ticket['ticket']; ?>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <?php if ($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                                                <?php if ($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                                                <?php if ($ticket['status'] == "Followed Up") echo "<span class='badge bg-teal'>Followed Up</span>"; ?>
+                                                                <?php if ($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#"
+                                                                    onClick='showM("ajax.php?modal=getTicketAllReply&reroute=tickets&routeid=&id=<?php echo $ticket['
+                                                                          id']; ?>&section=");return false' class='btn-right text-dark'>
+                                                                    <i class='fa fa-eye'></i>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                  $date1 = $ticket['timestamp'];
+                                                                  $date2 = date("Y/m/d");
+                                                                  $diff = strtotime($date2) - strtotime($date1);
+                                                                  echo  abs(round($diff / 86400));
+                                                                  ?>
+                                                            </td>
+                                                            <td class="oneline">
+                                                                <a href='?route=tickets/manage&id=<?php echo $ticket['
+                                                                          id']; ?>'>
+                                                                    <?php echo getSingleValue("ticketsubject", "subject", $ticket['subject']); ?>
+                                                                </a>
+                                                            </td>
+                  
+                                                            <td class="oneline">
+                                                                <?php
+                                                                  if ($ticket['clientid'] != 0) echo "<a class='dgft' href='?route=clients/manage&id=" . $ticket['clientid'] . "'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients", "name", $ticket['clientid']) . "</span></a> ";
+                                                                  $assetid = getSingleValue("contract", "assetid", $ticket['contractid']);
+                                                                  $assettag = getSingleValue("assets", "tag", $assetid);
+                                                                  $modelid = getSingleValue("assets", "modelid", $assetid);
+                                                                  $assetmodel = getSingleValue("models", "name", $modelid);
+                                                                  if ($ticket['contractid'] != 0) echo "<a class='rfrfr' href='?route=contract/manage&id=" . $ticket['contractid'] . "'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"> " . $assetmodel . "</span></a> ";
+                                                                  ?>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                  $dipartment_id = getSingleValue('contract', 'department', $ticket['contractid']);
+                                                                  $dipartment_name = getSingleValue('department', 'name', $dipartment_id);
+                                                                  if ($ticket['clientid'] == 0) echo "<span class='text-muted'>None</span>";
+                                                                  else echo $dipartment_name; ?>
+                                                            </td>
+                  
+                                                            <td>
+                                                                <?php echo $closed_by_name = getSingleValue("people", "name", $ticket['userid']); ?>
+                                                            </td>
+                                                            <?php
+                                                              $assets_memo = getSingleValue("contract", "notes", $ticket['contractid']); ?>
+                                                            <td class="asste_note">
+                                                                <?php if ($assets_memo) { ?>
+                                                                    <div class="bookmark1wrap">
+                                                                        <span class=" bookmark1" title="Asset Memo"
+                                                                            onClick="bookmark1(this.id)" id="<?php echo $ticket['id']; ?>">
+                  
+                                                                            <span class="btn"> memo</span>
+                  
+                                                                        </span>
+                                                                        <span class="cont_none" id="bookmark1<?php echo $ticket['id']; ?>"
+                                                                            style="display:none;">
+                                                                            <span class="clodepops"><i class="fa fa-times"
+                                                                                    aria-hidden="true"></i></span>
+                  
+                  
+                                                                        <?php
+                                                                          echo $assets_memo;
+                                                                      } ?>
+                                                                        </span>
+                  
+                                                                    </div>
+                                                            </td>
+                                                            <td class="oneline">
+                                                                <?php echo $ticket['timestamp'] ?>
+                                                            </td>
+                  
+                                                            <td class="oneline">
+                                                                <?php if ($ticket['adminid'] != 0) echo getSingleValue("people", "name", $ticket['adminid']);
+                                                                  else echo "<span class='text-muted'>Nobody</span>"; ?>
+                                                            </td>
+                                                        </tr>
+                                                <?php
+                                                      }
+                                                  } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                
+                
+    
+                    <!-- TO DO List -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <i class="fa fa-tasks"></i>
+                            <a href="?route=tickets/pending_ticket">
+                                <h3 class="box-title">My assigned issues</h3>
+                            </a>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <?php if(empty($myIssues)) echo "There are no issues assigned to you."; ?>
+                            <ul class="todo-list" id="myIssues">
+                                <?php foreach($myIssues as $item) { ?>
+                                <li id="<?php echo $item['id']; ?>" class="issues_item">
+    
+                                    <span class="text">
+                                        <?php if($item['issuetype'] == "Task") echo "<i class='fa fa-check-square text-blue' data-toggle='tooltip' title='Task'></i> "; ?>
+                                        <?php if($item['issuetype'] == "Maintenance") echo "<i class='fa fa-minus-square text-yellow' data-toggle='tooltip' title='Maintenance'></i> "; ?>
+                                        <?php if($item['issuetype'] == "Bug") echo "<i class='fa fa-bug text-red' data-toggle='tooltip' title='Bug'></i> "; ?>
+                                        <?php if($item['issuetype'] == "Improvement") echo "<i class='fa fa-external-link text-teal' data-toggle='tooltip' title='Improvement'></i> "; ?>
+                                        <?php if($item['issuetype'] == "New Feature") echo "<i class='fa fa-plus-square text-green' data-toggle='tooltip' title='New Feature'></i> "; ?>
+                                        &nbsp;&nbsp;<?php echo $item['name']; ?>
+                                    </span>
+                                    <div class="tools">
+                                        <a href="#" onClick='showM("ajax.php?modal=issueEdit&reroute=dashboard&routeid=&id=<?php echo $item['id']; ?>&section=");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <a href="#" onClick='showM("ajax.php?modal=issueDelete&reroute=dashboard&routeid=&id=<?php echo $item['id']; ?>&section=");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer clearfix no-border">
+                            <a onClick='showM("ajax.php?modal=issueAdd&reroute=dashboard&routeid=&section="); return false' data-toggle="modal" class="btn btn-primary btn-sm pull-right">NEW ISSUE</a>
+                        </div>
+                    </div>
+                    <!-- /.box -->
+
+                    <!-- user complain  -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <i class="fa fa-tasks"></i>
+                            <a href="?route=clients/complain"><h3 class="box-title">Client Complain</h3></a>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table id="" class="table table-striped table-hover">
+                                <!-- <thead>
+                                    <tr>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center">Client Name</th>
+                                        <th class="text-center">Subject</th>
+                                        <th class="text-center">Description</th>
+                                    </tr>
+                                </thead> -->
+                                <tbody>
+                                    <?php foreach($user_complains as $user_complain) { ?>
+                                        <tr>
+                                            <td class="text-center"><?php echo $user_complain['date']; ?></td>
+                                            <td class="text-center"><?php echo $user_complain['client_name']; ?></td>
+                                            <td class="text-center"><?php echo $user_complain['name']; ?></td>
+                                            <td class="text-center"><?php echo $user_complain['description']; ?></td>
+                                        </tr>
+                                    <?php } ?>                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- user complain  -->
+
+                    <?php if($role !='technician') { ?>
+                    <!-- TO DO List -->
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <i class="fa fa-tag"></i>
+                            <a href="?route=tickets/pending_ticket">
+                                <?php 
+                                if(!empty($openTickets) && count($openTickets) > 0){
+                                    $openTickets_count = count($openTickets);
+                                }
+                                ?>
+                                <h3 class="box-title">
+                                    Pending Tickets <?php echo isset($openTickets_count) ? '( '.$openTickets_count . ' )': ''; ?>
+                                </h3>
+                            </a>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <ul class="todo-list" style="white-space: nowrap !important; overflow-x: auto !important; width: 100% !important;">
+                                <?php if(empty($openTickets)) echo "There are no Pending tickets."; ?>
+                                <?php foreach ($openTickets as $ticket) {
+                                    $contract_id  = $ticket['contractid'];
+                                    $dipartment= getSingleValue("contract","department",$contract_id);
+                                    $ticketsubject= getSingleValue("ticketsubject","subject",$ticket['subject']);
+                                ?>
+                                <li style="min-width: 300px;margin-right: 10px;vertical-align: top; width: fit-content; background-color: white !important; margin: 0px;">
+
+                                    <span class="text">
+                                        <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>#<?php echo $ticket['ticket']; ?> </a>
+                                    </span>
+
+                                    <span>
+                                        <?php if($ticket['status'] == "Open") echo "<small class='badge bg-green bhjk' style='float: none !important; padding: 2px;'>Open</small>"; ?>
+                                        <?php if($ticket['status'] == "In Progress") echo "<small class='badge bg-navy' style='float: none !important; padding: 2px;'>In Progress</small>"; ?>
+                                        <?php if($ticket['status'] == "Answered") echo "<small class='badge bg-teal' style='float: none !important; padding: 2px;'>Answered</small>"; ?>
+                                        <?php if($ticket['status'] == "Reopened") echo "<small class='badge bg-orange bhjk'>Reopened</small>"; ?>
+                                        <?php if($ticket['status'] == "Closed") echo "<small class='badge bg-gray' style='float: none !important; padding: 2px;'>Closed</small>"; ?>
+                                    </span>
+
+                                    <!-- <span style="background-color: black;color:white;font-weight: bolder;" class="label" title="The total number of tickets created from this asset within the past 30 days"> -->
+                                    <?php
+                                    $pending_frequency_set_days_db = get_pending_frequency_filter_val('pending_frequency_set_days');
+                                    ?>
+                                    <span title="The total number of tickets created from this asset within the past <?php echo $pending_frequency_set_days_db; ?> days">
+                                        <!-- this number is same as in contract detail page ticket list total count for more go to the 
+                                        http://localhost/egatesupport/?route=contract/manage&id=306 -->
+
+                                        <span class="badge" style="background-color: black; color: white;" >
+                                            <?php 
+                                                $total_contract_amount = get_total_contract_amount($ticket['contractid']);
+                                                echo $total_contract_amount;
+                                            ?>
+                                        </span>
+                                    </span>
+
+                                    <span style="background-color:#FFF;color:#0073b7;border:1px solid #0073b7;" class="label">
+                                        <?php echo $ticket['clientname']?>
+                                    </span>
+
+                                    <?php 
+                                    if(!empty($dipartment)){
+                                    $depart1=getSingleValue("department", "name",$dipartment);
+                                    ?>
+                                    <span class="valuone">
+                                        <?php echo $depart1; ?>
+                                    </span>
+                                    <?php } ?>
+                                    <span style="background-color:#FFF;color: black;border:1px solid lightgreen;" class="label">
+                                        <?php echo $ticket['timestamp']; ?>
+                                    </span>
+
+                                    <span style="background-color:#FFF;color:#001F3F;border:1px solid #001F3F;" class="label hd_mb">
+                                        <?php echo $ticket['tag']?>:<?php echo $ticket['modelname']?>:<?php echo $ticket['serial']?>
+                                    </span>
+
+                                    <span class="text texttt">
+                                        <?php echo $ticketsubject ;?>
+                                    </span>
+
+                                    <span class="frmobile" style="width: fit-content !important;">
+
+                                        <span style="background-color:#FFF;color:#001F3F;border:1px solid #001F3F;" class="label hd_dsktp">
+                                            <?php echo $ticket['tag']?>:<?php echo $ticket['modelname']?>:<?php echo $ticket['serial']?>
+                                        </span>
+
+                                        <span class="text onhgy">
+                                            <?php echo $ticketsubject ;?>
+                                        </span>
+
+                                    </span>               
+                                    <span style="color: blue;" title="Last action taken to this asset">
+                                        <?php 
+                                        if($ticket['status'] == 'Open'){
+                                            $previous_action_taken_name = get_previous_action_taken_name($ticket['contractid']);
+                                            if($previous_action_taken_name != ''){
+                                                echo  '( ' . get_previous_action_taken_name($ticket['contractid']) . ' )';
+                                            }
+                                        }
+                                        ?>
+                                    </span>                   
+                                    <!-- General tools such as edit or delete-->
+                                    
+                                    <div class="tools">
+                                        <!-- <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a> -->
+                                        &nbsp;
+                                        <a href='#' onClick='showM("ajax.php?modal=ticketEdit&reroute=dashboard&routeid=&id=<?php echo $ticket['id']; ?>&is_readonly_1=1&section=");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <!-- <a href='#' onClick='showM("ajax.php?modal=ticketDelete&reroute=dashboard&routeid=&id=<?php echo $ticket['id']; ?>&section=");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a> -->
+                                    </div>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer clearfix style_css" title="Disabled">
+                            <!--a onClick='showM("ajax.php?modal=ticketAdd&reroute=dashboard&routeid=&section="); return false' data-toggle="modal" class="btn btn-primary btn-sm pull-right"></a-->
+                            <!-- NEW TICKET -->
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <!-- /.box -->
+    
+                    <?php if($lia['role'] == 'technician'){ ?>
+    
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <i class="fa fa-tag"></i>
+                                <h3 class="box-title">Pending Tickets </h3>
+                            </div>
+        
+                            <div class="box-body">
+        
+                                <div class="col-xs-12">
+                                    <!-- <div class="table-responsive">
+                                        <table id="dataTablesFullTickets" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ticket #</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                    <th>P</th>
+                                                    <th>Subject</th>
+                                                    <th>Related Entities</th>
+                                                    <th>Department</th>
+                                                    <th>Username</th>
+                                                    <th style="text-align:center;padding-right: 26px;
+                                        padding-left: 26px;" title="Asset Memo">Memo</th>
+                                                    <th>Date</th>
+                                                    <th>Assigned To</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($tickets as $ticket) {
+                                                                
+                                                if($ticket['status'] !='Closed'){ ?>
+                                                <tr>
+                                                    <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>
+                                                            <?php echo $ticket['ticket']; ?>
+                                                        </a></td>
+        
+                                                    <td>
+                                                        <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                                        <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                                        <?php if($ticket['status'] == "Followed Up") echo "<span class='badge bg-teal'>Followed Up</span>"; ?>
+                                                        <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                                    </td>
+        
+                                                  
+                                                    <td><a href="#"
+                                                            onClick='showM("ajax.php?modal=getTicketAllReply&reroute=tickets&routeid=&id=<?php echo $ticket['
+                                                            id']; ?>&section=");return false' class='btn-right text-dark'>
+                                                            <i class='fa fa-eye'></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <?php
+                                                                            $date1= $ticket['timestamp'];
+                                                                            $date2= date("Y/m/d");
+                                                                            $diff = strtotime($date2) - strtotime($date1); 
+                                          
+                                                                            // 1 day = 24 hours 
+                                                                            // 24 * 60 * 60 = 86400 seconds 
+                                                                            echo  abs(round($diff / 86400));
+                                                                            ?>
+                                                    </td>
+        
+                                                    <td class="oneline"><a href='?route=tickets/manage&id=<?php echo $ticket['
+                                                            id']; ?>'>
+                                                            <?php echo getSingleValue("ticketsubject","subject",$ticket['subject']); ?>
+                                                        </a></td>
+        
+                                                   
+        
+                                                    <td class="oneline">
+                                                        <?php
+                                                                                if($ticket['clientid'] != 0) echo "<a class='dgft' href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$ticket['clientid']) . "</span></a> ";
+                                                                                $assetid = getSingleValue("contract","assetid",$ticket['contractid']);
+                                                                                $assettag = getSingleValue("assets","tag",$assetid);
+                                                                                $modelid = getSingleValue("assets","modelid",$assetid);
+                                                                                $assetmodel = getSingleValue("models","name",$modelid);
+                                                                                if($ticket['contractid'] != 0) echo "<a class='rfrfr' href='?route=contract/manage&id=".$ticket['contractid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"> ". $assetmodel . "</span></a> ";
+                                                                                ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php 
+                                                            $dipartment_id = getSingleValue('contract', 'department', $ticket['contractid']);  
+                                                            $dipartment_name = getSingleValue('department', 'name', $dipartment_id); 
+                                                            
+                                                            if($ticket['clientid'] == 0) echo "<span class='text-muted'>None</span>";
+                                                            
+                                                            else echo $dipartment_name; ?>
+                                                    </td>
+                                                   
+                                                    <td>
+                                                        <?php echo $closed_by_name= getSingleValue("people", "name", $ticket['userid']);?>
+                                                    </td>
+                                                    <?php 
+                                                    $assets_memo = getSingleValue("contract","notes",$ticket['contractid']); ?>
+                                                    <td class="asste_note">
+                                                        <?php if($assets_memo){?>
+                                                        <div class="bookmark1wrap">
+                                                            <span class=" bookmark1" title="Asset Memo"
+                                                                onClick="bookmark1(this.id)" id="<?php echo $ticket['id']; ?>">
+        
+                                                                <span class="btn"> memo</span>
+        
+                                                            </span>
+                                                            <span class="cont_none" id="bookmark1<?php echo $ticket['id'];?>"
+                                                                style="display:none;">
+                                                                <span class="clodepops"><i class="fa fa-times"
+                                                                        aria-hidden="true"></i></span>
+        
+        
+                                                                <?php
+                                                                                                  echo $assets_memo ; }?>
+                                                            </span>
+        
+                                                        </div>
+                                                    </td>
+                                                    <td class="oneline">
+                                                        <?php echo $ticket['timestamp']?>
+                                                    </td>
+        
+                                                    <td class="oneline">
+                                                        <?php if($ticket['adminid'] != 0) echo getSingleValue("people","name",$ticket['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?>
+                                                    </td>
+                                                </tr>
+                                                <?php 
+                                                                        }
+                                                                        } ?>
+                                            </tbody>
+                                        </table>
+                                    </div> -->
+                                   <ul class="todo-list" style="white-space: nowrap !important; overflow-x: auto !important; width: 100% !important;">
+                                        <?php foreach ($tickets as $ticket) {
+                                            if ($ticket['status'] != 'Closed') { ?>
+                                                <li style="min-width: 300px; margin-right: 10px; vertical-align: top; width: fit-content; background-color: white !important; margin: 0px;">
+                                    
+                                                    <span class="text">
+                                                        <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>
+                                                            <?php echo $ticket['ticket']; ?>
+                                                        </a>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green' style='padding: 2px;'>Open</span>"; ?>
+                                                        <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                                        <?php if($ticket['status'] == "Followed Up") echo "<span class='badge bg-teal'>Followed Up</span>"; ?>
+                                                        <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                                    </span>
+                                    
+                                                    <span>
+                                                        <a href="#" onClick='showM("ajax.php?modal=getTicketAllReply&reroute=tickets&routeid=&id=<?php echo $ticket['id']; ?>&section=");return false' class='btn-right text-dark'>
+                                                            <i class='fa fa-eye'></i>
+                                                        </a>
+                                                    </span>
+                                    
+                                                    <span style="text">
+                                                        <?php
+                                                        $date1 = $ticket['timestamp'];
+                                                        $date2 = date("Y/m/d");
+                                                        $diff = strtotime($date2) - strtotime($date1);
+                                                        echo abs(round($diff / 86400));
+                                                        ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>
+                                                            <?php echo getSingleValue("ticketsubject", "subject", $ticket['subject']); ?>
+                                                        </a>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php
+                                                        if ($ticket['clientid'] != 0) echo "<a class='dgft' href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients", "name", $ticket['clientid']) . "</span></a> ";
+                                                        $assetid = getSingleValue("contract", "assetid", $ticket['contractid']);
+                                                        $assettag = getSingleValue("assets", "tag", $assetid);
+                                                        $modelid = getSingleValue("assets", "modelid", $assetid);
+                                                        $assetmodel = getSingleValue("models", "name", $modelid);
+                                                        if ($ticket['contractid'] != 0) echo "<a class='rfrfr' href='?route=contract/manage&id=".$ticket['contractid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\">". $assetmodel . "</span></a> ";
+                                                        ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php
+                                                        $dipartment_id = getSingleValue('contract', 'department', $ticket['contractid']);
+                                                        $dipartment_name = getSingleValue('department', 'name', $dipartment_id);
+                                                        
+                                                        if ($ticket['clientid'] == 0) echo "<span class='text-muted'>None</span>";
+                                                        else echo $dipartment_name;
+                                                        ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php echo getSingleValue("people", "name", $ticket['userid']) . ' * '; ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php echo $ticket['timestamp']  . ' * ' ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php
+                                                        if ($ticket['adminid'] != 0) echo getSingleValue("people", "name", $ticket['adminid'])  . ' * ';
+                                                        else echo "<span class='text-muted'>Nobody  *  </span>";
+                                                        ?>
+                                                    </span>
+                                    
+                                                    <span class="text">
+                                                        <?php if ($assets_memo) { ?>
+                                                            <div class="bookmark1wrap">
+                                                                <span class="bookmark1" title="Asset Memo" onClick="bookmark1(this.id)" id="<?php echo $ticket['id']; ?>">
+                                                                    <span class="btn">memo</span>
+                                                                </span>
+                                                                <span class="cont_none" id="bookmark1<?php echo $ticket['id']; ?>" style="display:none;">
+                                                                    <span class="clodepops"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                                                    <?php echo $assets_memo; ?>
+                                                                </span>
+                                                            </div>
+                                                        <?php } ?>
+                                                    </span>
+                                                </li>
+                                            <?php } } ?>
+                                    </ul>
+                                </div>  
+                            </div>
+                        </div>
+        
+                    <?php } ?>
+
+
+                    <?php if($lia['role'] == 'admin'){ ?>
+
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <i class="fa fa-tag"></i>
+                            <h3 class="box-title">Recently Added Technician Report</h3>
+                        </div>
+
+                        <?php 
+                        $host = $_SERVER['HTTP_HOST'];
+                        $host_upper = strtoupper($host);
+                        $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                        $baseurl = "http://" . $host . $path . "/";
+                        ?>
+    
+                        <div class="box-body">
+                            <ul class="todo-list" style="white-space: nowrap !important; overflow-x: auto !important; width: 100% !important;">
+                                <?php foreach ($technicain_report as $report) { 
+                                    //echo "<pre>";
+                                    //print_r($technicain_report);
+                                    //die;
+                                    $contract_id  = $report['contractid'];
+                                    $dipartment= getSingleValue("contract","department",$contract_id);
+                                    ?>
+                                    
+                                    <li style="min-width: 300px;padding: 10px;margin-right: 10px;vertical-align: top; width: fit-content; background-color: white !important;">
+                                    <span class="text">
+                                        <?php echo date('m-d', strtotime($report['date'])); ?>
+                                    </span>
+
+                                    <span>
+                                        <?php 
+                                            $tickets_details = getTableFiltered('tickets' , 'id' , $report['ticketid']);
+                                            if(isset($tickets_details[0]['ticket'])){
+                                                $url = "?route=tickets/manage&id=" . $report['ticketid'];
+                                                echo '<a href="'. $url .'">#' . $tickets_details[0]['ticket'] . '</a>';
+                                            }
+                                        ?>
+                                    </span>
+
+                                    <span style="background-color:#FFF;color:#0073b7;border:1px solid #0073b7; padding: 2px;" class="label">
+                                        <?php echo $report['company'] ?>
+                                    </span>                                   
+                                    <?php 
+                                    if(!empty($dipartment)){
+                                    $depart1=getSingleValue("department", "name",$dipartment);
+                                    ?>
+                                    <span style="background-color:#FFF; color: black; border:1px solid #f60; padding: 2px;" class="label"><?php echo $depart1; ?></span>
+                                    <?php } ?>
+                                    <span style="background-color:#FFF;color:#001F3F;border:1px solid #001F3F;"
+                                        class="label">
+                                        <?php echo $report['model_name'] ?>
+                                    </span>
+                                    <span class="text">
+                                        <?php echo getSingleValue("ticketsubject","subject",$tickets_details[0]['subject']); ?>
+                                    </span>
+                                    <span class="text" style="margin-left: 5px;">
+                                         <a target="_blank" title="<?php echo $report['technician_file']; ?>"
+                                            href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $report['technician_file']; ?>">
+                                            <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                        </a>
+                                    </span>
+                                    <span class="text" style="color: #3c8dbc;">
+                                        <?php 
+                                            if($report['diagnose_comment'] != ""){
+                                                echo "*".$report['diagnose_comment'];
+                                            }
+                                         ?>
+                                    </span>
+                                    <span class="text">
+                                        <?php 
+                                            if($report['technician_comment'] != ""){
+                                                echo "*" . $report['technician_comment'];
+                                            }
+                                         ?>
+                                    </span>
+                                    <span class="test">
+                                        <a target="_blank" title="<?php echo $report['fixed_image']; ?>"
+                                            href="<?php echo $baseurl; ?>uploads/fixed_image/<?php echo $report['fixed_image']; ?>">
+                                            <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                        </a>
+                                    </span>
+                                    <span class="text">
+                                        <?php echo "*" . $report['technician_name']; ?>
+                                    </span>
+
+                                    <span class="text">
+                                        <?php
+                                         echo get_problem_category_name($report['problem_category']);
+                                        ?>
+                                    </span>
+
+                                    <span style="color: blue;" title="Last action taken to this asset">
+                                        <?php 
+                                            $previous_action_taken_name = get_previous_action_taken_name($report['contractid']);
+                                            if($previous_action_taken_name != ''){
+                                                echo  '( ' . get_previous_action_taken_name($report['contractid']) . ' )';
+                                            }
+                                        ?>
+                                    </span> 
+
+                                    <span class="text">
+                                        <a href="?route=tickets/manage&id=<?php echo $report['ticketid']; ?>" style="margin: 5px;"><i class="fa fa-edit"></i></a>
+                                    </span>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <?php } ?>
+<!-- dhaval -->
+                    <?php if($lia['role'] == 'technician'){ ?>
+                        <div class="box box-primary">
+                            <div class="box-header">
+                                <i class="fa fa-tag"></i>
+                                <h3 class="box-title">Recent added Technical Report</h3>
+                            </div>
+    
+                            <?php 
+                            $host = $_SERVER['HTTP_HOST'];
+                            $host_upper = strtoupper($host);
+                            $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                            $baseurl = "http://" . $host . $path . "/";
+                            ?>
+        
+                            <div class="box-body">
+                                <!-- <div class="table-responsive">
+                                    <div class="col-xs-12">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date & Time</th>
+                                                    <th>Company</th>
+                                                    <th>Model</th>
+                                                    <th>Technician Comments</th>
+                                                    <th>Image</th>
+                                                    <th>Technician</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($technicain_report as $report) { ?>
+                                                    <tr>
+                                                        <td><?php echo date('Y-m-d', strtotime($report['date'])); ?></td>
+                                                        <td><?php echo $report['company'] ?></td>
+                                                        <td><?php echo $report['model_name'] ?></td>
+                                                        <td><?php echo $report['technician_comment'] ?></td>
+                                                        <td>
+                                                            <a target="_blank" title="<?php echo $report['technician_file']; ?>"
+                                                                href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $report['technician_file']; ?>">
+                                                                <i class="fa fa-file"></i>
+                                                            </a>
+                                                        </td>
+                                                        <td><?php echo $report['technician_name'] ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div> -->
+                                <ul class="todo-list" style="white-space: nowrap !important; overflow-x: auto !important; width: 100% !important;">
+                                    <?php foreach ($technicain_report as $report) {
+                                        $contract_id  = $report['contractid'];
+                                        $dipartment= getSingleValue("contract","department",$contract_id);
+                                        ?>
+                                    <li style="min-width: 300px;margin-right: 10px;vertical-align: top; width: fit-content; background-color: white !important; margin: 0px;">
+                                        <span class="text">
+                                            <?php echo date('m-d', strtotime($report['date'])); ?>
+                                        </span>
+                                        <span style="background-color:#FFF;color:#0073b7;border:1px solid #0073b7; padding: 2px;" class="label">
+                                            <?php echo $report['company'] ?>
+                                        </span>
+                                        <?php 
+                                        if(!empty($dipartment)){
+                                            $depart1=getSingleValue("department", "name",$dipartment);
+                                        ?>
+                                            <span style="background-color:#FFF; color: black; border:1px solid #f60; padding: 2px;" class="label"><?php echo $depart1; ?></span>
+                                        <?php } ?>
+                                        <span style="background-color:#FFF;color:#001F3F;border:1px solid #001F3F;"
+                                            class="label">
+                                            <?php echo $report['model_name'] ?>
+                                        </span>
+                                        <span class="text" style="margin-left: 5px;">
+                                             <a target="_blank" title="<?php echo $report['technician_file']; ?>"
+                                                href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $report['technician_file']; ?>">
+                                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                            </a>
+                                        </span>
+                                        <span class="text" style="color: #3c8dbc;">
+                                            <?php 
+                                                if($report['diagnose_comment'] != ""){
+                                                    echo "*".$report['diagnose_comment'];
+                                                }
+                                             ?>
+                                        </span>
+                                        <span class="text">
+                                            <?php 
+                                                if($report['technician_comment'] != ""){
+                                                    echo "*" . $report['technician_comment'];
+                                                }
+                                             ?>
+                                        </span>
+                                        <span class="text">
+                                            <a target="_blank" title="<?php echo $report['fixed_image']; ?>"
+                                                href="<?php echo $baseurl; ?>uploads/fixed_image/<?php echo $report['fixed_image']; ?>">
+                                                <i class="fa fa-picture-o" aria-hidden="true"></i>
+                                            </a>
+                                        </span>
+                                        <span class="text">
+                                           <?php echo "*" . $report['technician_name']; ?>
+                                        </span>
+                                        <span class="text">
+                                            <a href="?route=tickets/manage&id=<?php echo $report['ticketid']; ?>" style="margin: 5px;"><i class="fa fa-edit"></i></a>
+                                        </span>
+                                    </li>
+                                        <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+                    <?php } ?>
+<!-- dhaval -->
+                    <!-- BAR CHART -->
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Worked Hours</h3>
+    
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="chart">
+                                <canvas id="Client6Chart" style="height:265px"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+    
+                <div class="col-md-4">
+                    <!-- DONUT CHART -->
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Assets by Category</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <canvas id="pieChart" style="height:250px"></canvas>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                    <!-- CONTRACT LIST -->
+                    <?php if ($lia['role'] != 'technician') { ?>
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Recently Added Contract</h3>
+    
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <ul class="products-list product-list-in-box">
+                                <?php if(empty($recentContracts)) echo "There are no assets to display."; ?>
+                                <?php foreach($recentContracts as $contract) { 
+                                ?>
+                                <li class="item">
+                                    <div class="product-img">
+                                        <i class="fa fa-book" style="font-size:30px;"></i>
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="?route=contract/manage&id=<?php echo $contract['contractid']; ?>" class="product-title"><?php echo $contract['clientname']; ?> : <?php echo $contract['contractno']; ?><span class='label pull-right' style='background-color:#FFF;color:<?php echo $contract['servicecolor']; ?>;border:1px solid <?php echo $contract['servicecolor']; ?>'><?php echo $contract['servicetype']; ?></span></a>
+                                        <span class="product-description"><?php echo $contract['tag']; ?> : <?php echo $contract['modelname']; ?> : <?php echo $contract['serial']; ?></span>
+                                    </div>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer text-center">
+                            <a href="?route=contract" class="uppercase">View All Contract</a>
+                        </div>
+                        <!-- /.box-footer -->
+                    </div>
+                    <?php } ?>
+                    <!-- /.box -->
+    
+                    <!-- LICENSES LIST -->
+                    <div class="box box-success">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Recently Added Licenses</h3>
+    
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <ul class="products-list product-list-in-box">
+                                <?php if(empty($recentLicenses)) echo "There are no licenses to display."; ?>
+                                <?php foreach($recentLicenses as $license) { ?>
+                                <li class="item">
+                                    <div class="product-img">
+                                        <i class="fa fa-certificate" style="font-size:30px;"></i>
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="?route=licenses/manage&id=<?php echo $asset['id']; ?>" class="product-title"><?php echo $license['tag']; ?><span class='label pull-right' style='background-color:#FFF;color:<?php echo getSingleValue("licensecategories","color",$license['categoryid']); ?>;border:1px solid <?php echo getSingleValue("licensecategories","color",$license['categoryid']); ?>'><?php echo getSingleValue("licensecategories","name",$license['categoryid']); ?></span></a>
+                                        <span class="product-description"><?php echo $license['name']; ?></span>
+                                    </div>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer text-center">
+                            <a href="?route=licenses" class="uppercase">View All Licenses</a>
+                        </div>
+                        <!-- /.box-footer -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+            </div>
+    
+        </section><!-- /.content -->
+    </aside><!-- /.right-side -->
+    
+    <div class="modal" tabindex="-1" role="dialog" id="issue_detail_modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" style="display: inline;">Issue Information</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Issue Name</label>
+                        <input type="text" class="form-control" id="issue_info_name" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Type</label>
+                        <input type="text" class="form-control" id="issue_info_type" disabled>
+                    </div>
+                </div>
+
+                
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Client</label>
+                        <input type="text" class="form-control" id="issue_info_client" disabled>
+                    </div>
+                </div>              
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Assigned To </label>
+                        <input type="text" class="form-control" id="issue_info_assigned_to" disabled>
+                    </div>
+                </div>
+                
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Asset</label>
+                        <input type="text" class="form-control" id="issue_info_asset" disabled>
+                    </div>
+                </div>
+
+
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Project</label>
+                        <input type="text" class="form-control" id="issue_info_project" disabled>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Status</label>
+                        <input type="text" class="form-control" id="issue_info_status" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name">Priority</label>
+                        <input type="text" class="form-control" id="issue_info_priority" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name"> Time Spent (minutes) </label>
+                        <input type="text" class="form-control" id="issue_info_time_spent" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="form-group">
+                        <label for="name"> Due Date </label>
+                        <input type="text" class="form-control" id="issue_info_due_date" disabled>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="form-group">
+                        <label for="name"> Description </label>
+                        <input type="text" class="form-control" id="issue_info_description" disabled>
+                    </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    
+    <!-- ChartJS 1.0.1 -->
+    <script src="template/assets/plugins/chartjs/Chart.min.js"></script>
+    
+    <?php
+    $first  = strtotime('first day next month');
+    $last6F = array();
+    for ($i = 6; $i >= 1; $i--) { array_push($last6F, date('F', strtotime("-$i month", $first))); }
+    
+    $last6YM = array();
+    for ($i = 6; $i >= 1; $i--) { array_push($last6YM, date('Y-m', strtotime("-$i month", $first))); }
+    ?>
+    
+    <script>
+
+$(document).on("click" , ".issues_item" , function(){
+    var issue_id = $(this).attr('id');
+    // $("#issue_detail_modal").modal("show");
+    $.ajax({
+        url : "ajax.php?get_issues_data="+issue_id,
+        success: function(res){
+            var data = JSON.parse(res);
+            var issue_data = data.issue_data;
+            $("#issue_info_name").val(issue_data.name);
+
+            $("#issue_info_type").val(issue_data.issuetype);
+            $("#issue_info_client").val(issue_data.client_name);
+            $("#issue_info_assigned_to").val(issue_data.admin_name);
+            $("#issue_info_asset").val(issue_data.asset_name);
+            $("#issue_info_project").val(issue_data.project_name);
+            $("#issue_info_status").val(issue_data.status);
+            $("#issue_info_priority").val(issue_data.priority);
+            $("#issue_info_time_spent").val(issue_data.timespent);
+            $("#issue_info_due_date").val(issue_data.duedate);
+            $("#issue_info_description").val(issue_data.description);
+            
+            $("#issue_detail_modal").modal("show");
+        }
+    })
+})
+
+                                $(function () {
+                                var areaChartData = {
+                                labels: ["<?php echo $last6F[0]; ?>", "<?php echo $last6F[1]; ?>", "<?php echo $last6F[2]; ?>", "<?php echo $last6F[3]; ?>", "<?php echo $last6F[4]; ?>", "<?php echo $last6F[5]; ?>"],
+                                        datasets: [
+                                        {
+                                        fillColor: "rgba(60,141,188,0.9)",
+                                                data: [ <?php echo workHoursByMonth($last6YM[0]); ?> , <?php echo workHoursByMonth($last6YM[1]); ?> , <?php echo workHoursByMonth($last6YM[2]); ?> , <?php echo workHoursByMonth($last6YM[3]); ?> , <?php echo workHoursByMonth($last6YM[4]); ?> , <?php echo workHoursByMonth($last6YM[5]); ?> ]
+                                        }
+                                        ]
+                                };
+                                //-------------
+                                //- BAR CHART -
+                                //-------------
+                                var barChartCanvas = $("#Client6Chart").get(0).getContext("2d");
+                                var barChart = new Chart(barChartCanvas);
+                                var barChartData = areaChartData;
+                                var barChartOptions = {
+                                scaleBeginAtZero: true,
+                                        scaleShowGridLines: true,
+                                        scaleGridLineColor: "rgba(0,0,0,.05)",
+                                        scaleGridLineWidth: 1,
+                                        scaleShowHorizontalLines: true,
+                                        scaleShowVerticalLines: true,
+                                        barShowStroke: true,
+                                        barStrokeWidth: 2,
+                                        barValueSpacing: 5,
+                                        barDatasetSpacing: 1,
+                                        legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
+                                        responsive: true,
+                                        maintainAspectRatio: true
+                                };
+                                barChartOptions.datasetFill = false;
+                                barChart.Bar(barChartData, barChartOptions);
+                                });
+                                //-------------
+                                //- PIE CHART -
+                                //-------------
+                                // Get context with jQuery - using jQuery's .get() method.
+                                var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+                                var pieChart = new Chart(pieChartCanvas);
+                                var PieData = [
+    
+                                        <?php foreach($categories as $category) { ?>
+                                {
+                                value: <?php echo countAssetsByCategory($category['id']); ?> ,
+                                        color: "<?php echo $category['color']; ?>",
+                                        label: "<?php echo $category['name']; ?>"
+                                },
+                                        <?php } ?>
+                                ];
+                                var pieOptions = {
+                                //Boolean - Whether we should show a stroke on each segment
+                                segmentShowStroke: true,
+                                        //String - The colour of each segment stroke
+                                        segmentStrokeColor: "#fff",
+                                        //Number - The width of each segment stroke
+                                        segmentStrokeWidth: 2,
+                                        //Number - The percentage of the chart that we cut out of the middle
+                                        percentageInnerCutout: 50, // This is 0 for Pie charts
+                                        //Number - Amount of animation steps
+                                        animationSteps: 100,
+                                        //String - Animation easing effect
+                                        animationEasing: "easeOutBounce",
+                                        //Boolean - Whether we animate the rotation of the Doughnut
+                                        animateRotate: true,
+                                        //Boolean - Whether we animate scaling the Doughnut from the centre
+                                        animateScale: false,
+                                        //Boolean - whether to make the chart responsive to window resizing
+                                        responsive: true,
+                                        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                                        maintainAspectRatio: true,
+                                        //String - A legend template
+                                        legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+                                };
+                                //Create pie or douhnut chart
+                                // You can switch between pie and douhnut using the method below.
+                                pieChart.Doughnut(PieData, pieOptions);
+    </script>
+    

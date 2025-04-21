@@ -1,0 +1,160 @@
+<style>
+    .half-color {
+        background: #3c8dbc;
+        padding: 3px 10px !important;
+    }
+
+    .half-color {
+        position: relative;
+    }
+
+    .onhoverfile:hover>.hovertextfile {
+        display: block;
+        position: absolute;
+        background: #000;
+        color: #fff;
+        padding: 7px;
+        border-radius: 4px;
+        /* top: 0; */
+        /* left: 62%; */
+        z-index: 10;
+        min-width: 329px;
+        text-align: left;
+    }
+
+    .hovertextfile {
+        display: none;
+    }
+
+    td.onhoverfile {
+        position: relative;
+    }
+</style>
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Usage Report<small></small></h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Usage Report</li>
+        </ol>
+    </section>
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row">
+            <div class='col-md-12'>
+                <div class="alert alert-<?php print $statusmessage[" type"]; ?> alert-auto" role="alert">
+                    <?php print $statusmessage["message"]; ?>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+                        <div class="clearfix"></div>
+                        <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Contract Information</th>
+                                    <th>Department</th>
+                                    <th>Unit</th>
+                                    <th>Model</th>
+                                    <th>A3 Color</th>
+                                    <th>A3 Black</th>
+                                    <th>A4 Color</th>
+                                    <th>A4 Black</th>
+                                    <th>File</th>
+                                    <th>Remark</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                   $usage_reports = getTableFiltered("usage_report", "clientid", $lia['clientid'], "", "", "*", "id", "DESC");
+            
+                                    $host = $_SERVER['HTTP_HOST'];
+                                    $host_upper = strtoupper($host);
+                                    $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                                    $baseurl = "http://" . $host . $path . "/";
+                                    $targetdir = $baseurl . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . "usage_report" . DIRECTORY_SEPARATOR;
+                                
+                                    $departments = [];
+                                    $serials = [];
+                                
+                                    foreach ($usage_reports as $usage_report) {
+                                        $departments[$usage_report['department']][] = $usage_report;
+                                        $serials[$usage_report['serial']][] = $usage_report;
+                                    }
+                                
+                                    if (!empty($usage_reports)) {
+                                        foreach ($departments as $department => $department_reports) {
+                                            echo '<tr><th style="color: white;text-align: left;" class="col-lg-4 col-md-4 col-sm-4 half-color" colspan="12">' . strtoupper($department) . '</th></tr>';
+                                
+                                            foreach ($serials as $serial => $serial_reports) {
+                                                if (isset($serial_reports[0]) && $serial_reports[0]['department'] === $department) {
+                                                    echo '<tr><th style="color: #FF0000;text-align: left;" class="col-lg-4 col-md-4" colspan="12">' . $serial . '</th></tr>';
+                                
+                                                    // Loop through reports of the current department and serial
+                                                    foreach ($serial_reports as $usage_report) {
+                                                        $imagePath = $targetdir . $usage_report['image'];
+                                
+                                                        echo '<tr>';
+                                                        echo '<td>' . date('Y-m-d', strtotime($usage_report['date'])) . '</td>';
+                                                        echo '<td>' . $usage_report['serial'] . '</td>';
+                                                        echo '<td>' . $usage_report['department'] . '</td>';
+                                
+                                                        $modelname = getSingleValue("models", "name", $usage_report['asset_id']);
+                                                        $modelimage = getSingleValue("models", "image", $usage_report['asset_id']);
+                                
+                                                        echo '<td>';
+                                
+                                                        if (!empty($modelimage)) {
+                                                            // If $modelimage is not empty, display the image with specified height and width
+                                                            echo '<img style="height: 30px;" src="uploads/' . $modelimage . '" alt="Model Image">';
+                                                        }
+                                
+                                                        echo '</td>';
+                                
+                                                        echo '<td>' . $usage_report['modal_name'] . '</td>';
+                                                        echo '<td class="text-right">' . $usage_report['A3clr'] . '</td>';
+                                                        echo '<td class="text-right">' . $usage_report['A3blk'] . '</td>';
+                                                        echo '<td class="text-right">' . $usage_report['A4clr'] . '</td>';
+                                                        echo '<td class="text-right">' . $usage_report['A4blk'] . '</td>';
+
+                                                        if ($usage_report['image'] != "") {
+                                                            $usage_image = "<a class='onhoverfile' target='_blank' href='" . $imagePath . "'><i class='fa fa-file'></i><span class='hovertextfile'>" . $usage_report['image'] . "</span></a><br>";
+                                                        }
+                                                        
+                                                        echo "<td style='text-align: center;'>" . $usage_image . "</td>";
+
+                                                        echo "<td style='text-align: center;'>" . $usage_report['remark'] . "</td>";
+
+
+                                                        if ($usage_report['usage_confimed'] == 1) {
+                                                            echo "<td><button class='btn btn-primary'>Confirmed</button></td>";
+                                                        } else {
+                                                            echo "<td><a title='" . htmlspecialchars($client['client_memo'], ENT_QUOTES, 'UTF-8') . "' href='#' onClick='showM(\"ajax.php?modal=editUsagereport&reroute=clients&id=" . $usage_report['id'] . "\"); return false;' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                                <a href='#' onClick='showM(\"ajax.php?modal=DeleteUsagereport&reroute=clients&id=" . $usage_report['id'] . "&routeid=" . $usage_report['clientid'] . "\"); return false;' class='btn-right text-red'><i class='fa fa-trash-o'></i></a></td>";
+                                                        }
+                                                        echo '</tr>';
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    ?>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->

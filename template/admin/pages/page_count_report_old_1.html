@@ -1,0 +1,252 @@
+<aside class="right-side">
+    <?php 
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+    if (preg_match('/mobile/i', $userAgent)) {
+        $pc = 0;
+    } else {
+        $pc = 1;
+    }
+
+    if($pc == 0){
+        $header_design = 'style="display: flex; align-items: center; gap: 15px; justify-content: space-between; width: 100%; flex-direction: column;"';
+        $heading_font_size = 'font-size: 18px;';
+    }else{
+        $header_design = 'style="display: flex; align-items: center; gap: 30px; justify-content: space-between; width: 100%; overflow-x: scroll;"';
+        $heading_font_size = 'font-size: 24px;';
+    }
+    ?>
+    <section class="content-header" <?php echo $header_design; ?>>
+        <?php 
+        if($pc == 0){
+            echo '<span style="display: flex; gap: 15px; align-items: center;">';
+        }
+        ?>
+        <span class="pull-left" style="<?php echo $heading_font_size; ?> text-wrap: nowrap;"><i class="fa fa-dashboard" style="font-size: 22px; margin-right: 10px;"></i>Page Count Report</span>
+                <!-- <label>Clients</label> -->
+        <span style="display: flex; justify-content: center; align-items: center; gap: 10px;" class="hidden-xs">
+            <select id="view-options-client" class="form-control " style="min-width: 150px; max-width: 160px;">
+                <option value="">Clients</option>
+                <?php 
+                    foreach($client_dropdown_list as $client_dropdown){
+                        $client_id = '';
+                        if(isset($_GET['client_id'])){
+                            $client_id = $_GET['client_id'];
+                        }
+                        if($client_id != '' && $client_dropdown['id'] == $client_id){
+                            echo "<option value='".$client_dropdown['id']."' selected>".$client_dropdown['name']."</option>";
+                        }else{
+                            echo "<option value='".$client_dropdown['id']."'>".$client_dropdown['name']."</option>";
+                        }
+                    }
+            ?>
+            </select>
+            <!-- <label>Month</label> -->
+            <?php 
+            $month_value = '';
+            if(isset($_GET['year_month'])){
+                $month_value = $_GET['year_month'];
+            }
+            ?>
+            <input type="text" id="month_filter" class="form-control month_filter" value="<?php echo $month_value != '' ? $month_value : ''; ?>" placeholder="Month" style="min-width: 100px; max-width: 120px;">
+        </span>
+
+        <div style="display: flex; justify-content: flex-end; align-items: center; flex-direction: column;">
+            <ol class="breadcrumb" style="margin-bottom: 0px; background: none; text-wrap: nowrap;">
+                <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Page Count Report</li>
+            </ol>
+        </div>
+
+        <?php 
+        if($pc == 0){
+            echo '</span>';
+        }
+        ?>
+
+        <span style="display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; flex-direction: column;" class="hidden-lg">
+            <select id="view-options-client" class="form-control " style="min-width: 300px; max-width: 160px;">
+                <option value="">Clients</option>
+                <?php 
+                    foreach($client_dropdown_list as $client_dropdown){
+                        $client_id = '';
+                        if(isset($_GET['client_id'])){
+                            $client_id = $_GET['client_id'];
+                        }
+                        if($client_id != '' && $client_dropdown['id'] == $client_id){
+                            echo "<option value='".$client_dropdown['id']."' selected>".$client_dropdown['name']."</option>";
+                        }else{
+                            echo "<option value='".$client_dropdown['id']."'>".$client_dropdown['name']."</option>";
+                        }
+                    }
+            ?>
+            </select>
+            <!-- <label>Month</label> -->
+            <?php 
+            $month_value = '';
+            if(isset($_GET['year_month'])){
+                $month_value = $_GET['year_month'];
+            }
+            ?>
+            <input type="text" id="month_filter" class="form-control month_filter" value="<?php echo $month_value != '' ? $month_value : ''; ?>" placeholder="Month" style="min-width: 300px; max-width: 120px;">
+        </span>
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <div class="table-responsive">
+
+                            <table id="page_count_report_table" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Dup</th>
+                                        <th>Client Name</th>
+                                        <th>Reference No.</th>
+                                        <th>Contract No</th>
+                                        <th>Date</th>
+                                        <th>Department</th>
+                                        <th>Model Name</th>
+                                        <th style="color: red;">A3</th>
+                                        <th>A3</th>
+                                        <th style="color: red;">A4 </th>
+                                        <th>A4</th>
+                                        <th>Remark</th>
+                                        <th>File</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    $cntv = 1;
+                                    foreach ($page_count_report_data as $page_count) { 
+                                       $is_duplicate = check_dup_usage_report($page_count_report_data , $page_count['ref_no'] , $page_count['contract_id'] , $page_count['date'] , $page_count['month']);
+                                            if($is_duplicate){
+                                                    $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                                            <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                                          </svg>
+                                                    </span>";
+                                            }else{
+                                                    $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                                            }
+                                        ?>
+                                    <tr>
+                                        <td>
+                                            <?php echo $page_count['id']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $dup_html; ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            $short_text = mb_substr($page_count['client_name'], 0, 10) . '...';
+                                            if (mb_strlen($page_count['client_name']) > 10) {
+                                                $short_text = mb_substr($page_count['client_name'], 0, 10) . '...';
+                                            } else {
+                                                $short_text = $page_count['client_name']; // Use the original text if it's 10 characters or fewer
+                                            }
+                                            echo $short_text; 
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['ref_no']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['contractno']; ?>
+                                        </td>
+                                        <?php 
+                                      $date = $page_count['date'];
+                                      $dateParts = explode(' ', $date);
+                                      $formattedDate = $dateParts[0];
+                                      ?>
+                                        <!-- <td><?php // echo $formattedDate; ?></td> -->
+                                        <td>
+                                            <?php echo $page_count['date']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['department']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['modal_name']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['A3clr']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['A3blk']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['A4clr']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['A4blk']; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $page_count['remark']; ?>
+                                        </td>
+                                        <?php
+                                      $host = $_SERVER['HTTP_HOST'];
+                                      $host_upper = strtoupper($host);
+                                      $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                                      $baseurl = "http://" . $host . $path . "/";
+                                      $targetdir = $baseurl . 'uploads' . DIRECTORY_SEPARATOR . 'usage_report' . DIRECTORY_SEPARATOR; 
+                                      if($page_count['image'] != ''){
+                                          $imagePath = $targetdir . $page_count['image'];
+                                      }else{
+                                        $imagePath = '';
+                                      }
+                                      ?>
+                                        <!-- <td><img src="<?php echo $imagePath; ?>" height="80px"></td> -->
+                                        <td>
+                                            <?php
+                                        if($imagePath != ''){ ?>
+                                            <a href="<?php echo $imagePath; ?>" target="_blank">
+                                                <i style="color:#3c8dbc;cursor: pointer;" class="fa fa-file"
+                                                    aria-hidden="true"> </i>
+                                            </a>
+                                            <?php } ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                       echo "<a href='#' onClick='showM(\"ajax.php?modal=EditUsagereport&reroute=clients&id=".$page_count['id']."\"); return false;' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <a href='#' onClick='showM(\"ajax.php?modal=DeleteUsagereport&reroute=clients&id=".$page_count['id']."&routeid=".$page_count['contractid']."\"); return false;' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>";
+                                        ?>
+                                        </td>
+                                    </tr>
+                                    <?php $cntv++; } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+<script>
+    $('#view-options-client, .month_filter').change(function () {
+        // Get the selected values
+        var client = $("#view-options-client").val();
+        var month = $(".month_filter").val();
+
+        // Construct the base URL
+        var baseUrl = '?route=page_count_report';
+
+        // Append filters dynamically
+        if (client) {
+            baseUrl += '&client_id=' + client;
+        }
+        if (month && month > 0) {
+            baseUrl += '&year_month=' + month;
+        }
+
+        // Redirect to the constructed URL
+        window.location.href = baseUrl;
+    });
+</script>

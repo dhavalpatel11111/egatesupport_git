@@ -1,0 +1,61 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<?php // nextContractTag(); die();?>
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1> Document Type <small> Document Type </small></h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home </a></li><li><a href="?route=department">Document Type</a></li><li class="active">Edit</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Edit Document Type list</h3></div><!-- /.box-header -->
+                    <div class="box-body">
+					
+					
+                        <div class="row">
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateContractForm()">
+								<?php
+
+                             foreach($document_type as $document_ty ){?>
+							
+								
+                                <div class="form-group">
+                                    <label for="banner" class="col-sm-2 control-label">Document Type</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="document_tyname" name="document_tyname" value="<?= $document_ty['document_name'] ?>">
+                                    </div>
+                                </div>
+                             
+								<div style="clear:both"></div>
+                               <input type="hidden" name="editdocumenttype">
+                              <input type="hidden" name="route" value="department">
+                                <input type="hidden" name="id" value="<?= $document_ty['id'] ?>">
+								
+                               <div class="col-sm-2"></div>
+							   <?php } ?>
+                                <div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i>Update</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function () {
+	
+    });
+</script>

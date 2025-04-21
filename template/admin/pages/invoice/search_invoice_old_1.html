@@ -1,0 +1,766 @@
+<style>
+  table.dataTable th,
+  table.dataTable td {
+      white-space: nowrap; /* Prevent text wrapping */
+  }
+</style>
+<aside class="right-side">
+
+    <section class="content-header" style="display: flex; justify-content: space-between; align-items: center; gap: 30px; width: 100%; overflow-x: auto;">
+        <!-- header line  -->
+        <span style="font-size: 25px; text-wrap: nowrap;">
+            <i class="fa fa-tag" style="font-size: 20px; margin-left: 5px;"></i>&nbsp;Invoice
+        </span>
+        <!-- header line  -->
+
+        <span style="display: flex; align-items: center; justify-content: end; gap: 20px;">
+            <?php 
+            $month_value = '';
+            if(isset($_GET['year_month'])){
+                $month_value = $_GET['year_month'];
+            }
+            ?>
+            <input type="text" id="month_filter" class="form-control" value="<?php echo $month_value != '' ? $month_value : ''; ?>" style="min-width: 100px;" placeholder="202501">
+
+            <button class="btn btn-primary" id="get_data_btn" style="min-width: 100px;">Get Data</button>
+
+            <input type="button" class="btn btn-primary" style="min-width: 100px;" id="export_invoice" data-sdate="" data-edate="" value="Export">
+
+            <span style="text-wrap: nowrap;font-size: 15px; margin-bottom: 0px; margin-top: 0px;">
+                Total client: <span style="color: red;">
+                    <span title="Total Client who has invoice"><?php echo isset($client_counts) ? $client_counts : 0; ?></span>
+                    <?php echo isset($client_counts_1) ? '<span style="color: blue;" title="Total number of active client">( '.$client_counts_1 . ' )</span>' : 0; ?>
+                </span>
+                <br>
+                Contract : <span style="color: red;">
+                    <?php echo isset($coto) ? number_format($coto) : 0; ?>
+                    <span title="Total Contract Amount of Active Client " style="color: blue;">(<?php echo isset($total_amount_text) ? number_format($total_amount_text) : 0; ?> )</span>
+                </span>
+            </span>
+
+            <span>
+                <span title="Total  Amount of Invoice" style="text-wrap: nowrap;margin-left: 5px; margin-bottom: 0px; font-size: 15px; margin-top: 10px;">Invoice Total : <span style="color: red;" id="total_amount_receivable"><?php echo isset($total_amount) ? number_format($total_amount) : 0; ?></span></span>
+            </span>
+
+            <?php 
+                $not_confirm_selected = isset($_GET['checked']) ? $_GET['checked'] : '';
+                if($not_confirm_selected == 1){
+                    $not_confirm = 'checked';
+                }else{
+                    $not_confirm = '';
+                }
+                ?>
+                <span style="text-wrap: nowrap; display: flex; justify-content: center; align-items: center;"> Confirmed &nbsp;&nbsp; <input type="checkbox" id="not_checked_filter" style="height: 20px;width: 20px;" <?php echo $not_confirm; ?> ></span>
+
+                <?php 
+                $invoice_page_detail = get_template_invoice_page_detail('defult_email_template');
+                if(!empty($invoice_page_detail)){
+                    $invoice_page_detail_value = $invoice_page_detail['value'];
+                }
+                ?>
+                <select class="form-control" id="defult_email_template" name="defult_email_template" style="min-width: 100px;">
+                    <option value="">Set Email Template</option>
+                    <?php 
+                    foreach($notificationtemplates as $template){ 
+                        if($template['id'] == $invoice_page_detail_value){ ?>
+                            <option value="<?php echo $template['id']; ?>" selected><?php echo $template['name']; ?></option>    
+                        <?php }else{ ?> 
+                            <option value="<?php echo $template['id']; ?>"><?php echo $template['name']; ?></option>    
+                        <?php } ?>
+                    <?php }
+                    ?>
+                </select>
+                <button class="btn btn-primary" id="send_email_to_all_invoice" style="min-width: 100px;">Send To All</button>
+                <input class="form-control datepicker" data-date-format="yyyy-mm-dd" id="global_date_picker" style="min-width: 100px;">
+                <button class="btn btn-primary" id="set_overdue_btn">Check Overdue</button>
+        </span>
+    </section>
+
+    <!-- <section class="content-header" style="display: flex; align-items: center; gap: 10px;"> -->
+        <!-- <h1 class="pull-left" style="width: 15%;"><i class="fa fa-tag" style="margin-right: 5px; font-size: 20px;"></i>Invoice</h1> -->
+        <!-- new_option -->
+        <!-- <div style="display: flex;  align-items: center; margin-bottom: 10px; gap: 10px; width: 75%;"> -->
+            <!-- <div style="width: 7%;">
+                <?php 
+                $month_value = '';
+                if(isset($_GET['year_month'])){
+                    $month_value = $_GET['year_month'];
+                }
+                ?>
+                <input type="text" id="month_filter" class="form-control" value="<?php echo $month_value != '' ? $month_value : ''; ?>" style="width: 100%; margin-top: 8% !important;" placeholder="202501">
+            </div> -->
+            <!-- <div>
+                <button class="btn btn-primary" id="get_data_btn" style="margin-top: 12% !important;">Get Data</button>
+            </div> -->
+
+            <!-- <div>
+                <input type="button" class="btn btn-primary"
+                    style="margin-top: 12% !important;" id="export_invoice" data-sdate=""
+                    data-edate="" value="Export">
+            </div> -->
+
+            <!-- <div style="padding: 0px 5px; margin-top: 10px;">
+                <p style="text-wrap: nowrap;font-size: 15px; margin-bottom: 0px; margin-top: 0px;">
+                    Total client: <span style="color: red;">
+                        <span title="Total Client who has invoice"><?php echo isset($client_counts) ? $client_counts : 0; ?></span>
+                        <?php echo isset($client_counts_1) ? '<span style="color: blue;" title="Total number of active client">( '.$client_counts_1 . ' )</span>' : 0; ?>
+                    </span>
+                    <br>
+                    Contract : <span style="color: red;">
+                        <?php echo isset($coto) ? number_format($coto) : 0; ?>
+                        <span title="Total Contract Amount of Active Client " style="color: blue;">(<?php echo isset($total_amount_text) ? number_format($total_amount_text) : 0; ?> )</span>
+                        
+                    </span>
+                </p>
+            </div> -->
+            
+            <!-- <div style="padding: 0px 5px; ">
+                <p title="Total  Amount of Invoice" style="text-wrap: nowrap;margin-left: 5px; margin-bottom: 0px; font-size: 15px; margin-top: 10px;">Invoice Total : <span style="color: red;" id="total_amount_receivable"><?php echo isset($total_amount) ? number_format($total_amount) : 0; ?></span></p>
+            </div> -->
+
+            <!-- <div style="padding: 0px 5px; font-size: 15px; margin-top: 10px;">
+                <?php 
+                $not_confirm_selected = isset($_GET['checked']) ? $_GET['checked'] : '';
+                if($not_confirm_selected == 1){
+                    $not_confirm = 'checked';
+                }else{
+                    $not_confirm = '';
+                }
+                ?>
+                <span style="text-wrap: nowrap; display: flex; justify-content: center; align-items: center;"> Confirmed &nbsp;&nbsp; <input type="checkbox" id="not_checked_filter" style="height: 20px;width: 20px;" <?php echo $not_confirm; ?> ></span>
+            </div> -->
+
+            <!-- <div style="font-size: 15px; display: flex; gap: 15px;align-items: center;"> -->
+                        <?php 
+                        $invoice_page_detail = get_template_invoice_page_detail('defult_email_template');
+                        if(!empty($invoice_page_detail)){
+                            $invoice_page_detail_value = $invoice_page_detail['value'];
+                        }
+                        ?>
+                        <!-- <select class="form-control" id="defult_email_template" name="defult_email_template" style="margin-top: 14px;">
+                            <option value="">Set Email Template</option>
+                            <?php 
+                            foreach($notificationtemplates as $template){ 
+                                if($template['id'] == $invoice_page_detail_value){ ?>
+                                    <option value="<?php echo $template['id']; ?>" selected><?php echo $template['name']; ?></option>    
+                                <?php }else{ ?> 
+                                    <option value="<?php echo $template['id']; ?>"><?php echo $template['name']; ?></option>    
+                                <?php } ?>
+                            <?php }
+                            ?>
+                        </select> -->
+
+
+                    <!-- <div class="col-sm-1" title="View Email Details" style="margin-top: 5%;">
+                        <i class="fa fa-eye" id="g_email_template_message_btn"></i>
+                    </div> -->
+                    <!-- <button class="btn btn-primary" id="send_email_to_all_invoice" style="margin-top: 13px;">Send To All</button> -->
+            <!-- </div> -->
+
+            <!-- <div style=" font-size: 15px; display: flex; align-items: center; gap: 10px; width: 17%; margin-top: 15px;">
+                    <input class="form-control datepicker" data-date-format="yyyy-mm-dd" id="global_date_picker" style="width: 100%; z-index: 999 !important;">
+                    <button class="btn btn-primary" id="set_overdue_btn">Check Overdue</button>
+            </div> -->
+            
+        <!-- </div> -->
+        <!-- new_option -->
+        <!-- <div style="width: 10%; display: flex; justify-content: flex-end; align-items: center; flex-direction: column;">
+            <ol class="breadcrumb pull-right" style="width: 100%; margin: 0px;">
+                <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Issued Invoice</li>
+            </ol>
+        </div> -->
+    <!-- </section> -->
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <!-- <h3 class="box-title">Issued Invoice</h3> -->
+                    </div>
+                    <div class="box-body" style="padding-left: 40px; padding-top: 0px;">
+
+                        <div style="overflow-x: scroll;">
+
+                            <?php 
+                            if(isset($invoice_data)){ 
+                                //echo "<pre>";
+                                //print_r($invoice_data);
+                                //die;
+                                ?>
+                                <table id="search_invoice_table" class="table table-striped table-hover">
+                                    <thead>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center">For</th>
+                                        <th class="text-center">Dup</th>
+                                        <th class="text-center">INV Ref No</th>
+                                        <th class="text-center">Client</th>
+                                        <th class="text-center">Invoice No.</th>
+                                        <th class="text-center">INV Amt</th>
+                                        <th class="text-center">INV File</th>
+
+                                        <th class="text-center">Sent</th>
+                                        <th class="text-center">Last Sent</th>
+                                        <th class="text-center">Email</th>
+                                        <th class="text-center"><input type="checkbox" id="th_check_all"></th>
+                                        <th class="text-center" title="The customer has confirmed receipt of the invoice">Confirmed</th>
+
+                                        <!-- <th class="text-center">Pay Type</th>
+                                        <th class="text-center">Ref No</th>
+                                        <th class="text-center">Paid File</th>
+                                        <th class="text-center">Tax</th>
+                                        <th class="text-center">Tax File</th>
+                                        <th class="text-center">O.R No.</th>
+                                        <th class="text-center">Paid Amt</th>
+                                        <th class="text-center">OR File</th> -->
+
+                                        <th class="text-center">Balance</th>
+                                        <th class="text-center">Remarks</th>
+                                        <!-- <th class="text-center">Sent</th>  -->
+                                        <th title="Over Due Days">O.D</th>
+                                        <th class="text-center">Paid</th>
+                                        <th class="text-center">Action</th>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($invoice_data as $invoice) {  
+                                            //echo "<pre>";
+                                            //print_r($invoice_data);
+                                            //die;
+                                            $is_duplicate = check_dup_invoice($invoice_data , $invoice['ref_no'] , $invoice['clintid'] , $invoice['month'] , $invoice['id'] , $invoice['date']);
+                                            if($is_duplicate){
+                                                    $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                                            <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                                          </svg>
+                                                    </span>";
+                                            }else{
+                                                    $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                                            }
+                                            ?>
+                                        <tr>
+                                                <td style="text-wrap: nowrap;" class="invoice-date"><?php echo date('Y - m - d', strtotime($invoice['date'])); ?></td>
+                                                <?php 
+                                                $month_name = "";
+                                                if($invoice['month']==1) {
+                                                    $month_name = "Jan";
+                                                } elseif($invoice['month']==2) {
+                                                    $month_name = "Feb";
+                                                } elseif($invoice['month']==3) {
+                                                    $month_name = "Mar";
+                                                }  elseif($invoice['month']==4) {
+                                                    $month_name = "Apr";
+                                                }  elseif($invoice['month']==5) {
+                                                    $month_name = "May";
+                                                }  elseif($invoice['month']==6) {
+                                                    $month_name = "Jun";
+                                                } elseif($invoice['month']==7) {
+                                                    $month_name = "Jul";
+                                                } elseif($invoice['month']==8) {
+                                                    $month_name = "Aug";
+                                                } elseif($invoice['month']==9) {
+                                                    $month_name = "Sep";
+                                                } elseif($invoice['month']==10) {
+                                                    $month_name = "Oct";
+                                                } elseif($invoice['month']==11) {
+                                                    $month_name = "Nov";
+                                                } elseif($invoice['month']==12) {
+                                                    $month_name = "Dec";
+                                                }
+                                            ?>
+
+                                            <td class="text-center"><?php echo $month_name; ?></td>
+                                            <?php $client = getSingleValue("clients", "name", $invoice['clintid']); ?>
+                                            <td class="text-center" style="padding-left: 1%;"><?php echo $dup_html; ?></td>
+                                            <td class="text-center"><a href="?route=clients/editinvoice&id=<?php echo $invoice['id']; ?>"><?php echo $invoice['ref_no']; ?></a></td>
+
+                                            <?php 
+                                            if (strlen($client) > 10) {
+                                                $client_formated = substr($client, 0, 15) . '...';
+                                            } else {
+                                                $client_formated = $client;
+                                            }
+                                            ?>
+                                            <td class="client_name" data-client_name="<?php echo $client; ?>">
+                                                <?php 
+                                                $amount = $invoice['amount'];
+                                                $client_fonr_color = '';
+                                                if($amount == 0 || $amount < 0){
+                                                    $client_fonr_color = 'style="color: red;"';
+                                                }
+                                                ?>
+                                                <a href='?route=clients/manage&id=<?php echo $invoice['clintid']; ?>&tab=invoice' <?php echo $client_fonr_color; ?>>
+                                                    <?php echo $client_formated; ?>
+                                                </a>
+                                            </td>
+                                            <td class="text-right"><?php echo $invoice['invoiceno']?></td>
+                                            <td class="text-right invoice_amount"><?php echo number_format($invoice['amount'], 0, '.', ','); ?></td>
+                                            <td class="text-right">
+                                                <?php
+                                                if ($invoice['attachment'] != "") {
+                                                    echo "<a href='javascript:void(0);' onClick=\"window.open('?route=invoiceTPdf&id={$client['id']}&invoice_id={$invoice['id']}', '_blank')\"><i class='fa fa-picture-o' aria-hidden='true'></i></a>&nbsp;&nbsp;
+                                                    
+                                                    <a class='onhoverfile invoice_attechment_img' data-img_src='uploads" . DIRECTORY_SEPARATOR . $invoice['attachment'] . "'><i style='color: orange;' class='fa fa-picture-o' aria-hidden='true'></i></a><br>";
+                                                } else {
+                                                    echo "<a href='javascript:void(0);' onClick=\"window.open('?route=invoiceTPdf&id={$client['id']}&invoice_id={$invoice['id']}', '_blank')\"><i class='fa fa-picture-o' aria-hidden='true'></i></a>&nbsp;";
+                                                }
+                                                ?>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <?php
+                                                if($invoice['send_mail'] != '' && $invoice['send_mail'] > '0'){
+                                                    echo $invoice['send_mail'];
+                                                }
+                                                ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <?php 
+                                                if($invoice['send_mail_date'] != NULL && $invoice['send_mail_date'] != '0000-00-00'){
+                                                    echo $invoice['send_mail_date'];
+                                                }
+                                                ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <?php 
+                                                //echo "<a id='email_notification_btn' onClick='showM(\"ajax.php?modal=emailtemplete&id=".$invoice['clintid']."&inv=".$inv."&invoice_id=".$invoice['id']."\");return false;' style='cursor: pointer;'><i class='fa fa-envelope-o'></i>&nbsp; Send</a>";
+
+
+                                                $client = getSingleValue("clients", "name", $invoice['clintid']); 
+                                                $responsible_person_count = get_responsible_person($invoice['clintid']);
+                                                 
+                                                echo "<a id='email_notification_btn' class='email_notification_btn' style='cursor: pointer;' data-client_id='". $invoice['clintid'] ."' data-invoice_id='". $invoice['id'] ."' data-invoice_attachment='uploads" . DIRECTORY_SEPARATOR . $invoice['attachment'] . "' data-invoice_attachment_name='". $invoice['attachment'] . "'><i class='fa fa-envelope-o'></i>&nbsp; Send</a>";
+                                                if($responsible_person_count == 0){
+                                                    echo "<i class='fa fa-question-circle' aria-hidden='true' style='margin-left: 10px; color: red;'></i>";
+                                                }
+
+                                                ?>
+                                                
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="check_invoice" data-invoice_id="<?php echo $invoice['id']; ?>">
+                                            </td>
+
+                                            <td class="text-center">
+                                                <?php 
+                                                if($invoice['confirmed'] == '1'){
+                                                    $confirmed_html = '<div style="display: flex; align-items: center; justify-content: center;"><label for="confirmed" style="padding-right: 5px; color: #757584; margin-top: 3px;" >Yes</label><input type="checkbox" id="confirmed" data-invoice_id="'.$invoice['id'].'" checked style="margin: 0px;"> </div>';
+                                                    echo $confirmed_html;
+                                                }else{
+                                                    $confirmed_html = '<div style="display: flex; align-items: center;justify-content: center;"><label for="confirmed" style="padding-right: 5px; color: #757584; margin-top: 3px;" >No</label><input type="checkbox" id="confirmed" data-invoice_id="'.$invoice['id'].'"  style="margin: 0px;"></div>';
+                                                    echo $confirmed_html;
+                                                }
+                                                ?>
+                                            </td>
+                                            <!-- <td class="text-right"><?php
+                                                if ($invoice['payment_method']) {
+                                                    if(is_numeric($invoice['payment_method'])){
+                                                        $payment_method = get_payment_method_name($invoice['payment_method']);
+                                                        echo $payment_method;
+                                                    }else{
+                                                        echo $invoice['payment_method'];
+                                                    }
+                                                }
+                                                 ?></td>
+                                    <td class="text-right"><?php echo $invoice['payment_ref_no']; ?></td> -->
+                                    <?php
+                                    $invo_paid = "";
+                                    if($invoice['paid_file']!= ""){
+                                    $invo_paid ="<a class='onhoverfile' href='ajax.php?invoicefile=".$invoice['paid_file']."'><i class='fa fa-picture-o' aria-hidden='true'></i><span class='hovertextfile'>" . $invoice['paid_file'] . "</span><a><br>";
+                                    }
+                                    ?>
+
+                                    <!-- <td class="text-right"><?php echo $invo_paid?></td> -->
+                                    <!-- <td class="text-right"><?php echo $invoice['tax_amount']?></td> -->
+
+                                    <?php
+                                    $invo_tax = "";
+                                    if(!empty($invoice['tax_file_2307'])) {
+                                    $invo_tax = "<a class='onhoverfile' href='ajax.php?invoicetaxfile=".$invoice['tax_file_2307']."'  ><i class='fa fa-picture-o' aria-hidden='true'></i><span class='hovertextfile'>" . $invoice['tax_file_2307'] . "</span></a><br>"; 
+                                    
+                                    }
+                                    ?>
+
+                                    <!-- <td class="text-right"><?php echo $invo_tax?></td> -->
+                                    
+                                    <!-- <td class="text-right"><?php echo $invoice['ornumber']?></td> -->
+                                    <!-- <td class="text-right"><?php echo number_format($invoice['paid'], 0, '.', ','); ?></td> -->
+                                    <?php
+                                    $invo_or = "";
+                                    if($invoice['or_file']!= ""){
+                                    $invo_or ="<a class='onhoverfile' href='ajax.php?invoicefile=".$invoice['or_file']."' ><i class='fa fa-picture-o' aria-hidden='true'></i><a><br>";
+                                    }
+                                    ?>
+                                    <!-- <td class="text-right"><?php echo $invo_or?></td> -->
+                                    <td class="text-right"><?php echo number_format($invoice['balance'], 0, '.', ','); ?></td>
+                                    <td class="text-right"><?php echo $invoice['remark']?></td>
+                                    <!-- <td class="text-right onhover" style="cursor: pointer;">
+                                        <a href='#'>
+                                            <?php echo countTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id'], "", "") ?>
+                                        </a>
+                                        <?php  
+                                            $email_history = getTableFiltered("invoicesentmailhistory", "invoiceid", $invoice['id']);
+                                            
+                                            if (!empty($email_history)) {
+                                        ?>
+                                        <span class='hovertext'>
+                                            <?php 
+                                                foreach ($email_history as $record) {
+                                                    echo date('Y-m-d', strtotime($record['date'])) . "<br>";
+                                                }
+                                            ?>
+                                        </span>
+                                        <?php 
+                                            } // End of if statement
+                                        ?>
+                                    </td> -->
+                                    <td class="over_due_td" style="text-align: right;"></td>
+
+                                    <td style="text-align: center;">
+                                                    <?php if($invoice['paid'] <= 0): ?>
+                                                    <a style="background-color:red;color: white;padding: 3px;border-radius: 4px;">No</a>
+                                                    <?php else: ?>
+                                                    <a style="color:#ffffff;background-color:#CCCCCC;padding: 3px;border-radius: 4px;">Yes</a>
+                                                    <?php endif; ?>
+                                    </td>
+
+                                    <td>
+                                        <div>
+                                            <a href="?route=clients/editinvoice&id=<?php echo $invoice['id']; ?>&view_con=1"><i class='fa fa-edit'></i></a>&nbsp;
+                                            <a href='#' onClick='showM("ajax.php?modal=invoiceDelete&reroute=clients/manage&routeid=<?php echo  $invoice['clintid']; ?>&id=<?php echo $invoice['id']; ?>&section=invoice");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>&nbsp;
+                                           
+                                            
+                                                <?php 
+                                               
+                                                   //echo "<a href='?route=invoiceTemplateEmail&id=" . $invoice['clintid'] . "&amp;invoice_id=" . $invoice['id'] . "&amp;view=1'><i class='fa fa-envelope-o'></i></a>";
+                                                ?>
+
+                                                 <!-- if ($invoice['send_mail'] == 1) {
+                                                    echo "Sent";
+                                                } -->
+                                                    
+                                        </td>
+                                        </tr>
+
+
+
+
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            <?php } ?>
+                            
+                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+
+<div class="modal fade" id="g_email_template_message_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body">
+
+          <div class="form-group">
+                <label for="message" class="control-label">Message</label>
+                <textarea class="form-control summernote2" id="g_email_template_message"></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="all_invoice_image_view_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body">
+
+            <img id="all_invoice_image_view" src="" style="width: 100%; height: 100%;">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    $("#get_data_btn").on('click', function () {
+        var month = $("#month_filter").val();
+        var baseUrl = '?route=invoice/search_invoice';
+        if (month && month > 0) {
+            baseUrl += '&year_month=' + month;
+        }
+        window.location.href = baseUrl;
+    })
+
+    $("#export_invoice").on('click', function () {
+        var over_due_date = $("#global_date_picker").val();
+
+        var month_filter = $("#month_filter").val();
+        if (month_filter == '') {
+            window.location.href = "?route=invoice_export&over_due_date=" + over_due_date;
+        } else {
+            window.location.href = "?route=invoice_export&year_month=" + month_filter + '&over_due_date=' + over_due_date;
+        }
+    });
+
+    $(document).on("change" , "#confirmed" , function(){
+        var invoice_id = $(this).data('invoice_id');
+        var checkbox = $(this);
+        var label = checkbox.prev('label');
+        if ($(this).is(":checked")) {
+            $.ajax({
+                url: "ajax.php?update_invoice_confirm=1",
+                data : {
+                    'invoice_id' : invoice_id
+                },
+                type : "POST",
+                success: function(res){
+                    label.html('Yes');
+                }
+            })
+        }else{
+            $.ajax({
+                url: "ajax.php?update_invoice_confirm=0",
+                data : {
+                    'invoice_id' : invoice_id
+                },
+                type : "POST",
+                success: function(res){
+                    label.html('No');
+                }
+            })
+        }  
+    })
+
+
+    $(document).on('change' , "#not_checked_filter" , function(){
+        var url = window.location.href;
+        if ($(this).is(':checked')) {
+            window.location = '?route=invoice/search_invoice&checked=1';
+        }else{
+            window.location = '?route=invoice/search_invoice';
+        }
+    })
+
+    $(".email_notification_btn").on('click' , function(){
+
+        let parentRow = $(this).closest("tr");
+        let clientNameTd = parentRow.find(".client_name");
+        let clientName = clientNameTd.data("client_name");
+
+        $("#myModal .modal-dialog").addClass('modal-lg');
+
+        var client_id = $(this).data('client_id');
+        var invoice_id = $(this).data('invoice_id');
+        var invoice_attachment = $(this).data('invoice_attachment');
+        var invoice_attachment_name = $(this).data('invoice_attachment_name');
+        
+        $('#myModal .modal-content').empty().load('ajax.php?modal=emailtemplete&id=' + client_id + '&inv=&invoice_id=' + invoice_id, function() {
+            var defaultEmailTemplate = $("#defult_email_template").val();
+            $('#myModal').modal('show');
+            $("#myModal").on('shown.bs.modal', function () {
+                // email_template_title
+                $(".email_template_title").html('');
+                $(".email_template_title").html('Email To ' + clientName);
+                             
+                if (invoice_attachment_name != undefined && invoice_attachment_name != '') {
+                    $("#invoice_attechment").html("<i class='fa fa-picture-o' aria-hidden='true' style='color: orange;'></i>");
+                    if (invoice_attachment != undefined && invoice_attachment != '') {
+                        $("#invoice_attechment").attr('href', invoice_attachment);
+                        $("#invoice_attechment_input").val(invoice_attachment);
+                        
+                    }else{
+                        $("#invoice_attechment").attr('href', '');    
+                    }
+                }else{
+                    $("#invoice_attechment").html('');
+                }
+                
+                var modalDropdown = $(".templateSelect_d");
+
+                if (modalDropdown.length > 0) {
+                    var dropdownOption = modalDropdown.find("option[value='" + defaultEmailTemplate + "']");
+                    if (dropdownOption.length > 0) {
+                        modalDropdown.val(defaultEmailTemplate);
+                        modalDropdown.trigger('change');
+                    }
+                }
+            });
+        });   
+
+    })
+
+    $("#myModal").on("hidden.bs.modal" , function(){
+            $("#myModal .modal-dialog").removeClass('modal-lg');
+    })
+
+
+    $(document).on('click', "#g_email_template_message_btn" , function(){
+            var template_id = $("#defult_email_template").val();
+
+            if(template_id != ''){
+
+                $.ajax({
+                url : "ajax.php?get_templete_subject&templete_id="+template_id,
+                success: function(res){
+                    var data = JSON.parse(res);
+                    console.log('data:', data);
+                    if (data.res.status == 1) {
+                        var template_data = data.res ?.data;                     
+                        var message = template_data[0].message;
+                        // $("#email_template_message").val('');
+                        // $("#email_template_message").val(message);
+                        $('#g_email_template_message').summernote({height: 300});
+                        $('#g_email_template_message').summernote('code', message);
+                        $("#g_email_template_message_modal").modal('show');
+                    }
+                }
+            })
+                
+            }else{
+                alert("Plz Select Email Template");
+            }
+    })
+
+        
+    $(document).on('hidden.bs.modal' , "#g_email_template_message_modal" , function(){
+        $('#g_email_template_message').summernote('code', '');
+    })
+
+
+    $(document).ready(function () {
+
+        $("#th_check_all").prop("checked", true);
+        $(".check_invoice").prop("checked", true);
+
+        $("#th_check_all").on("change", function () {
+            let isChecked = $(this).is(":checked");
+            $(".check_invoice").prop("checked", isChecked);
+        });
+
+        $('.datepicker').datepicker();
+        // Function to calculate date difference in days
+        function formatDateString(dateString) {
+            // Replace ' - ' with '-' and trim spaces
+            return dateString.replace(/\s*-\s*/g, '-').trim();
+        }
+        // function calculateDateDifference(startDate, endDate) {
+        //     console.log('startDate:', typeof startDate)
+        //     console.log('endDate:', typeof endDate)
+        //     const start = new Date(startDate);
+        //     const end = new Date(endDate);
+        //     console.log('start:', typeof start)
+        //     console.log('end:', typeof end)
+        //     const diffTime = parseFloat(end) - parseFloat(start);
+        //     console.log('diffTime:', typeof diffTime)
+        //     return Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Floor to avoid rounding issues
+        // }
+
+        // function updateOverdueDays(globalDate) {
+        //     $("#search_invoice_table tbody tr").each(function () {
+        //         const invoiceDate = $(this).find(".invoice-date").text().trim(); // Get the invoice date
+        //         const overdueDays = calculateDateDifference(invoiceDate, globalDate); // Calculate difference in days
+        //         console.log('overdueDays:', typeof overdueDays)
+        //         $(this).find(".over_due_td").text(overdueDays);
+        //     });
+        // }
+        function calculateDateDifference(startDate, endDate) {
+                console.log('startDate:', typeof startDate);
+                console.log('endDate:', typeof endDate);
+
+                // Reformat dates
+                const formattedStartDate = formatDateString(startDate);
+                const formattedEndDate = formatDateString(endDate);
+
+                const start = new Date(formattedStartDate);
+                const end = new Date(formattedEndDate);
+
+                console.log('start:', start, typeof start);
+                console.log('end:', end, typeof end);
+
+                if (isNaN(start) || isNaN(end)) {
+                    console.error('Invalid date format:', { startDate, endDate });
+                    return NaN; // Return NaN for invalid dates
+                }
+
+                const diffTime = end - start; // Difference in milliseconds
+                console.log('diffTime:', diffTime, typeof diffTime);
+
+                return Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Difference in days
+            }
+
+            function updateOverdueDays(globalDate) {
+                $("#search_invoice_table tbody tr").each(function () {
+                    const invoiceDate = $(this).find(".invoice-date").text().trim(); // Get the invoice date
+                    const overdueDays = calculateDateDifference(invoiceDate, globalDate); // Calculate difference in days
+                    console.log('overdueDays:', overdueDays, typeof overdueDays);
+                    $(this).find(".over_due_td").text(isNaN(overdueDays) ? "Invalid Date" : overdueDays);
+                });
+            }
+
+        const today = new Date().toISOString().split('T')[0];
+        $("#global_date_picker").val(today);
+
+        updateOverdueDays(today);
+
+        $("#set_overdue_btn").on("click", function () {
+            const selectedDate = $("#global_date_picker").val();
+            updateOverdueDays(selectedDate);
+        });
+    });
+
+    $(document).on('click' , "#send_email_to_all_invoice" , function(){
+        var defult_email_template = $("#defult_email_template").val();
+        if (defult_email_template != '') {
+            $("#myModal .modal-dialog").addClass('modal-lg');
+
+            $('#myModal .modal-content').empty().load('ajax.php?modal=emailtemplete', function() {
+                var defaultEmailTemplate = $("#defult_email_template").val();
+                $('#myModal').modal('show');
+                $("#myModal").on('shown.bs.modal', function () {
+                    // // email_template_title
+                    // $(".email_template_title").html('');
+                    // $(".email_template_title").html('Email To ' + clientName);
+                    
+                    var modalDropdown = $(".templateSelect_d");
+
+                    if (modalDropdown.length > 0) {
+                        var dropdownOption = modalDropdown.find("option[value='" + defaultEmailTemplate + "']");
+                        if (dropdownOption.length > 0) {
+                            modalDropdown.val(defaultEmailTemplate);
+                            modalDropdown.trigger('change');
+                        }
+                    }
+                });
+            });
+
+        }else{
+            alert("Plz Select Email Template");
+        }
+    })
+
+    // defult_email_template
+    $("#defult_email_template").on('change' , function(){
+        $.ajax({
+            url : "ajax.php?insert_invoice_page_detail&defult_email_template="+$(this).val(),
+        })
+    })
+
+    $(document).on('click' , ".invoice_attechment_img" , function(e){
+        e.preventDefault();
+        var img_src = $(this).data('img_src'); // Get the image source
+        $("#all_invoice_image_view").attr('src', img_src); // Set the correct src without extra quotes
+        $("#all_invoice_image_view_modal").modal('show');
+    })
+
+</script>

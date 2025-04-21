@@ -1,0 +1,439 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <h4 class="modal-title email_template_title">Invoice Payment</h4>
+</div>
+
+<?php 
+$redirect_url = isset($_GET['pera']) ? $_GET['pera'] : '';
+$invoice = isset($invoice) && !empty($invoice) ? $invoice[0] : [];
+$invoice_id = $_GET['id'];
+
+$contract_amount_total = 0;
+foreach ($active_contracts as $key => $contract) {
+  $invoice_contract_amount = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["id"],"contract_id",$contract['id'],"invoice",0,"amount");
+  if(!empty( $invoice_contract_amount)){
+    $contract_amount =  $invoice_contract_amount[0];
+  }else{
+    $contract_amount = $contract['contract_amount'];
+  }
+  if($contract_amount > 0){
+    $contract_amount_total += $contract_amount;
+  }else{
+    $contract_amount_total += 0;
+  }
+}
+$licenses_by_client = get_licenses_by_client($invoice['clintid']);
+$licenses_by_client_amount = 0;
+foreach($licenses_by_client as $license){ 
+    $licenses_by_client_amount += $license['amount'];
+}
+$invoice_amount_hid = $licenses_by_client_amount + $contract_amount_total;
+?>
+
+<!-- setting the amount to pay  -->
+<input type="hidden" id="invoice_amount_hid" value="<?php echo $invoice['balance']; ?>" data-id="<?php echo $contract_amount; ?>" name="invoice_amount_hid">
+<!-- setting the amount to pay  -->
+
+
+<div class="modal-body">
+    <div class="row">
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="col-sm-12">
+        <div class="row">
+            
+          <div class="col-sm-6">
+            <label for="month" class="control-label">Usage For Month</label>
+            <select class="form-control select2" id="month" name="month"
+                style="width:100%;" disabled>
+                <option value="01" <?php if($invoice['month']==1){ ?> selected = 'selected'
+                    <?php } ?> >Jan
+                </option>
+                <option value="02" <?php if($invoice['month']==2){ ?> selected = 'selected'
+                    <?php } ?> >Feb
+                </option>
+                <option value="03" <?php if($invoice['month']==3){ ?> selected = 'selected'
+                    <?php } ?> >Mar
+                </option>
+                <option value="04" <?php if($invoice['month']==4){ ?> selected = 'selected'
+                    <?php } ?> >Apr
+                </option>
+                <option value="05" <?php if($invoice['month']==5){ ?> selected = 'selected'
+                    <?php } ?> >May
+                </option>
+                <option value="06" <?php if($invoice['month']==6){ ?> selected = 'selected'
+                    <?php } ?> >Jun
+                </option>
+                <option value="07" <?php if($invoice['month']==7){ ?> selected = 'selected'
+                    <?php } ?> >Jul
+                </option>
+                <option value="08" <?php if($invoice['month']==8){ ?> selected = 'selected'
+                    <?php } ?> >Aug
+                </option>
+                <option value="09" <?php if($invoice['month']==9){ ?> selected = 'selected'
+                    <?php } ?> >Sep
+                </option>
+                <option value="10" <?php if($invoice['month']==10){ ?> selected = 'selected'
+                    <?php } ?> >Oct
+                </option>
+                <option value="11" <?php if($invoice['month']==11){ ?> selected = 'selected'
+                    <?php } ?> >Nov
+                </option>
+                <option value="12" <?php if($invoice['month']==12){ ?> selected = 'selected'
+                    <?php } ?> >Dec
+                </option>
+            </select>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="ref_no" class="control-label">INV Reference No</label>
+            <input type="text" class="form-control" id="ref_no" name="ref_no" value="<?php echo $invoice['ref_no']; ?>" required disabled>
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+
+
+
+
+
+
+      <div class="col-sm-12">
+        <div class="row">
+
+            <div class="col-sm-6">
+              <label for="invoiceno" class="control-label">Invoice Number. *</label>
+              <input type="text" class="form-control" id="invoiceno" name="invoiceno"
+                      value="<?= $invoice['invoiceno']; ?> " required <?php echo $readonly; ?>>
+              <input type="hidden" name="countinvoice" id="countinvoice">
+              <div id="checkInvoiceids"></div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="amount" class="control-label">Invoice Amount *</label>
+              <input type="text" class="form-control" id="amount" name="amount"
+                      value="" required readonly>
+            </div>
+            
+        </div>
+      </div>
+
+ 
+
+      <div class="col-sm-12">
+        <label for="amount" class="control-label">Date Payment Receive</label>
+        <?php 
+        if($invoice['date_payment_receive'] != '0000-00-00' && $invoice['date_payment_receive'] != NULL){
+          $date_payment_receive = $invoice['date_payment_receive'];
+        }else{
+          $date_payment_receive = '';
+        }
+        ?>
+        <input type="text" class="form-control DateFilter" id="date_payment_receive" name="date_payment_receive" value="<?php echo $date_payment_receive; ?>" required>
+      </div>
+
+      <div class="col-sm-12">
+
+          <div class="row">
+
+            <div class="col-sm-6">
+              <label for="payment_method" class="control-label">Payment Method</label><br>
+              <?php
+              if($multiple_payment == 1){
+                  $payment_method_cond = "disabled"; ?>
+                  <input type="hidden" name="payment_method" value="<?php echo $invoice['payment_method']; ?>">
+                  <input type="hidden" id="bulk" value="yes">
+              <?php }else{
+                  $payment_method_cond = "";
+              }
+              if($view_con == 3){
+                  $payment_method_cond = 'disabled';
+              }
+              ?>
+              <select id="payment_method" name="payment_method" class="form-control" style="width:100%;display:inline;" <?php echo $payment_method_cond; ?>>
+                      <option value="" selected>
+                          Select Payment Method
+                      </option>
+                  <?php 
+                  
+                  $payment_method_data = get_payment_method_data();
+                  if(!empty($payment_method_data)){
+                      
+                      foreach($payment_method_data as $payment_method){
+                          if($invoice['payment_method'] != '' && $payment_method['id'] == $invoice['payment_method']){ ?>
+                              <option value="<?php echo $payment_method['id']; ?>" selected>
+                                  <?php echo $payment_method['name']; ?>
+                              </option>
+                          <?php }else{ ?>
+                              <option value="<?php echo $payment_method['id']; ?>">
+                                  <?php echo $payment_method['name']; ?>
+                              </option>
+                          <?php }
+                      }
+                  }
+                  ?>
+                  <!-- <option value="check" <?php if ($invoice['payment_method'] == 'check') echo 'selected="selected"'; ?>>Check</option>
+                  <option value="cash" <?php if ($invoice['payment_method'] == 'cash') echo 'selected="selected"'; ?>>Cash</option>
+                  <option value="transfer" <?php if ($invoice['payment_method'] == 'transfer') echo 'selected="selected"'; ?>>Transfer</option>
+                  <option value="others" <?php if ($invoice['payment_method'] == 'others') echo 'selected="selected"'; ?>>Others</option> -->
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="payment_ref_no" class="control-label">Payment Ref No</label>
+              <input type="text" required class="form-control" id="payment_ref_no" name="payment_ref_no" value="<?= $invoice['payment_ref_no']; ?>" <?php echo $multiple_payment_input; ?>  <?php echo $payment_ref_no_readonly; ?> >
+            </div>
+
+          </div>
+
+      </div>
+
+      <input type="hidden" name="ref_no_hid" id="ref_no_hid">
+
+      <div class="col-sm-12">
+        <div class="row">
+            
+            <div class="col-sm-6">
+                <label for="ornumber" class="control-label">O.R Number</label>
+                <?php 
+                $ornumber = '';
+                if(is_numeric($invoice['ornumber'])){
+                  if($invoice['ornumber'] > 0){
+                    $ornumber = $invoice['ornumber'];
+                  }
+                }
+                ?>
+                <input type="text" class="form-control" id="ornumber" name="ornumber"
+                value="<?php echo $ornumber; ?>" <?php echo $multiple_payment_input; ?> <?php echo $or_no_readonly; ?> required>
+            </div>
+
+            <div class="col-sm-6">
+
+              <div>
+                <label for="or_file" class="control-label">Official Reciept</label>
+                <input type="file" id="or_file" name='or_file' class="filestyle form-control"
+                data-iconName="glyphicon glyphicon-inbox">
+              </div>
+
+              <div style="margin-top: 10px;" class="or_file_div">
+                <?php 
+                  if ($invoice['or_file'] != "") {
+                    //echo "<a href='#' onClick='showM(\"ajax.php?modal=clientOrDelete&reroute_url=".$redirect_url."&id=".$invoice['id']."\");return false' style='font-size: 18px; border: 2px solid red; border-radius: 4px; padding: 0px 10px;' class='btn-right text-red delete_css'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicefile=" . $invoice['or_file'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['or_file'] . "</i></a>";
+
+                    echo "<a href='#' class='btn-right text-red delete_css or_file_del' data-invoice_id='". $invoice['id']."' style='font-size: 15px; border: 2px solid red; border-radius: 4px; padding: 0px 5px;'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicefile=" . $invoice['or_file'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['or_file'] . "</i></a>";
+                  }
+                ?>
+              </div>
+
+            </div>
+
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="row">
+            
+            <div class="col-sm-6">
+                <label for="paid" class="control-label">Paid Amount</label>
+                <input type="text" class="form-control" id="paid" name="paid"
+                value="<?php echo $invoice['paid']; ?>" <?php echo $multiple_payment_input; ?> required>
+            </div>
+
+            <div class="col-sm-6">
+
+              <div>
+                <label for="paidfile" class="control-label">Payment Proof</label>
+                <input type="file" id="paidfile" name='paid_file' class="filestyle form-control"
+                data-iconName="glyphicon glyphicon-inbox">
+              </div>
+
+              <div style="margin-top: 10px;" class="paid_file_div">
+                <?php 
+                  if ($invoice['paid_file'] != "") {
+                    //echo "<a href='#' onClick='showM(\"ajax.php?modal=clientPaidDelete&reroute=invoice&id=".$invoice['id']."\");return false' style='font-size: 18px; border: 2px solid red; border-radius: 4px; padding: 0px 5px;' class='btn-right text-red delete_css'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicefile=" . $invoice['paid_file'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['paid_file'] . "</i></a>";
+
+                    echo "<a href='#' data-invoice_id='". $invoice['id']."' style='font-size: 15px; border: 2px solid red; border-radius: 4px; padding: 0px 5px;' class='btn-right text-red delete_css paid_file_del'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicefile=" . $invoice['paid_file'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['paid_file'] . "</i></a>";
+                  }
+                ?>
+              </div>
+
+            </div>
+
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="row">
+            
+            <div class="col-sm-6">
+
+              <label for="tax_amount" class="control-label">Tax Amount</label>
+              <input type="text" class="form-control" id="tax_amount" name="tax_amount"
+                      value="<?php echo $invoice['tax_amount']; ?>" >
+            </div>
+            
+            <div class="col-sm-6">
+
+              <div>
+                <label for="tax_file_2307" class="control-label">Tax Payment Proof</label>
+                <input type="file" id="tax_file_2307" name='tax_file_2307' class="filestyle form-control"
+                data-iconName="glyphicon glyphicon-inbox">
+              </div>
+
+              <div style="margin-top: 10px;" class="tax_file_2307_div">
+                <?php 
+                  if ($invoice['tax_file_2307'] != "") {
+                    //echo "<a href='#' onClick='showM(\"ajax.php?modal=clientTaxDelete&reroute=invoice&id=".$invoice['id']."\");return false' style='font-size: 18px; border: 2px solid red; border-radius: 4px; padding: 0px 10px;' class='btn-right text-red delete_css'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicetaxfile=" . $invoice['tax_file_2307'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['tax_file_2307'] . "</i></a>";
+
+                    echo "<a href='#' data-invoice_id='". $invoice['id']."' class='btn-right text-red delete_css tax_file_2307_del' style='font-size: 15px; border: 2px solid red; border-radius: 4px; padding: 0px 5px;'>Del</a>&nbsp;&nbsp;<a target='_blank' href='ajax.php?invoicetaxfile=" . $invoice['tax_file_2307'] . "&show=true' title='file'><i class='fa fa-file'>" ."&nbsp;". $invoice['tax_file_2307'] . "</i></a>";
+                  }
+                ?>
+              </div>
+
+            </div>
+
+        </div>
+      </div>
+
+      <div class="col-sm-12">
+        <label for="final_balance" class="control-label">Final Balance</label>
+        <input type="text" class="form-control" id="final_balance" name="final_balance"
+            value="<?php echo $invoice['balance']; ?>" readonly>
+      </div>
+
+      <input type="hidden" name="editinvoice_payment">
+      <input type="hidden" name="tax_amt_hid" id="tax_amt_hid">
+      <input type="hidden" name="paid_amt_hid" id="paid_amt_hid">
+      <input type="hidden" name="invoiceid" value="<?php echo $invoice_id; ?>">
+      <input type="hidden" name="redirect_url" value="<?php echo $_GET['pera']; ?>">
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+</div>
+
+<script>
+  $(document).ready(function(){
+    $('.DateFilter').datepicker({ format: 'yyyy-mm-dd', autoclose: true });
+    var invoice_amount_hid = $("#invoice_amount_hid").val();
+    $("#paid_amt_hid").val(invoice_amount_hid);
+    invoice_amount_hid = parseFloat(invoice_amount_hid);
+    invoice_amount_hid = invoice_amount_hid.toLocaleString();    
+    $("#amount").val(invoice_amount_hid.toLocaleString());
+    var ref_no = $("#ref_no").val();
+    $("#ref_no_hid").val(ref_no);
+  });
+
+  $(document).on("keyup", "#paid" , function(){
+      var paid = $(this).val();
+      $("#paid_amt_hid").val(paid);
+      var invoice_amount_hid = $("#invoice_amount_hid").val();
+      paid = parseFloat(paid);
+      if (!isNaN(paid)) {
+        var tax_amount = invoice_amount_hid - paid;
+        var final_balance = invoice_amount_hid - paid - tax_amount;
+        if (tax_amount >= 0) {
+          $("#tax_amt_hid").val(tax_amount);
+          $("#tax_amount").val(tax_amount.toLocaleString());
+          $("#final_balance").val(final_balance.toLocaleString());
+        }else{
+          alert('Paid Amount is not more then Invoice Amount');
+          $(this).val('');
+          $("#tax_amt_hid").val('');
+          $("#tax_amount").val('');
+        }
+      }
+    })
+
+
+    $(document).on("keyup", "#tax_amount" , function(){
+      var paid_amt_hid =  $("#paid_amt_hid").val();
+      var invoice_amount_hid = $("#invoice_amount_hid").val();
+      var tax_amt_hid = invoice_amount_hid - paid_amt_hid;
+      var tax = parseFloat($(this).val());
+      if (tax_amt_hid < tax) {
+        alert('Tax Amount are not more then ' + tax_amt_hid);
+        $(this).val(tax_amt_hid);
+      }else{
+        var final_balance = invoice_amount_hid - paid_amt_hid - tax;
+        var tax_amt_hid =  $("#tax_amt_hid").val($(this).val());
+        $("#final_balance").val(final_balance.toLocaleString());
+      }
+    });
+
+
+
+    $(document).on("click" , ".or_file_del" , function(){
+      var confirm = window.confirm('Are you sure you want to delete this O.R File?');
+      if (confirm) {
+        var invoice_id = $(this).data('invoice_id');
+        $.ajax({
+          url : 'ajax.php?or_file_del=""',
+          type : "POST",
+          data: {
+            invoice_id : invoice_id
+          },
+          success : function(res){
+              $(".or_file_div").hide();
+          }
+        })
+      }
+    })
+
+    
+    $(document).on("click" , ".paid_file_del" , function(){
+      var confirm = window.confirm('Are you sure you want to delete this Paid File?');
+      if (confirm) {
+        var invoice_id = $(this).data('invoice_id');
+        $.ajax({
+          url : 'ajax.php?paid_file_del=""',
+          type : "POST",
+          data: {
+            invoice_id : invoice_id
+          },
+          success : function(res){
+              $(".paid_file_div").hide();
+          }
+        })
+      }
+    })
+
+    // tax_file_2307_del
+
+    $(document).on("click" , ".tax_file_2307_del" , function(){
+      var confirm = window.confirm('Are you sure you want to delete this Tax File?');
+      if (confirm) {
+        var invoice_id = $(this).data('invoice_id');
+        $.ajax({
+          url : 'ajax.php?tax_file_2307_del=""',
+          type : "POST",
+          data: {
+            invoice_id : invoice_id
+          },
+          success : function(res){
+              $(".tax_file_2307_div").hide();
+          }
+        })
+      }
+    })
+</script>

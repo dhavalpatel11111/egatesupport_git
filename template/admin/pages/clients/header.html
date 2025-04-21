@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title><?php echo getConfigValue("app_name"); ?></title>
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<link rel="icon" href="../uploads/fevicon.png" type="image/png" />
+        <!-- Bootstrap 3.3.5 -->
+		<link href="template/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="template/assets/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="template/assets/plugins/datatables/dataTables.bootstrap.css">
+        <!-- Select2 -->
+        <link rel="stylesheet" href="template/assets/plugins/select2/select2.min.css">
+		<!-- Theme style -->
+		<link href="template/assets/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+		<!-- AdminLTE Skins. Choose a skin from the css/skins
+			 folder instead of downloading all of them to reduce the load. -->
+		<link href="template/assets/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+        <!-- Pace style -->
+        <link rel="stylesheet" href="template/assets/plugins/pace/pace.min.css">
+        <!-- Bootstrap Color Picker -->
+        <link rel="stylesheet" href="template/assets/plugins/colorpicker/bootstrap-colorpicker.min.css">
+		<!-- Date Picker -->
+		<link href="template/assets/plugins/datepicker/datepicker3.css" rel="stylesheet" type="text/css" />
+		<!-- Daterange picker -->
+		<link href="template/assets/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+		<!-- summernote wysihtml5 - text editor -->
+		<link href="template/assets/plugins/summernote/summernote.css" rel="stylesheet" type="text/css" />
+        <!-- bootstrap slider -->
+        <link rel="stylesheet" href="template/assets/plugins/bootstrap-slider/bootstrap-slider.min.css">
+<link href="template/assets/plugins/bs-lightbox/ekko-lightbox.min.css" rel="stylesheet" type="text/css" />
+        <!-- CUSTOM CSS -->
+		<link href="template/assets/custom.css" rel="stylesheet" type="text/css" />
+
+        <!-- jQuery 2.1.4 -->
+		<script src="template/assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+                <script src="template/assets/plugins/autoNumeric/autoNumeric.min.js"></script>
+                <script src="template/assets/plugins/autoNumeric/jquery.animateNumber.min.js"></script>
+                <script src="template/assets/plugins/bootstrapFilestyle/bootstrap-filestyle.min.js"></script>
+                <script src="template/assets/plugins/bs-lightbox/ekko-lightbox.min.js"></script>
+    </head>
+    <body class="hold-transition <?php echo $lia['theme']; ?> <?php echo $lia['layout']; ?> <?php if($lia['sidebar']=="collapsed") echo "sidebar-collapse"; ?> sidebar-mini">
+		<div class="wrapper">
+        <!-- header logo: style can be found in header.less -->
+        <header class="main-header">
+            <a href="?route=dashboard" class="logo">
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><b><i class="fa fa-circle-o-notch"></i></b></span>
+              <!-- logo for regular state and mobile devices -->
+              <span class="logo-lg"><?php echo getConfigValue("app_name"); ?></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" role="navigation">
+              <!-- Sidebar toggle button-->
+              <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- Notifications: style can be found in dropdown.less -->
+                        <li class="dropdown notifications-menu">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-star"></i></a>
+
+                          <ul class="dropdown-menu">
+                            <li>
+                              <ul class="menu">
+                                <li><a href="?route=assets/create"><i class="fa fa-barcode text-aqua"></i> New Asset</a></li>
+                                <li><a href="?route=licenses/create"><i class="fa fa-certificate text-green"></i> New License</a></li>
+                                <li><a href="#" onClick='showM("ajax.php?modal=clientAdd&reroute=clients&routeid=&section=");return false' data-toggle="modal"><i class="fa fa-briefcase text-blue"></i> New Client</a></li>
+                                <li><a href="#" onClick='showM("ajax.php?modal=issueAdd&reroute=issues&routeid=&section=");return false' data-toggle="modal"><i class="fa fa-tasks text-blue"></i> New Issue</a></li>
+                                <li><a href="#" onClick='showM("ajax.php?modal=ticketAdd&reroute=tickets&routeid=&section=");return false' data-toggle="modal"><i class="fa fa-tag text-blue"></i> New Ticket</a></li>
+
+
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="<?php echo getGravatar($lia['email'],"84"); ?>" class="user-image" alt="User Image" />
+                                <span class="hidden-xs"><?php echo $lia['name']; ?> <i class="caret"></i></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header">
+                                    <img src="<?php echo getGravatar($lia['email'],"128"); ?>" class="img-circle" />
+                                    <p>
+                                        <?php echo $lia['name']; ?> - <?php echo $lia['title']; ?>
+                                        <small><?php echo $lia['email']; ?></small>
+                                    </p>
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="?route=people/admins/profile&id=<?php echo $lia['id']; ?>" class="btn btn-default btn-flat">Profile</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="?route=logout" class="btn btn-default btn-flat">Log Out</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+		
+		<?php
+		date_default_timezone_set('Asia/Singapore'); 
+		?>
+
+        <aside class="main-sidebar">
+          <section class="sidebar">
+
+              <!-- Sidebar user panel -->
+              <div class="user-panel">
+                <div class="pull-left image">
+                  <img src="<?php echo getGravatar($lia['email'],"160"); ?>" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                  <p><?php echo $lia['name']; ?></p>
+                  <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                </div>
+              </div>
+    			<!-- search form -->
+    			<form method="get" class="sidebar-form">
+    				<div class="input-group">
+    					<input type="text" name="q" class="form-control" placeholder="Search..." required/>
+                    <input type="hidden" name="route" value="search" />
+    					<span class="input-group-btn">
+    						<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+    					</span>
+    				</div>
+    			</form>
+				
+				
+  					<!-- /.search form -->
+            <!-- sidebar menu: : style can be found in sidebar.less -->
+            <ul class="sidebar-menu">
+						  <li class="header">MAIN NAVIGATION</li>
+              <li <?php if(strpos($route,'dashboard') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=dashboard">
+                      <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                  </a>
+              </li>
+              <li <?php if(strpos($route,'invoice') !== false) echo 'class="active"'; ?>>
+                <a href="?route=invoice">
+                    <i class="fa fa-file"></i> <span>Invoice</span>
+                </a>
+              </li>
+              <li <?php if(strpos($route,'clients') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=clients">
+                      <i class="fa fa-briefcase"></i> <span>Client ( Location )</span>
+                  </a>
+              </li>
+              <!--
+              <li <?php if(strpos($route,'assets') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=assets">
+                      <i class="fa fa-barcode"></i> <span>Assets</span>
+                  </a>
+              </li>
+              -->
+              <li class="treeview<?php if(strpos($route,'assets') !== false) echo ' active'; ?>">
+                  <a href="#">
+<i class="fa fa-barcode"></i> <span>Asset List with Status</span>
+                      <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                      <li title="Deployed Assets to Client" <?php if($route == "assets") echo 'class="active"'; ?>><a  href="?route=assets"><i class="fa fa-angle-double-right"></i> Assets In Service 
+					  <button class="btn btn-success inservice"><?php echo  $assettotalCount = $database->count("assets", ["status" => ["In Service"]]); ?></button></a></li>
+                      <li  title="Assets in Stock Warehouse" <?php if($route == "assets/warehouse") echo 'class="active"'; ?>><a href="?route=assets/warehouse"><i class="fa fa-angle-double-right"></i> Asset in Warehouse<button class="btn btn-success instock"><?php echo  $assetstockwarehouseCount = $database->count("assets", ["status" => ["Available"]]); ?></button> </a></li> 
+					  
+					   <li  title="Assets in  Warranty" <?php if($route == "assets/uwarranty") echo 'class="active"'; ?>><a href="?route=assets/uwarranty"><i class="fa fa-angle-double-right"></i> Asset Under Warranty <button class="btn btn-success under_warranty">
+ <?php echo  $assetst = $database->count("assets", ["warranty_expiry[!]" => ["0000-00-00"]]); ?></button> </a></li> 
+					   
+					   
+                      <li title="Assets for Repair" <?php if($route == "assets/repair") echo 'class="active"'; ?>><a href="?route=assets/repair"><i class="fa fa-angle-double-right"></i> For Repair
+					  
+					  <button class="btn btn-warning under_repair"><?php echo   $assetsdisposeCount = $database->count("assets", ["status" => ["Under Repair"]]); ?></button> </a></li>
+					  <li title="Assets for Disposal" <?php if($route == "assets/disposal") echo 'class="active"'; ?>><a href="?route=assets/disposal"><i class="fa fa-angle-double-right"></i> For Disposal
+					    <button class="btn btn-danger for_disposel"><?php echo   $assetsdisposeCount = $database->count("assets", ["status" => ["For Disposal"]]); ?></button> </a></li>
+					  <li title="Assets for Pull Out" <?php if($route == "assets/pullout") echo 'class="active"'; ?>><a href="?route=assets/pullout"><i class="fa fa-angle-double-right"></i> For Pullout
+                       <button class="btn btn-danger for_pullout"><?php echo   $assetsdisposeCount = $database->count("assets", ["status" => ["For Pullout"]]); ?></button>
+					  </a></li>
+					  <li title=" Total Number of Assets" <?php if($route == "assets/allaset") echo 'class="active"'; ?>><a href="?route=assets/allaset">
+					  <i class="fa fa-angle-double-right"></i> All Asset <button class="btn btn-primary all_asset"><?php echo  $sumAssets = countTable("assets"); ?></button></a></li>
+                  </ul>
+              </li>
+              <li class="treeview<?php if(strpos($route,'contract') !== false) echo ' active'; ?>">
+                  <a href="#">
+                      <i class="fa fa-book"></i> <span>Contract</span>
+                      <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                      <li <?php if($route == "contract") echo 'class="active"'; ?>><a href="?route=contract"><i class="fa fa-angle-double-right"></i> All Contract</a></li>
+                      <li <?php if($route == "contract/active") echo 'class="active"'; ?>><a href="?route=contract/active"><i class="fa fa-angle-double-right"></i> Active Contract</a></li>
+                      <li <?php if($route == "contract/end") echo 'class="active"'; ?>><a href="?route=contract/end"><i class="fa fa-angle-double-right"></i> Ended Contract</a></li>
+                  </ul>
+              </li>
+              <li <?php if(strpos($route,'licenses') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=licenses">
+                      <i class="fa fa-certificate"></i> <span>Licenses</span>
+                  </a>
+              </li>
+              <li <?php if(strpos($route,'projects') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=projects">
+                      <i class="fa fa-lightbulb-o"></i> <span>Projects</span>
+                  </a>
+              </li>
+			  
+			  <li class="treeview<?php if(strpos($route,'tickets') !== false) echo ' active'; ?>">
+                  <a href="#">
+				  <?php //echo $followTicketsCount;?>
+                      <i class="fa fa-tag"></i> <span> Ticket Status </span>
+					  <?php if($openTicketsCount > 0) { ?><span style="margin-right:20px;" class="label label-success pull-right" data-toggle="tooltip" title="Opened Tickets"><?php echo $openTicketsCount; ?></span><?php } ?> 
+					  <?php if($followTicketsCount > 0) { ?><span style="margin-left: 1px;background-color:#3c8dbc !important;" class="label" data-toggle="tooltip" title="Follow Tickets"><?php echo $followTicketsCount; ?></span><?php } ?>
+					  <?php if($inprogressTicketsCount > 0) { ?><span style="margin-left: -5px;background-color:#001f3f !important" class="label" data-toggle="tooltip" title="InProgress Tickets"><?php echo $inprogressTicketsCount; ?></span><?php } ?> 
+					  <?php if($reopenedCount > 0) { ?><span style="margin-left: -5px; background-color:#ff851b !important" class="label" data-toggle="tooltip" title="ReOpened Tickets"><?php echo $reopenedCount; ?></span><?php } ?>
+					  <i class="fa fa-angle-left pull-right"></i>
+                      
+                  </a>
+                  <ul class="treeview-menu">
+			  
+              <li <?php if(strpos($route,'tickets') !== false) echo 'class="active1"'; ?>>
+                  <a href="?route=tickets">
+                      <i class="fa fa-tag"></i> <span>All Tickets</span>
+                  </a>
+              </li>
+			 <li <?php if(strpos($route,'tickets/pending_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/pending_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>Pending Ticket</span><?php if($pendingTicketsCount > 0) { ?><span style="margin-left: 6px; background-color:#fff !important; color:#000;" class="label" data-toggle="tooltip" title="Pending Tickets"><?php echo $pendingTicketsCount; ?></span><?php } ?>
+                  </a>
+              </li><li <?php if(strpos($route,'tickets/open_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/open_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>Open Ticket</span>  <?php if($openTicketsCount > 0) { ?><span style="margin-right:80px;" class="label label-success pull-right" data-toggle="tooltip" title="Opened Tickets"><?php echo $openTicketsCount; ?></span><?php } ?>
+                  </a>
+              </li><li <?php if(strpos($route,'tickets/follow_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/follow_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>Followed Up Ticket</span><?php if($followTicketsCount > 0) { ?><span style="margin-left: 1px;background-color:#3c8dbc !important;" class="label" data-toggle="tooltip" title="Follow Tickets"><?php echo $followTicketsCount; ?></span><?php } ?>
+                  </a>
+              </li><li <?php if(strpos($route,'tickets/inprogress_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/inprogress_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>In Progress Ticket</span> <?php if($inprogressTicketsCount > 0) { ?><span style="margin-left: 2px;background-color:#001f3f !important" class="label" data-toggle="tooltip" title="InProgress Tickets"><?php echo $inprogressTicketsCount; ?></span><?php } ?> 
+                  </a>
+              </li><li <?php if(strpos($route,'tickets/reopened_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/reopened_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>Reopened Ticket</span><?php if($reopenedCount > 0) { ?><span style="margin-left: 5px; background-color:#ff851b !important" class="label" data-toggle="tooltip" title="ReOpened Tickets"><?php echo $reopenedCount; ?></span><?php } ?>
+                  </a>
+              </li>
+			  
+			  
+			   <li <?php if(strpos($route,'tickets/company_ticket') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/company_ticket">
+                      <i class="fa fa-angle-double-right"></i> <span>Ticket by Company</span>
+                  </a>
+              </li>
+			
+			  
+			  <li <?php if(strpos($route,'tickets/client_handle_mistake') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/client_handle_mistake">
+                      <i class="fa fa-angle-double-right"></i> <span>Client Handling Mistake</span>
+                  </a>
+              </li>
+			 
+			  <li <?php if(strpos($route,'tickets/technical_improvement') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/technical_improvement">
+                      <i class="fa fa-angle-double-right"></i> <span>For technical improvement</span>
+                  </a>
+              </li>
+			
+			  <li <?php if(strpos($route,'tickets/refill') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/refill">
+                      <i class="fa fa-angle-double-right"></i> <span>Refill & Preventive Maintenance</span>
+                  </a>
+              </li>
+			 
+			  <li <?php if(strpos($route,'tickets/parsts_replacments') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/parsts_replacments">
+                      <i class="fa fa-angle-double-right"></i> <span>Parts Replacments</span>
+                  </a>
+              </li>
+			  <li <?php if(strpos($route,'tickets/ticketsothers') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=tickets/ticketsothers">
+                      <i class="fa fa-angle-double-right"></i> <span>Others</span>
+                  </a>
+              </li>
+			  </ul>
+              </li>
+              <li <?php if(strpos($route,'issues') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=issues">
+                      <i class="fa fa-tasks"></i> <span>Issues</span><?php if($overdueIssues > 0) { ?><span class="label label-danger pull-right" data-toggle="tooltip" title="Overdue Issues"><?php echo $overdueIssues; ?></span><?php } ?>
+                  </a>
+              </li>
+			  
+			  
+			  <li <?php if(strpos($route,'kb') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=kb">
+                      <i class="fa fa-book"></i> <span>Knowledge Base</span><?php if($overdueIssues > 0) { ?><span class="label label-danger pull-right" data-toggle="tooltip" title="Overdue Issues"><?php echo $overdueIssues; ?></span><?php } ?>
+                  </a>
+              </li>
+              <li <?php if(strpos($route,'monitoring') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=monitoring">
+                      <i class="fa fa-heartbeat"></i> <span>Monitoring</span>
+                  </a>
+              </li>
+			  <li class="treeview<?php if(strpos($route,'warranty') !== false) echo 'class="active"'; ?>">
+                  <a href="#">
+                      <i class="fa fa-plus"></i> <span>Warranty</span>
+                      <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                      <li <?php if($route == "warranty&stts=1") echo 'class="active"'; ?>><a href="?route=warranty&stts=1"><i class="fa fa-angle-double-right"></i> View all</a></li>
+                      <li <?php if($route == "warranty/create") echo 'class="active"'; ?>><a href="?route=warranty/create"><i class="fa fa-edit"></i>Create new</a></li>
+                  </ul>
+              </li>
+
+              <li <?php if(strpos($route,'reports') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=reports">
+                      <i class="fa fa-bar-chart"></i> <span>Reports</span>
+                  </a>
+              </li>
+			  
+			  <?php if($lia['role'] != 'technician'){ ?>
+              <li class="treeview<?php if(strpos($route,'people') !== false) echo ' active'; ?>">
+                  <a href="#">
+                      <i class="fa fa-users"></i> <span>People</span>
+                      <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                      <li <?php if(strpos($route,'people/users') !== false) echo 'class="active"'; ?>><a href="?route=people/users"><i class="fa fa-angle-double-right"></i> Users</a></li>
+                      <li <?php if(strpos($route,'people/admins') !== false) echo 'class="active"'; ?>><a href="?route=people/admins"><i class="fa fa-angle-double-right"></i> Admins</a></li>
+                  </ul>
+              </li>
+			  <?php } ?>
+			  
+			  <li <?php if(strpos($route,'email') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=email">
+                      <i class="fa fa-envelope-o"></i> <span>Email</span>
+                  </a>
+              </li>
+			  
+			  <li <?php if(strpos($route,'slide') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=slide">
+                      <i class="fa fa-object-ungroup"></i> <span>Slide</span>
+                  </a>
+              </li>
+			     <li <?php if(strpos($route,'banner') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=banner">
+                      <i class="fa fa-object-ungroup"></i> <span>Banner</span>
+                  </a>
+              </li>
+			  
+			   <li <?php if(strpos($route,'department') !== false) echo 'class="active"'; ?>>
+                  <a href="?route=department">
+                      <i class="fa fa-object-ungroup"></i>&nbsp;&nbsp;<span> Document Type List </span>
+                  </a>
+              </li>
+			  
+			    <li class="treeview<?php if(strpos($route,'system/') !== false) echo ' active'; ?>">
+                  <a href="#">
+                      <i class="fa fa-cogs"></i> <span>System</span>
+                      <i class="fa fa-angle-left pull-right"></i>
+                  </a>
+                  <ul class="treeview-menu">
+                      <li <?php if($route == "system/ticketsubject") echo 'class="active"'; ?>><a href="?route=system/ticketsubject"><i class="fa fa-angle-double-right"></i>Ticket Subject List</a></li>
+					  
+					  <li <?php if($route == "system/consumable") echo 'class="active"'; ?>><a href="?route=system/consumable"><i class="fa fa-angle-double-right"></i>Client Help List</a></li>
+					   <li <?php if($route == "system/contract_categories") echo 'class="active"'; ?>><a href="?route=system/contract_categories"><i class="fa fa-angle-double-right"></i> Contract Categories </a></li>
+					  <li <?php if($route == "system/contracttype") echo 'class="active"'; ?>><a href="?route=system/contracttype"><i class="fa fa-angle-double-right"></i> Contract Type</a></li>
+                      
+                      <li <?php if($route == "system/clienttype") echo 'class="active"'; ?>><a href="?route=system/clienttype"><i class="fa fa-angle-double-right"></i> Client Type</a></li>
+
+                      <li <?php if($route == "system/licensecategories") echo 'class="active"'; ?>><a href="?route=system/licensecategories"><i class="fa fa-angle-double-right"></i> License Categories</a></li>
+					 
+                      <li <?php if($route == "system/labels") echo 'class="active"'; ?>><a href="?route=system/labels"><i class="fa fa-angle-double-right"></i> Asset Memo List </a></li>
+                      <li <?php if($route == "system/manufacturers") echo 'class="active"'; ?>><a href="?route=system/manufacturers"><i class="fa fa-angle-double-right"></i> Asset Categories</a></li>
+					   <li <?php if($route == "system/assetcategories") echo 'class="active"'; ?>><a href="?route=system/assetcategories"><i class="fa fa-angle-double-right"></i> Asset Type</a></li>
+					  <li <?php if($route == "system/models") echo 'class="active"'; ?>><a href="?route=system/models"><i class="fa fa-angle-double-right"></i> Asset Models</a></li>
+					  <li <?php if($route == "system/warehouselist") echo 'class="active"'; ?>><a href="?route=system/warehouselist"><i class="fa fa-angle-double-right"></i>Warehouse List</a></li>
+                      
+                      <li <?php if($route == "system/suppliers") echo 'class="active"'; ?>><a href="?route=system/suppliers"><i class="fa fa-angle-double-right"></i> Suppliers</a></li>
+			          <li <?php if($route == "system/logs") echo 'class="active"'; ?>><a href="?route=system/logs"><i class="fa fa-angle-double-right"></i> System Logs</a></li>
+                      <li <?php if($route == "system/settings") echo 'class="active"'; ?>><a href="?route=system/settings"><i class="fa fa-angle-double-right"></i> System Settings</a></li>
+                  </ul>
+              </li>
+          </ul>
+        </section>
+        <!-- /.sidebar -->
+      </aside>
+	  
+ <style>
+ .under_warranty {background: #4a82b1;margin-left: 16px;width: 30px;padding: 0px 0px;font-size: 12px;}
+ .under_warranty:hover {background: #337ab7;}
+ .all_asset{ margin-left: 92px; width: 30px;padding: 0px 0px;font-size: 12px;}.instock {margin-left: 31px; width: 30px;padding: 0px 0px;font-size: 12px;}.under_repair{margin-left: 81px;width: 30px;padding: 0px 0px;font-size: 12px;}
+ .for_pullout{margin-left:77px;width: 30px;padding: 0px 0px;font-size: 12px;}.for_disposel{ margin-left: 69px;width: 30px;padding: 0px 0px;font-size: 14px;background-color: #ae08f39e;
+    border: none;}.inservice{margin-left: 45px;width: 30px; padding: 0px 0px;font-size: 12px;color: #000;background-color: #ecf0f5;border: none; }.inservice:hover {background: #ecf0f5; color: #000;
+}.for_disposel:hover {background-color: #ae08f39e;}
+	 </style>

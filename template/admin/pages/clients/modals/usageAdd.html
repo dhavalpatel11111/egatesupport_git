@@ -1,0 +1,162 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Usage</h4></div>
+<div class="modal-body">
+<!--
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="duedate">Checked Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control datepicker-input" id="checkeddate" name="checkeddate">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="issuetype">Total Mileage</label>
+                <input type="text" class="form-control" id="total_mileage" name="total_mileage" value="" required>
+            </div>
+        </div>
+    </div>
+-->
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="clientid">Client</label>
+                <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">None</option>
+                    <?php foreach ($clients as $client) { ?>
+                    <option value='<?php echo $client['id']; ?>' <?php if(isset($_GET['clientid'])) { if($_GET['clientid'] == $client['id']) echo "selected"; }  ?>><?php echo $client['name']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="assetid">Asset</label>
+                <select class="form-control select2" id="assetid" name="assetid" style="width: 100%;">
+                    <option value="0">None</option>
+                    <?php foreach ($assets as $asset) { $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']); ?>
+                    <option value='<?php echo $asset['id']; ?>' <?php if(isset($_GET['assetid'])) { if($_GET['assetid'] == $asset['id']) echo "selected"; }  ?>>
+                            <?php
+                            echo $asset['tag']." ".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modelid']);
+                            if ($asset['clientid'] != "0") echo " [" .getSingleValue("clients","name",$asset['clientid']). "] ";
+                            ?>
+                </option>
+                <?php } ?>
+            </select>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+            <label for="month_mileage">Mileage for this month</label>
+            <input type="text" class="form-control" id="month_mileage" name="month_mileage" value="" readonly="">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+            <label for="startdate">Start Date</label>
+            <div class="input-group">
+                <input type="text" class="form-control datepicker-input" id="startdate" name="startdate" value="<?php echo getMaxValue('asset_usages','enddate',['assetid'=>$assetid])?>">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+            <label for="start_mileage">Start Mileage</label>
+            <input type="text" class="form-control" id="start_mileage" name="start_mileage" value="<?php echo getTotalAmount('asset_usages','month_mileage','assetid',$assetid)?>">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+            <label for="enddate">Cut off Date</label>
+            <div class="input-group">
+                <input type="text" class="form-control datepicker-input" id="enddate" name="enddate">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+            <label for="end_mileage">End Mileage</label>
+            <input type="text" class="form-control" id="end_mileage" name="end_mileage" value="">
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="description" class="control-label">Description</label>
+    <textarea class="form-control summernote" id="description" name="description"></textarea>
+</div>
+
+<input type="hidden" name="addUsage">
+<input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+<input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+<input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+<input type="hidden" id="clientid" name="clientid" value="<?php echo $_GET['clientid']?>" />
+<input type="hidden" id="assetid" name="assetid" value="<?php echo $_GET['assetid']?>" />
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+    $(".select2").select2();
+
+    function formatIcon(icon) {
+        if (!icon.id) {
+            return icon.text;
+        }
+        var originalOption = icon.element;
+        var $icon = $('<span></span>').append($('<i class="fa ' + $(originalOption).data('icon') + '"></i>')).append(icon.text);
+        return $icon;
+    }
+
+    $('.select2-icon').select2({
+        templateResult: formatIcon,
+        templateSelection: formatIcon
+    });
+
+    $(document).ready(function () {
+        $(document).on('keyup mouseup', '#start_mileage', function () {
+            //var s = $(this).val();
+            //var e = $(this).closest('.modal-body').find('#end_mileage').val();
+            //var e = $(this).closest('.modal-body').find('#end_mileage').val();
+            calculate_milage($(this));
+        });
+        $(document).on('keyup mouseup', '#end_mileage', function () {
+            //var e = $(this).val();
+            //var s = $(this).closest('.modal-body').find('#start_mileage').val();
+            //console.log(s,e);
+            calculate_milage($(this));
+        });
+        function calculate_milage(elm) {
+            var s = elm.closest('.modal-body').find('#start_mileage');
+            var e = elm.closest('.modal-body').find('#end_mileage');
+            var m = elm.closest('.modal-body').find('#month_mileage');
+            //console.log(s)
+            if (parseInt(e.val()) > parseInt(s.val())) {
+                m.val(parseInt(e.val()) - parseInt(s.val()));
+            } else {
+                m.val("");
+            }
+        }
+
+    });
+</script>

@@ -1,0 +1,914 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<style>
+    input[type="checkbox"], input[type="radio"]{
+        line-height: normal;
+    width: 20px;
+    height: 20px;
+    }
+</style>
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Create New Invoice</h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i>Home</a></li><li><a href="?route=clients/manage&section=invoice">Invoice</a></li><li class="active">Create</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <script type="text/javascript">
+            function doDelete(id) {
+                itemid = id;
+                document.getElementById("deleteValue").value = itemid;
+                $('#delModal').modal('show');
+            }
+        </script>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <!-- <div class="box-header with-border"><h3 class="box-title">Create New Invoice</h3></div> -->
+                    <div class="box-body">
+                        <div class="row">
+                            <?php 
+                            $serializedData = $invoice['invoice_contract_id'];
+                            $unserializedData = unserialize($serializedData);
+                            $check_is  = $unserializedData;
+
+                            $active_contracts = getTableFiltered("contract", "clientid", $_GET['id'], "is_end", 0);
+                            $totle_active_contract =  count($active_contracts);
+                            $client_data = get_client_name_by_id($_GET['id']);
+                            $client_name = '';
+                            if(isset($client_data) && !empty($client_data[0])){
+                                if(isset($client_data[0]['name']) && $client_data[0]['name'] != ''){
+                                    $client_name = $client_data[0]['name'];
+                                    $client_name = substr($client_name, 0, 3);
+                                }
+                            }
+                            ?>
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" id="InvoiceForm">
+                            <!-- list -->
+                            <div class="form-group col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                <div class="row" style="width: 70%; display: flex;">
+                                    <span for="notes" class="col-sm-2" style="padding-top: 7px; margin-bottom: 5px; width: 70%; font-size: 30px;"> Printer Rental Contract</span>
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                        <p style="font-size: 20px;text-wrap: nowrap; padding-right: 50px;">Total Contract Qty : <span ><?php echo $totle_active_contract; ?> </span></p>
+                                    </div>
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                        <p style="font-size: 20px;text-wrap: nowrap;">Total Amount : <span id="total_amount_box" style="color: blue;"></span></p>
+                                    </div>
+
+                                </div>
+                                
+                                <hr style="width: 70%; margin: 0px; padding: 0px; border: 1px solid orange;">
+                                <div class="col-sm-8">
+                                    <div id="active-contracts" class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr style="border-bottom: 4px solid #A9A9A0;">
+                                                    <th>Contract No.</th>
+                                                    <th>Condition</th>
+                                                    <th>PL/M</th>
+                                                    <th>Asset<span
+                                                            title="Deploye Asset Format Asset ID+Model+Serial No"
+                                                            class="circle-1"><i class="fa fa-info-circle"
+                                                                aria-hidden="true" style="padding-left: 5px;"></i></span></th>
+                                                    <th>Department</th>
+                                                    <?php if($lia['role'] != 'technician'){ ?>
+                                                    <th>Amount</th>
+                                                    <?php } ?>
+                                                    
+                                                    <th style='text-align: center;'>D-Day<span title="Days Remaining Until Contract Expiration"
+                                                            class="circle-1"><i class="fa fa-info-circle"
+                                                                aria-hidden="true" style="padding-left: 5px;"></i></span>
+                                                    </th>
+                                                    <th style='text-align: center;'>Adjust
+                                                        <span title="Modify the invoice amount specifically for this invoice" class="circle-1">
+                                                            <i class="fa fa-info-circle"
+                                                            aria-hidden="true" style="padding-left: 5px;"></i>
+                                                    </th>
+                                                    <th>Notes</th>
+                                                    <th><input type="checkbox" id="chkall" checked></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                
+
+
+                                                
+                                    foreach ($active_contracts as $key => $contract) {
+                                        if(isset($contract['department']) && $contract['department'] != ''){
+                                            $department_info = getTableFiltered("department", "id", $contract['department'], "", "" , "name");
+                                            if(!empty($department_info)){
+                                                $department_name = isset($department_info[0]) ? $department_info[0] : '';
+                                            }else{
+                                                $department_name = '';
+                                            }
+                                        }else{
+                                            $department_name = '';
+                                        }
+
+                                    
+                                    echo "<tr>";
+                                  
+                                    echo "<td><a href='?route=contract/manage&id=".$contract['id']."&reroute=clients/manage&routeid=".$client['id']."&contractid=".$contract['id']."&section=contract'>".$contract['contractno']."</a></td>";
+                                    echo '<td>'.str_replace("_", " ", $contract["contract_condition"]) .'</td>';
+
+                                    if($contract["page_limit_per_month"] > 0){
+                                        $formated_page_limit_per_month = number_format($contract["page_limit_per_month"]);
+                                      }else{
+                                        $formated_page_limit_per_month = '';
+                                      }
+                                    echo '<td style="text-align: right;">'. $formated_page_limit_per_month .'</td>';
+
+                                    $modelid = getSingleValue("assets","modelid",$contract['assetid']);
+                                    $modelname = getSingleValue("models","name",$modelid);
+                                    $asset_serial = getSingleValue("assets","serial",$contract['assetid']);
+                                    $invoice_contract_notes = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["id"],"contract_id",$contract['id'],"invoice",0,"notes");
+
+                                    ?>
+                                 
+                                    <td><a href='?route=assets/manage&id=<?php echo $contract['assetid'] ?>'> <?php echo getSingleValue("assets","tag",$contract['assetid']). " : " . $modelname . " : " . $asset_serial ?> </a> <br></td>
+                                    <td><?php echo $department_name; ?></td>
+                                    <?php
+                                    if($lia['role'] != 'technician'){ 
+                                        $invoice_contract_amount = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["id"],"contract_id",$contract['id'],"invoice",0,"amount");
+                                      if(!empty( $invoice_contract_amount)){
+                                        $contract_amount =  $invoice_contract_amount[0];
+                                      }else{
+                                        $contract_amount = $contract['contract_amount'];
+                                      }
+
+                                      if($contract_amount > 0){
+                                        $formated_contract_amount = $contract_amount;
+                                      }else{
+                                        $formated_contract_amount = '';
+                                      }
+                                        ?>
+
+                                    <td class='amount_td' style='text-align: right;'><span class='autoNumeric'><?php echo $formated_contract_amount; ?></span></td>
+                                 <?php   }
+
+                                    //Calculate the remaining days
+                                    $str = (strtotime($contract['contract_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($contract['contract_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">Expired</span>';
+                                    echo "<td style='text-align: right;'>".$str."</td>";                        
+                                    $url ='ajax.php?modal=InvoiceContractUpdate&invoiceid='.$_GET["id"].'&amount='.$contract['contract_amount'].'&contractid='.$contract['id'];               
+                                        ?>
+                                    <td style='text-align: center;'><a href='javascript:void(0)' onClick='showM("<?php echo $url; ?>");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;</td>
+
+                                    <?php 
+                                    $invoice_contract_note = !empty($invoice_contract_notes) ? $invoice_contract_notes[0] : '';
+                                    echo "<td><span>". $invoice_contract_note ."</span></td>";
+                                    ?>
+
+                                    <?php
+                                    echo "<td class='contract_checkbox'><input type='checkbox' data-contraxt_id='".$contract['id']."' name='check[]' id='check_" . ($key + 1) . "' value='" . $contract['id']. "' class='con_check_box'></td>";
+
+
+
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- <div class="row" style="width: 85%; margin: auto;"> -->
+                                    <!-- <div class="row">
+                                        <div class="col-sm-6"></div>
+                                        <div class="col-sm-3">
+                                            <p style="font-size: 20px;">Total Contract Qty : <span><?php echo $totle_active_contract; ?> </span></p>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <p style="font-size: 20px;">Total Amount : <span id="total_amount_box"></span></p>
+                                        </div>
+                                    </div> -->
+                                    <!-- <hr> -->
+                                </div>
+                                
+                            </div>
+                            <!-- list -->
+
+                            <!-- list -->
+                            <div class="form-group col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                                <div class="row" style="width: 70%; display: flex;">
+                                    <span for="notes" class="col-sm-2" style="padding-top: 7px; margin-bottom: 5px; width: 70%; font-size: 30px;"> License and Service Contract</span>
+                                    <?php 
+                                    $licenses_by_client = get_licenses_by_client($_GET['id']);
+                                    $licenses_by_client_count = count($licenses_by_client);
+                                    ?>
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                        <p style="font-size: 20px;padding-right: 50px;text-wrap: nowrap;">Total Contract Qty : <span><?php echo $licenses_by_client_count; ?> </span></p>
+                                    </div>
+                                    <?php 
+                                    $licenses_by_client_amount = 0;
+                                    foreach($licenses_by_client as $license){ 
+                                        $licenses_by_client_amount += $license['amount'];
+                                    }
+                                    ?>
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                        <p style="font-size: 20px;text-wrap: nowrap;">Total Amount : <span id="totle_license_amount" style="color: blue;"><?php echo number_format($licenses_by_client_amount); ?></span></p>
+                                    </div>
+                                </div>
+                                <hr style="width: 70%; margin: 0px; padding: 0px; border: 1px solid orange;">
+                                <div class="col-sm-8">
+                                    <div id="active-contracts" class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr style="border-bottom: 4px solid #A9A9A0;">
+                                                    <th>Tag</th>
+                                                    <th>License Contract no</th>
+                                                    <th>Category</th>
+                                                    <th>Name</th>
+                                                    <th>Amount</th>
+                                                    <th><input type="checkbox" name="" id="check_all_license" checked></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php 
+                                                
+                                                $licenses_by_client_amount = 0;
+                                                foreach($licenses_by_client as $license){ 
+                                                    $licenses_by_client_amount += $license['amount'];
+                                                    ?>
+                                                    <tr>
+                                                        <td><?php echo $license['tag'] ?></td>
+                                                        <td><?php echo $license['licno'] ?></td>
+                                                        <td>
+                                                            <span style="color: <?php echo $license['licensecategories_color']; ?>; border: 2px solid <?php echo $license['licensecategories_color']; ?>; border-radius: 5px; padding: .2em .6em .3em;">
+                                                                <?php echo $license['licensecategories_name']; ?>
+                                                            </span>
+                                                        </td>
+                                                        <td><?php echo $license['name'] ?></td>
+                                                        <td class="lice_amount"><?php echo number_format($license['amount']); ?></td>
+                                                        <td><input type="checkbox" class="each_check_licence" checked data-id="<?php echo $license['id'] ?>"></td>
+                                                    </tr>
+                                                <?php }
+                                                ?>
+                                               
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- <div class="row" style="width: 85%; margin: auto;"> -->
+                                    <div class="row">
+                                        <div class="col-sm-6"></div>
+                                        <!-- <div class="col-sm-3">
+                                            <p style="font-size: 20px;">Total Contract Qty : <span><?php echo $licenses_by_client_count; ?> </span></p>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <p style="font-size: 20px;">Total Amount : <span id="totle_license_amount"><?php echo number_format($licenses_by_client_amount); ?></span></p>
+                                        </div> -->
+
+                                        <div class="col-sm-12" style="text-align: right;">
+                                            <span style="color: blue; font-size: 25px; text-align: center;border: 2px solid blue; border-radius: 5px; padding: 10px 10px;">Total Invoice Amount : <span id="totle_amount" style=""><?php echo $licenses_by_client_amount; ?></span></span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                
+                            </div>
+                            <!-- list -->
+                            <div class="form-group col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 90%; margin-left: 5%;">
+                                <div class="row" style="width: 75%;">
+
+                                    <div class="col-sm-4">
+                                        <label for="date" class="control-label" style="margin-right: 5px;">Date</label>
+                                        <input type="text" class="form-control" id="date" name="date" placeholder="yyyy-mm-dd" required value="<?php echo date('Y-m-d') ?>">
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label for="month" class="control-label" style="margin-right: 5px;">Usage For Month</label>
+                                        <?php 
+                                        $defult_month = date('M');
+                                        ?>
+                                        <input type="text" id="month" name="month" disabled class="form-control" value="<?php echo $defult_month; ?>">
+                                        <input type="hidden" id="month_hid" name="month_hid" value="<?php echo date('m'); ?>">
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label for="invoiceno" class="control-label">Invoice Number. *</label>
+                                        <input type="text" class="form-control" id="invoiceno" name="invoiceno" required>
+                                        <input type="hidden" name="countinvoice" id="countinvoice">
+                                        <div id="checkInvoiceids"></div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label for="amount" class="control-label">Invoice Amount *</label>
+                                        <input type="text" class="form-control" id="amount" name="amount" required>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label for="inv_file" class="control-label">INV File</label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <input type="file" id="file" name='file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label for="ref_no" class="control-label">INV Reference No *</label>
+                                        <?php 
+                                        $defult_ref_no = $client_name . '-' . date('Y') . date('m');
+                                        ?>
+                                        <input type="text" class="form-control" id="ref_no" name="ref_no" required disabled value="<?php echo $defult_ref_no; ?>">
+                                    </div>
+
+                                </div>
+                            </div>
+                            
+                            <div class="form-group col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 90%; margin-left: 5%;">
+                                <div class="row" style="width: 75%;">
+                                    <div class="col-sm-12">
+                                        <label for="notes" class="control-label">Notes</label>
+                                        <textarea class="form-control summernote" id="notes" name="notes"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" id="InvoiceForm"> -->
+                  
+								<input type="hidden" name="clintid" value="<?= $_GET['id'] ?>">
+								
+								<!-- <input type="hidden" name="defult_date" value="<?= date('d-m-Y') ?>"> -->
+
+                                <input type="hidden" name="client_sort_name" value="<?php echo $client_name; ?>" id="client_sort_name">
+                                <input type="hidden" name="ref_no_hid" id="ref_no_hid">
+								
+                                       
+
+                                <div class="hide">
+                                <div class="form-group">
+                                        <label for="payment_method" class="col-sm-2 control-label">Payment Method</label>
+                                        <div class="col-sm-8">
+                                            <select id="payment_method" name="payment_method" class="form-control" style="width:287px;display:inline;">
+                                                     <option value="" selected></option>
+                                                     <option value="check">Check</option>
+                                                     <option value="cash">Cash</option>
+                                                     <option value="transfer">Transfer</option>
+                                                     <option value="others">Others</option>
+                                            </select>
+                                        </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="payment_ref_no" class="col-sm-2 control-label">Payment Ref No</label>
+                                    <div class="col-sm-8">
+										<input type="text" class="form-control" id="payment_ref_no" name="payment_ref_no">
+                                    </div>
+                                </div>
+								
+								<div class="form-group">
+                                    <label for="ornumber" class="col-sm-2 control-label">O.R Number</label>
+                                    <div class="col-sm-8">
+										<input type="text" class="form-control" id="ornumber" name="ornumber">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group">
+                                    <label for="paid" class="col-sm-2 control-label">Paid Amount</label>
+                                    <div class="col-sm-8">
+										<input type="text" class="form-control" id="paid" name="paid">
+                                    </div>
+                                </div>
+
+                                 <div class="form-group">
+                                    <div class="col-sm-2">
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div id="checkamountPaid"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tax_amount" class="col-sm-2 control-label">Tax Amount</label>
+                                    <div class="col-sm-8">
+										<input type="text" class="form-control" id="tax_amount" name="tax_amount" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="final_balance" class="col-sm-2 control-label">Final Balance</label>
+                                    <div class="col-sm-8">
+										<input type="text" class="form-control" id="final_balance" name="final_balance" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="remark" class="col-sm-2 control-label">Remarks</label>
+                                    <div class="col-sm-8">
+						
+										<input type="text" class="form-control balance" id="remark" name="remark" maxlength="50">
+									
+                                    </div>
+                                </div>
+								
+                              
+
+                                <div class="form-group">
+                                    <label for="paidfile" class="col-sm-2 control-label">Paid File</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="paidfile" name='paid_file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="or_file" class="col-sm-2 control-label">OR File</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="or_file" name='or_file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tax_file_2307" class="col-sm-2 control-label">Tax File (2307)</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="tax_file_2307" name='tax_file_2307' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <!-- <div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label">Notes</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control summernote" id="notes" name="notes"></textarea>
+                                    </div>
+                                </div> -->
+
+                                <!-- <div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label"></label>
+                                    <div class="col-sm-8">
+                                        <div class="row">
+                                            <div class="col-sm-9"></div>
+                                            <div class="col-sm-3">
+                                                <p style="color: red; font-size: 20px;">Total Amount : <span id="total_amount_box"></span></p>
+                                            </div>
+                                        </div>
+                                        <div id="active-contracts" class="table-responsive">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Contract No.</th>
+                                                        <th>Condition</th>
+                                                        <th>PL/M</th>
+                                                        <th>Asset<span
+                                                                title="Deploye Asset Format Asset ID+Model+Serial No"
+                                                                class="circle-1"><i class="fa fa-info-circle"
+                                                                    aria-hidden="true"></i></span></th>
+                                                        <?php if($lia['role'] != 'technician'){ ?>
+                                                        <th>Amount</th>
+                                                        <?php } ?>
+                                                        
+                                                        <th>D-Day<span title="Today - Contract End Date"
+                                                                class="circle-1"><i class="fa fa-info-circle"
+                                                                    aria-hidden="true"></i></span>
+                                                        </th>
+                                                        <th>Adjust</th>
+                                                        <th><input type="checkbox" id="chkall" checked></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php
+                                                    $serializedData = $invoice['invoice_contract_id'];
+                                                    $unserializedData = unserialize($serializedData);
+                                                    $check_is  = $unserializedData;
+
+                                                $active_contracts = getTableFiltered("contract", "clientid", $_GET['id'], "is_end", 0);
+
+
+                                                    
+                                        foreach ($active_contracts as $key => $contract) {
+                                        echo "<tr>";
+                                      
+                                        echo "<td><a href='?route=contract/manage&id=".$contract['id']."&reroute=clients/manage&routeid=".$client['id']."&contractid=".$contract['id']."&section=contract'>".$contract['contractno']."</a></td>";
+                                        echo '<td>'.str_replace("_", " ", $contract["contract_condition"]) .'</td>';
+                                        echo '<td>'.$contract["page_limit_per_month"] .'</td>';
+                                        $modelid = getSingleValue("assets","modelid",$contract['assetid']);
+                                        $modelname = getSingleValue("models","name",$modelid);
+                                        $asset_serial = getSingleValue("assets","serial",$contract['assetid']);
+                                        $invoice_contract_notes = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["id"],"contract_id",$contract['id'],"invoice",0,"notes");
+
+                                        ?>
+                                     
+                                        <td><a href='?route=assets/manage&id=<?php echo $contract['assetid'] ?>'> <?php echo getSingleValue("assets","tag",$contract['assetid']). " : " . $modelname . " : " . $asset_serial ?> </a> <br><span><?php echo !empty($invoice_contract_notes) ? $invoice_contract_notes[0] : '';  ?></span></td>
+                                        <?php
+                                        if($lia['role'] != 'technician'){ 
+                                            $invoice_contract_amount = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["id"],"contract_id",$contract['id'],"invoice",0,"amount");
+                                          if(!empty( $invoice_contract_amount)){
+                                            $contract_amount =  $invoice_contract_amount[0];
+                                          }else{
+                                            $contract_amount = $contract['contract_amount'];
+                                          }
+                                            ?>
+
+                                        <td class='amount_td'><span class='autoNumeric'><?php echo $contract_amount; ?></span></td>
+                                     <?php   }
+
+                                        //Calculate the remaining days
+                                        $str = (strtotime($contract['contract_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($contract['contract_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">Expired</span>';
+                                        echo "<td>".$str."</td>";                        
+                                        $url ='ajax.php?modal=InvoiceContractUpdate&invoiceid='.$_GET["id"].'&amount='.$contract['contract_amount'].'&contractid='.$contract['id'];               
+                                            ?>
+                                        <td><a href='javascript:void(0)' onClick='showM("<?php echo $url; ?>");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;</td>
+                                        <?php
+                                        echo "<td class='contract_checkbox'><input type='checkbox' data-contraxt_id='".$contract['id']."' name='check[]' id='check_" . ($key + 1) . "' value='" . $contract['id']. "' class='con_check_box'></td>";
+
+                                        echo "</tr>";
+                                        }
+                                        ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div> -->
+								
+                                <input type="hidden" name="checked_lic_ids" id="checked_lic_ids">
+								
+								<input type="hidden" name="balance">
+
+                                <input type="hidden" name="addinvoice">
+
+                                <div class="col-sm-2"></div><div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary" id="submit"><i class="fa fa-check"></i> Create</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function () {
+	var rand =  Math.floor(Math.pow(10, 6-1) + Math.random() * (Math.pow(10, 6) - Math.pow(10, 6-1) - 1));	
+	//alert(rand);
+	$('.fixlenghtrand').val(rand);
+	
+	
+	
+	$('#random_num').click(function () {
+	
+	var rand =  Math.floor(Math.pow(10, 6-1) + Math.random() * (Math.pow(10, 6) - Math.pow(10, 6-1) - 1));	
+	//alert(rand);
+	$('.fixlenghtrand').val(rand);
+	
+	});
+        $('.summernote-modal').summernote({height: 200});
+        $('.bootstrap-slider').bootstrapSlider();
+
+        $(".sliderToggle").click(function () {
+            if (this.checked) {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("disable");
+            } else {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("enable");
+            }
+        });
+		
+		
+		
+		$('#manufacturerid').change(function () {
+		
+		var id = $(this).val();
+		window.location.replace("?route=warranty/create&assettyp="+id);
+		});		
+    });
+
+
+    $(function () {
+        $(".select2").select2();
+    });
+   
+</script>
+
+<script>
+$(document).ready(function () {
+
+
+
+    function get_total_amount(){
+        var totalAmount = 0;
+        $('.autoNumeric').each(function() {
+            $(this).text()
+            var spanText = $(this).text();
+            var value = parseFloat(spanText.replace(/,/g, ''));
+            if (!isNaN(value)) {
+                totalAmount += value;
+            }
+        });
+        $("#total_amount_box").text(totalAmount.toLocaleString());
+    }
+    get_total_amount();
+
+    $(".con_check_box").on('change', function(){
+        var td = $(this).closest('tr').find('td.amount_td');
+        var spanText = td.find('span').text();
+        var total_amount_box = $("#total_amount_box").text();
+        total_amount_box = parseInt(total_amount_box.replace(/,/g, ""), 10);
+        var totle_amount = $("#totle_amount").text();
+        totle_amount = parseFloat(totle_amount.replace(/,/g, ''));
+        var value = parseFloat(spanText.replace(/,/g, ''));
+        if($(this).prop('checked') === false){
+            if (!isNaN(value)) {
+                var final_amount = parseFloat(total_amount_box) - value;
+                var totle_amount_changed = parseFloat(totle_amount) - value;
+            }
+            $("#total_amount_box").text(final_amount.toLocaleString());
+            $("#totle_amount").text(totle_amount_changed.toLocaleString());
+        }else{
+            if (!isNaN(value)) {
+                var final_amount = parseFloat(total_amount_box) + value;
+            }
+            var totle_amount_changed = parseFloat(totle_amount) + value;
+            $("#total_amount_box").text(final_amount.toLocaleString());
+            $("#totle_amount").text(totle_amount_changed.toLocaleString());
+        }
+        setinvoiceAmount();
+
+    })
+
+    setinvoiceAmount();
+
+    // Handle individual checkboxes
+    // $("[id^=check_]").click(function () {
+    //     setinvoiceAmount();
+    //     // updateCheckedIds();
+    // });
+
+    // Handle Select All checkbox
+    $('#chkall').change(function () {   
+        var checkboxes = $(this).closest('table').find(':checkbox');
+        checkboxes.prop('checked', $(this).is(':checked'));
+        // updateCheckedIds();
+        setinvoiceAmount();
+        if ($('#chkall').prop('checked') === false) {
+        $("#total_amount_box").text('0');
+        var totle_license_amount = $("#totle_license_amount").text();
+        // totle_license_amount = parseFloat(totle_license_amount.replace(/,/g, ''));
+        $("#totle_amount").text(totle_license_amount);
+        }else{
+            get_total_amount();
+            var total_amount_box = $("#total_amount_box").text();
+            total_amount_box = parseFloat(total_amount_box.replace(/,/g, ''));
+            var totle_license_amount = $("#totle_license_amount").text();
+            totle_license_amount = parseFloat(totle_license_amount.replace(/,/g, ''));
+            var totle_amount = total_amount_box + totle_license_amount;
+            $("#totle_amount").text(totle_amount.toLocaleString());
+        }
+    });
+
+    if ($('#chkall').prop('checked')) {
+            $('#chkall').change();
+    }
+
+
+    
+        $('#paid').change(function () {
+            var Amount = parseFloat($("#amount").val());
+            var PaidAmount = parseFloat($(this).val());
+            $("#checkamountPaid").html("");
+            if (PaidAmount > Amount) {
+                $("#checkamountPaid").html('<p style="color:red;">Received amount should not be bigger than invoice amount</p>');
+            }
+            setinvoiceAmount();
+        });
+
+    function updateCheckedIds() {
+        var checkedIds = [];
+        $("[id^=check_]:checked").each(function () {
+            var currentRow = $(this).closest("tr");
+            var contentId = currentRow.find("td:eq(0)").text();
+            var asset = currentRow.find("td:eq(1)").text();
+            var amount = currentRow.find("td:eq(2)").text();
+            checkedIds.push(contentId + " " + asset + " " + amount);
+        });
+        $("#notes").summernote('code', checkedIds.join("<br>"));
+    }
+    function setinvoiceAmount(){
+        var final_amount = 0;
+        $("[id^=check_]:checked").each(function () {
+            var currentRow = $(this).closest("tr");
+            var amount = currentRow.find("td:eq(5)").text();
+            amount = amount.replace(',','');
+            if (amount == '') {
+                amount = 0;
+            }
+            final_amount += parseInt(amount);
+            // checkedIds.push(contentId + " " + asset + " " + amount);
+        });
+        var totle_license_amount = $("#totle_license_amount").text();
+        totle_license_amount = parseInt(totle_license_amount.replace(/,/g, ""), 10);
+        final_amount = totle_license_amount + final_amount;
+        $("#amount").val(final_amount);
+        $("#amount").change();
+    }
+});
+
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('#amount').change(function () {
+            var invoiceAmount = $("#amount").val();
+            var paidAmount = $("#paid").val();
+            if(paidAmount != ''){
+                var taxAmount = invoiceAmount - paidAmount;
+            var finalBalance = invoiceAmount - paidAmount - taxAmount;
+            $("#tax_amount").val(taxAmount);
+            $("#final_balance").val(finalBalance);
+            }
+            
+        });
+        $('#paid').change(function () {
+            var invoiceAmount = $("#amount").val();
+            var paidAmount = $("#paid").val();
+            var taxAmount = invoiceAmount - paidAmount;
+            var finalBalance = invoiceAmount - paidAmount - taxAmount;
+            $("#tax_amount").val(taxAmount);
+            $("#final_balance").val(finalBalance);
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+     $('#invoiceno').keyup(function () {
+            var invoiceid = $(this).val();
+            $("#checkInvoiceids").html("");
+            $.ajax({
+                url: "index.php?route=invoice/checkinvoiceid",
+                type: "POST",
+                data: {id: invoiceid},
+                success: function (response) {
+                    if(response > 0 ) {
+                        $("#checkInvoiceids").html('<p style="color:red;">Invoice Id is already Exists</p>');
+                        $("#countinvoice").val(response);
+                    }
+                    else{
+                        $("#countinvoice").val('');
+                    }
+                }
+            });
+        });
+        $('#submit').click(function () {
+            var invoiceId = $("#countinvoice").val();
+            var Amount = parseFloat($("#amount").val());
+            var PaidAmount = parseFloat($("#paid").val());
+            if (invoiceId != '') {
+                $("#checkInvoiceids").html('<p style="color:red;">Invoice Id is already Exists</p>');
+                $("#invoiceno").focus();
+                return false;
+            }
+             if (PaidAmount > Amount) {
+                $("#checkamountPaid").html('<p style="color:red;"> Received amount should not be  bigger than invoice amount</p>');
+                $("#paid").focus();
+                 return false;
+            }
+            var client_sort_name = $("#client_sort_name").val();
+            var date_val = $("#date").val();
+            var date = new Date(date_val);
+            let month = date.getMonth() + 1;
+            if (month < 10) {
+                month = "0" + month;
+            }
+            let year = date.getFullYear();
+            
+            var ref_no = client_sort_name + '-' + year + month;
+            $("#ref_no").val(ref_no);
+            $("#ref_no_hid").val(ref_no);
+        });
+    });
+
+    function ref_no(){
+        // var month = $("#month").val();
+        // var client_sort_name = $("#client_sort_name").val();
+        // var currentYear = new Date().getFullYear();
+        // var ref_no = client_sort_name + '-' + currentYear + month;
+        // $("#ref_no").val(ref_no);
+        // $("#ref_no_hid").val(ref_no);
+        var client_sort_name = $("#client_sort_name").val();
+            var date_val = $("#date").val();
+            var date = new Date(date_val);
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
+            if (month < 10) {
+                month = "0" + month;
+            }
+            var ref_no = client_sort_name + '-' + year + month;
+            $("#ref_no").val(ref_no);
+            $("#ref_no_hid").val(ref_no);
+    }
+
+
+$("#date").on("change" , function(){
+        var date_val = $(this).val();
+        var date = new Date(date_val);
+        let month_name_no = date.getMonth();
+        let shortMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        $("#month").val(shortMonthNames[month_name_no]);
+        let month = date.getMonth() + 1;
+        $("#month_hid").val(month);
+        ref_no();
+    })
+
+    // totle_license_amount
+    // total_amount_box
+    function set_final_total(){
+        setTimeout(function(){
+            var totle_license_amount = $("#totle_license_amount").text();
+            var total_amount_box = $("#total_amount_box").text();
+            total_amount_box = parseInt(total_amount_box.replace(/,/g, ""), 10);
+            totle_license_amount = parseInt(totle_license_amount.replace(/,/g, ""), 10);
+            var final_total = parseFloat(totle_license_amount) + parseFloat(total_amount_box);
+            $("#totle_amount").text(final_total.toLocaleString());
+        }, 1000);
+    }
+    set_final_total();
+
+
+    $(document).on('change' , "#check_all_license" , function(){
+        var totle_amount_text = $("#totle_amount").text();
+        totle_amount_text = parseInt(totle_amount_text.replace(/,/g, ""), 10);
+
+        var total_amount_box = $("#total_amount_box").text();
+        total_amount_box = parseInt(total_amount_box.replace(/,/g, ""), 10);
+
+        var totle_license_amount = $("#totle_license_amount").text();
+        totle_license_amount = parseInt(totle_license_amount.replace(/,/g, ""), 10);
+
+        var totle_amount_text_sum = total_amount_box + totle_license_amount;
+
+        $('.each_check_licence').prop('checked', this.checked);
+
+        if ($(this).is(':checked')) {
+            $("#totle_amount").text(totle_amount_text_sum.toLocaleString());
+            $("#amount").val(totle_amount_text_sum);
+            var licence_ids = [];
+            $('.each_check_licence').each(function(){
+                var licence_id = $(this).data('id');
+                licence_ids.push(licence_id);
+            });
+            licence_ids = licence_ids.join(',');
+            $("#checked_lic_ids").val(licence_ids);
+            
+        } else {
+            totle_amount_text_sum -= totle_license_amount;
+            $("#totle_amount").text(totle_amount_text_sum.toLocaleString());
+            $("#amount").val(totle_amount_text_sum);
+            $("#checked_lic_ids").val('');
+        }
+
+    })
+
+    $('.each_check_licence').on('change', function () {
+        var totle_amount_text = $("#totle_amount").text();
+        totle_amount_text = parseInt(totle_amount_text.replace(/,/g, ""), 10);
+        // If any checkbox in tbody is unchecked, uncheck the "Check All" checkbox
+        if ($('.each_check_licence:checked').length === $('.each_check_licence').length) {
+            $('#check_all_license').prop('checked', true);
+        } else {
+            $('#check_all_license').prop('checked', false);
+        }
+
+        total = 0;
+        let amount = $(this).closest('tr').find('.lice_amount').text();
+        amount = parseFloat(amount.replace(/,/g, '')) || 0;
+        total += amount;
+        var licence_ids = [];
+        if ($(this).is(':checked')) {
+            totle_amount_text += total;
+            $("#totle_amount").text(totle_amount_text.toLocaleString());
+            $("#amount").val(totle_amount_text);
+        } else {
+            totle_amount_text -= total;
+            $("#totle_amount").text(totle_amount_text.toLocaleString());
+            $("#amount").val(totle_amount_text);
+        }
+
+        $('.each_check_licence:checked').each(function(){
+                var licence_id = $(this).data('id');
+                licence_ids.push(licence_id);
+            });
+            licence_ids = licence_ids.join(',');
+            $("#checked_lic_ids").val(licence_ids);
+
+    });
+    
+    
+
+</script>

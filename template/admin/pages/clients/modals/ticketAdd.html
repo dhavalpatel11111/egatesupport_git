@@ -1,0 +1,165 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Add Ticket</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="subject">Subject *</label>
+        <select class="form-control select2" id="subject" name="subject" style="width: 100%;">
+			<option value="0">None</option>
+			<?php foreach ($subject as $Subj) { ?>
+			<option value="<?php echo $Subj['id']; ?>"><?php echo $Subj['subject']; ?></option>
+			<?php } ?>
+		</select>
+    </div>
+    <?php 
+        $dipartment_id = getSingleValue('contract', 'department', $_GET['contractid']);  
+          $dipartment_name = getSingleValue('department', 'name', $dipartment_id); ?>
+	<input type="hidden" name="department" value="<?php echo $dipartment_name; ?>">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="clientid">Client</label>
+				<?php if(isset($_GET['routeid']) && $_GET['routeid']!=""){ ?>
+				<input type="hidden" name="clientid" class="form-control" value="<?php echo $_GET['routeid']; ?>">
+				<input type="text" name="clientiddd" class="form-control" value="<?php echo getSingleValue("clients", "name", $_GET['routeid']); ?>" readonly>
+				<?php }else{ ?>
+                <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">None</option>
+                    <?php foreach ($clients as $client) { ?>
+                    <option value='<?php echo $client['id']; ?>'><?php echo $client['name']; ?></option>
+                    <?php } ?>
+                </select>
+				<?php } ?>
+			</div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="contractid">Contract</label>
+				<?php if(isset($_GET['contractid'])){ ?>
+				<input type="hidden" name="contractid" class="form-control" value="<?php echo $_GET['contractid']; ?>">
+				<input type="text" name="contractiddd" class="form-control" value="<?php echo getSingleValue("contract", "contractno", $_GET['contractid']); ?>" readonly>
+				<?php }else{ ?>
+                <select class="form-control select2" id="contractid" name="contractid" style="width: 100%;">
+                    <option value="0">None</option>
+                    <?php foreach ($contracts as $contract) { ?>
+                    <option value='<?php echo $contract['id']; ?>'><?php echo $contract['contractno']; ?></option>
+                    <?php } ?>
+                </select>
+				<?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="userid">User</label>
+				<?php if(isset($_GET['contractid'])){ ?>
+				<input type="hidden" name="userid" class="form-control" value="<?php echo $lia['id']; ?>">
+				<input type="text" name="useriddd" class="form-control" value="<?php echo getSingleValue("people", "name", $lia['id']); ?>" readonly>
+				<?php }else{ ?>
+                <select onchange='userEmail(this)' class="form-control select2 select2-hidden-accessible" id="userid" name="userid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option data-emailaddr="" value="0">None</option>
+                    <?php foreach ($users as $user) { ?>
+                    <option data-emailaddr="<?php echo $user['email']; ?>" value='<?php echo $user['id']; ?>' <?php if(isset($_GET['userid'])) { if($_GET['userid'] == $user['id']) echo "selected"; }  ?>><?php echo $user['name']; ?></option>
+                    <?php } ?>
+                </select>
+				<?php } ?>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="email"> Email Address *</label>
+                <input type="email" class="form-control" id="email" name="email" value="<?php if(isset($_GET['contractid'])){ echo $lia['email']; } ?>"<?php if(isset($_GET['contractid'])){ ?> readonly <?php } ?> >
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="adminid">Assigned To</label>
+				<?php if(isset($_GET['contractid'])){ ?>
+				<input type="hidden" name="adminid" class="form-control" value="<?php echo $lia['id']; ?>">
+				<input type="text" name="adminiddd" class="form-control" value="<?php echo getSingleValue("people", "name", $lia['id']); ?>" readonly>
+				<?php }else{ ?>
+                <select class="form-control select2 select2-hidden-accessible" id="adminid" name="adminid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">Nobody</option>
+                    <?php foreach ($admins as $admin) { ?>
+                    <option value='<?php echo $admin['id']; ?>' <?php if(isset($lia['id'])) { if($lia['id'] == $admin['id']) echo "selected"; }  ?>><?php echo $admin['name']; ?></option>
+                    <?php } ?>
+                </select>
+				<?php } ?>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="priority">Priority</label>
+				<?php if(isset($_GET['contractid'])){ ?>
+				<input type="hidden" name="priority" class="form-control" value="Normal">
+				<input type="text" name="priorityyy" class="form-control" value="Normal" readonly>
+				<?php }else{ ?>
+                <select class="form-control select2" id="priority" name="priority" style="width: 100%;">
+                    <option value="Low">Low</option>
+                    <option value="Normal" selected>Normal</option>
+                    <option value="High">High</option>
+                </select>
+				<?php } ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="message" class="control-label">Message</label>
+        <textarea class="form-control summernote-modal" id="message" name="message"></textarea>
+    </div>
+
+    <div class="form-group"><div class="checkbox"><label><input type="checkbox" name="notification" value="true" checked="yes"> Send New Ticket Notification</label></div></div>
+
+    <input type="hidden" name="addTicket">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.summernote-modal').summernote({height: 200});
+        $('#clientid').change(function () {
+            var clientid = $(this).val();
+            $('#contractid').html('<option value="0" >None</option>');
+            $('#contractid').val("0");
+            $.ajax({
+                url: "index.php?route=tickets/get_contract&clientid=" + clientid,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response.length);
+                    if (response.contracts.length > 0) {
+                        $('#contractid').select2({data: response.contracts});
+                    } else {
+                        $('#contractid').html('<option value="0" >None</option>');
+                        $('#contractid').val("0").change();
+                    }
+                    var options = '<option data-emailaddr="" value="0" >None</option>';
+                    if (response.users.length > 0) {                        
+                        for(var i=0;i < response.users.length; i++) {
+                            options += '<option data-emailaddr="'+response.users[i].email+'" value="'+response.users[i].id+'" >'+response.users[i].name+'</option>';
+                        }                        
+                    }
+                    $('#userid').html(options);
+                    $('#userid').select2();
+                }
+            });
+        });
+    });
+
+    function userEmail(_this) {
+        var emailaddr = $(_this).find(':selected').data("emailaddr");
+        document.getElementById("email").value = emailaddr;
+    }
+
+</script>

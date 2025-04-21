@@ -1,0 +1,46 @@
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header" style="display: flex; align-items: center;">
+            <h1 style="width: 10%;" class="pull-left">Client Complain</h1>
+        </section>
+        <!-- Main content -->
+        <section class="content" >
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <table id="dataTablesFullDesc" class="table table-striped table-hover dataTable no-footer">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center">Client Name</th>
+                                        <th class="text-center">Subject</th>
+                                        <th class="text-center">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    if(isset($user_complain_list)){
+                                        foreach($user_complain_list as $user_complain){ ?>
+                                            <tr>
+                                                <td class="text-center"><?php echo $user_complain['date']; ?></td>
+                                                <td class="text-center"><?php echo $user_complain['client_name']; ?></td>
+                                                <td class="text-center"><?php echo $user_complain['name']; ?></td>
+                                                <td class="text-center"><?php echo $user_complain['description']; ?></td>
+                                            </tr>
+                                    <?php }
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside><!-- /.right-side -->
+
+
+
+      

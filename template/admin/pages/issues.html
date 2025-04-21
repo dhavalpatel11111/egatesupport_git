@@ -1,0 +1,79 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1 class="pull-left">Issues<small> Manage issues</small></h1>
+		<div class="pull-right"><a onClick='showM("ajax.php?modal=issueAdd&reroute=issues&routeid=&section=");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-tasks"></i> NEW ISSUE</a></div>
+		<div style="clear:both"></div>
+	</section>
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-default">
+                    <div class="box-body">
+						<div class="table-responsive">
+	                        <table id="dataTablesFullDesc" class="table table-striped table-hover">
+	                            <thead>
+	                                <tr>
+										<th>ID</th>
+										<th>Project</th>
+										<th>Name</th>
+										<th>Description</th>
+										<th>Assigned To</th>
+										<th>Related Entities</th>
+										<th>Status</th>
+										<th class="text-right"></th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+									<?php foreach ($issues as $issue) { ?>
+										<tr>
+											<td><?php echo $issue['id']; ?></td>
+											<td><?php 
+												echo getSingleValue("projects", "name", $issue['projectid']);
+												 ?>
+											</td>
+											<td>
+												<?php if($issue['issuetype'] == "Task") echo "<i class='fa fa-check-square text-blue' data-toggle='tooltip' title='Task'></i> "; ?>
+												<?php if($issue['issuetype'] == "Maintenance") echo "<i class='fa fa-minus-square text-yellow' data-toggle='tooltip' title='Maintenance'></i> "; ?>
+												<?php if($issue['issuetype'] == "Bug") echo "<i class='fa fa-bug text-red' data-toggle='tooltip' title='Bug'></i> "; ?>
+												<?php if($issue['issuetype'] == "Improvement") echo "<i class='fa fa-external-link text-teal' data-toggle='tooltip' title='Improvement'></i> "; ?>
+												<?php if($issue['issuetype'] == "New Feature") echo "<i class='fa fa-plus-square text-green' data-toggle='tooltip' title='New Feature'></i> "; ?>
+												<?php echo $issue['name']; ?>
+											</td>
+											<td><?php echo $issue['description']; ?></td>
+											<td><?php if($issue['adminid'] != 0) echo getSingleValue("people","name",$issue['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?></td>
+											<td><?php
+												if($issue['clientid'] != 0) echo "<a href='?route=clients/manage&id=".$issue['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$issue['clientid']) . "</span></a> ";
+												if($issue['assetid'] != 0) echo "<a href='?route=assets/manage&id=".$issue['assetid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"><i class='fa fa-barcode'></i> " . getSingleValue("assets","tag",$issue['assetid']) . "</span></a> ";
+												if($issue['projectid'] != 0) echo "<a href='?route=projects/manage&id=".$issue['projectid']."'><span class='label' style=\"background-color:#FFF;color:#ff851b;border:1px solid #ff851b;\"><i class='fa fa-lightbulb-o'></i> " . getSingleValue("projects","tag",$issue['projectid']) . "</span></a> ";
+											?></td>
+											<td>
+												<?php if($issue['status'] == "To Do") echo "<span class='badge bg-green'>To Do</span>"; ?>
+												<?php if($issue['status'] == "In Progress") echo "<span class='badge bg-blue'>In Progress</span>"; ?>
+												<?php if($issue['status'] == "Done") echo "<span class='badge bg-gray'>Done</span>"; ?>
+
+
+												<?php if($issue['status'] != "Done" && $issue['duedate'] < date('Y-m-d') && $issue['duedate'] != "") echo "<span class='badge bg-red'>Overdue</span>"; ?>
+											</td>
+											<td>
+												<div class='pull-right'>
+	  											  <a href="#" onClick='showM("ajax.php?modal=issueEdit&reroute=issues&routeid=&id=<?php echo $issue['id']; ?>&section=");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+	  											  <a href="#" onClick='showM("ajax.php?modal=issueDelete&reroute=issues&routeid=&id=<?php echo $issue['id']; ?>&section=");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+	  										  	</div>
+											</td>
+										</tr>
+									<?php } ?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

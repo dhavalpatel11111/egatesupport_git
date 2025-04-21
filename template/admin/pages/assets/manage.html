@@ -1,0 +1,784 @@
+<style>
+.remdays {
+    color: #ff0000;
+    font-weight: bold;
+}
+.form-horizontal .form-group {
+ margin-right:0px;}
+.client_name a { color: white; }
+.content-header>h1 { display: inline-block; margin-left: 7px; line-height: 22px;
+}
+.dropdown_opt {
+    position: relative;
+    left: 33%;
+    top: 33px;
+    z-index: 9;
+    width: 50%;
+}
+ .error_msg1{
+font-size: 17px;
+    margin-left: 309px;
+   position: absolute;
+    margin-top: -32px;
+	color: #ed143d;
+   }
+</style>
+
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <span class="btn btn-success client_name">
+            <a href="?route=clients/manage&id=<?php echo $asset['clientid']; ?>">
+                <?php foreach ($clients as $client) { if($asset['clientid']==$client['id']){ 
+                echo $client['name']; }}?>
+            </a>
+        </span>
+        <h1 class="asste_name"><?php echo $asset['tag'];?></h1>
+
+        <?php $document_ty = getTable("document_type"); ?>
+        <span style="width: 80%; display: inline-block; padding-left: 25%;"> 
+            <select class="form-control select2 select2-hidden-accessible" id="document_type" name="document_type" style="width: 46%;" tabindex="-1" aria-hidden="true">
+                <option value="0">Select Document Type</option>
+                <?php foreach ($document_ty as $document_t) { echo "<option value='".$document_t['document_name']."'"; echo ">".$document_t['document_name']."</option>"; } ?>
+            </select>
+        </span>
+
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="?route=assets">Assets</a></li>
+            <li class="active"><?php echo $asset['tag']; ?></li>
+        </ol>
+    </section>
+	<?php 
+	   $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+
+					$msg = explode('=',$actual_link);
+					
+					$error_msg = $msg['3'];
+					?>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-md-12">
+				<?php if($error_msg=='99'){?>
+						<label class="error_msg1">Duplicate serial number please try with diffrent serial number </label>
+					<?php } ?>
+                <!-- Custom Tabs (Pulled to the right) -->
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li <?php if ($section == "") echo 'class="active"'; ?> ><a href="#tab-summary" data-toggle="tab">Summary</a></li>
+                        <li <?php if ($section == "issues") echo 'class="active"'; ?> ><a href="#tab-issues" data-toggle="tab">Issues</a></li>
+                        <li <?php if ($section == "usage") echo 'class="active"'; ?> ><a href="#tab-usage" data-toggle="tab">Usage</a></li>
+                        <!--<li <?php if ($section == "tickets") echo 'class="active"'; ?> ><a href="#tab-tickets" data-toggle="tab">Tickets</a></li>-->
+                        <li <?php if ($section == "files") echo 'class="active"'; ?> ><a href="#tab-files" data-toggle="tab">Files</a></li>
+                        <li <?php if ($section == "edit") echo 'class="active"'; ?> ><a href="#tab-edit" data-toggle="tab">Edit Asset</a></li>
+
+                        <div class="btn-group pull-right" style="padding:6px;">
+                            <a data-toggle='tooltip' title='New Issue' class="btn btn-primary btn-sm " href="#" onClick='showM("ajax.php?modal=issueAdd&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&clientid=<?php echo $asset['clientid']; ?>&assetid=<?php echo $asset['id']; ?>&section=issues");return false'>New Issue</a>
+                            <a data-toggle='tooltip' title='New Usage' class="btn btn-primary btn-sm " href="#" onClick='showM("ajax.php?modal=usageAdd&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&clientid=<?php echo $asset['clientid']; ?>&assetid=<?php echo $asset['id']; ?>&section=usage");return false'>New Usage</a>
+                            <!--<a data-toggle='tooltip' title='New Ticket' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=ticketAdd&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&clientid=<?php echo $asset['clientid']; ?>&assetid=<?php echo $asset['id']; ?>&section=tickets");return false'><i class="fa fa-tag"></i></a>-->
+                            <a data-toggle='tooltip' title='New Credential' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=credentialAdd&section=&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&assetid=<?php echo $asset['id']; ?>&clientid=<?php echo $asset['clientid']; ?>");return false'><i class="fa fa-asterisk"></i></a>
+                            <a data-toggle='tooltip' title='Upload File' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=uploadFile&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&clientid=<?php echo $asset['clientid']; ?>&assetid=<?php echo $asset['id']; ?>&section=files");return false'><i class="fa fa-upload"></i></a>
+                            <a data-toggle='tooltip' title='Assign License' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=assetAssignLicense&section=&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>");return false'><i class="fa fa-thumb-tack"></i></a>
+                        </div>
+
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane <?php if ($section == '') echo 'active'; ?>" id="tab-summary">
+                             <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="box box-primary">
+                                        <div class="box-body">
+                                            <table id="clientTable" class="table table-striped table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><b> Asset Status</b></td>
+                                                        <td><span class='badge' style='background-color:<?php echo getSingleValue("labels","color",$asset['statusid']); ?>'><?php echo getSingleValue("labels","name",$asset['statusid']); ?></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset SKU</b></td>
+                                                        <td><?php echo $asset['sku']; ?></td>
+                                                    </tr><tr>
+                                                        <td><b>Tag</b></td>
+                                                        <td><?php echo $asset['tag']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset Service Type</b></td>
+                                                        <td><span class='label' style='background-color:#FFF;color:<?php echo getSingleValue("assetcategories","color",$asset['categoryid']); ?>;border:1px solid <?php echo getSingleValue("assetcategories","color",$asset['categoryid']); ?>'><?php echo getSingleValue('assetcategories','name',$asset['categoryid']); ?></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Client ( Location )</b></td>
+                                                        <td><a href="?route=clients/manage&id=<?php echo $asset['clientid']; ?>"><?php echo getSingleValue('clients','name',$asset['clientid']); ?></a></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset Category</b></td>
+                                                        <?php
+                                                        $manufacturerid = getSingleValue("manufacturers","id",$asset['manufacturerid']);
+                                                        ?>
+                                                        <td><?php echo getSingleValue('manufacturers','name',$manufacturerid); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Model</b></td>
+                                                        <?php
+                                                        $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']);
+                                                        ?>
+                                                        <td><?php echo getSingleValue('manufacturers','name',$manufacturerid); ?> <?php echo getSingleValue('models','name',$asset['modelid']); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Contract Amount</b></td>
+                                                        <td class='text-right'><span class="autoNumeric"><?php echo $asset['contract_amount']; ?></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Contract End Date</b></td>
+                                                        <td><?php echo $asset['contract_expiry']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Supplier</b></td>
+                                                        <td><?php echo getSingleValue('suppliers','name',$asset['supplierid']); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Serial Number</b></td>
+                                                        <td><?php echo $asset['serial']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset Admin</b></td>
+                                                        <td><?php echo getSingleValue('people','name',$asset['adminid']); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset User</b></td>
+                                                        <td><?php echo getSingleValue('people','name',$asset['userid']); ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Purchase Date</b></td>
+                                                        <td><?php echo ($asset['purchase_date'] != '0000-00-00') ? $asset['purchase_date'] : ''; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Warranty (months)</b></td>
+                                                        <td><?php echo $asset['warranty_months']; ?></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Warranty Expired Date</b></td>
+                                                        <td><?php echo $asset['warranty_expiry'];   ?></td>
+                                                    </tr>
+													  <tr>
+                                                        <td><b style="    white-space: nowrap;">Warranty Remaining Days
+
+
+</b></td>
+<td>
+<span class="remdays">
+<?php
+
+ $str = (strtotime($asset['warranty_expiry']) > strtotime(date("Y-m-d"))) ? floor((strtotime($asset['warranty_expiry']) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">X</span>';
+ ?>
+<?php echo $str; ?>
+</span>
+</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><b>Asset Notes</b></td>
+                                                        <td><?php echo addslashes($asset['notes']); ?></td>
+                                                    </tr>
+													 
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-8">
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Credentials</h3>
+                                            <div class="pull-right box-tools">
+                                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Type</th>
+                                                            <th>Username</th>
+                                                            <th>Password</th>
+                                                            <th class="text-right">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php
+                                                        foreach ($credentials as $credential) {
+                                                        echo "<tr>";
+                                                        echo "<td>".$credential['type']."</td>";
+                                                        echo "<td>".$credential['username']."</td>";
+                                                        echo "<td>".$credential['password']."</td>";
+                                                        echo "<td>
+                                                        <div class='btn-group pull-right'>
+                                                        <a onClick='showM(\"ajax.php?modal=credentialEdit&reroute=assets/manage&routeid=".$asset['id']."&id=".$credential['id']."&section=\");return false' class='btn btn-xs text-black'><i class='fa fa-edit'></i></a>
+                                                        <a onClick='showM(\"ajax.php?modal=credentialDelete&reroute=assets/manage&routeid=".$asset['id']."&id=".$credential['id']."&section=\");return false' class='btn btn-xs text-red'><i class='fa fa-trash-o'></i></a>
+                                                        </div>
+                                                        </td>";
+                                                        echo "</tr>";
+                                                        }
+                                                        ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <?php if(empty($credentials)) echo "There are no credentials to display."; ?>
+                                        </div>
+                                    </div>
+                                    <div class="box box-primary">
+                                        <div class="box-header">
+                                            <h3 class="box-title">Assigned Licenses</h3>
+                                            <div class="pull-right box-tools">
+                                                <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Tag</th>
+                                                            <th>Category</th>
+                                                            <th>Name</th>
+                                                            <th class="text-right">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php
+                                                        foreach ($assignedlicenses as $assignedlicense) {
+                                                        $license = getRowById("licenses",$assignedlicense['licenseid']);
+                                                        echo "<tr>";
+                                                        echo "<td>".$license['tag']."</td>";
+                                                        echo "<td>".getSingleValue("licensecategories","name",$license['categoryid'])."</td>";
+                                                        echo "<td>".$license['name']."</td>";
+                                                        echo "<td>
+                                                        <div class='btn-group pull-right'>
+                                                        <a onClick='showM(\"ajax.php?modal=assetUnassignLicense&section=&reroute=assets/manage&routeid=".$asset['id']."&id=".$assignedlicense['id']."\");return false' data-toggle='modal' class='btn btn-xs text-red'><i class='fa fa-trash-o'></i></a>
+                                                        </div>
+                                                        </td>";
+                                                        echo "</tr>";
+                                                        }
+                                                        ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <?php if(empty($assignedlicenses)) echo "There are no assigned licenses to display."; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane <?php if ($section == 'issues') echo 'active'; ?>" id="tab-issues">
+                             <div class="table-responsive">
+                                <table id="dataTablesFullDesc" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th style="min-width:40%;">Name</th>
+                                            <th>Assigned To</th>
+                                            <th>Related Entities</th>
+                                            <th>Asset Status</th>
+                                            <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($issues as $issue) { ?>
+                                        <tr>
+                                            <td><?php echo $issue['id']; ?></td>
+                                            <td>
+                                                <?php if($issue['issuetype'] == "Task") echo "<i class='fa fa-check-square text-blue' data-toggle='tooltip' title='Task'></i> "; ?>
+                                                <?php if($issue['issuetype'] == "Maintenance") echo "<i class='fa fa-minus-square text-yellow' data-toggle='tooltip' title='Maintenance'></i> "; ?>
+                                                <?php if($issue['issuetype'] == "Bug") echo "<i class='fa fa-bug text-red' data-toggle='tooltip' title='Bug'></i> "; ?>
+                                                <?php if($issue['issuetype'] == "Improvement") echo "<i class='fa fa-external-link text-teal' data-toggle='tooltip' title='Improvement'></i> "; ?>
+                                                <?php if($issue['issuetype'] == "New Feature") echo "<i class='fa fa-plus-square text-green' data-toggle='tooltip' title='New Feature'></i> "; ?>
+                                                <?php echo $issue['name']; ?>
+                                            </td>
+                                            <td><?php if($issue['adminid'] != 0) echo getSingleValue("people","name",$issue['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?></td>
+                                            <td><?php
+                                                if($issue['clientid'] != 0) echo "<a href='?route=clients/manage&id=".$issue['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$issue['clientid']) . "</span></a> ";
+                                                if($issue['assetid'] != 0) echo "<a href='?route=assets/manage&id=".$issue['assetid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"><i class='fa fa-barcode'></i> " . getSingleValue("assets","tag",$issue['assetid']) . "</span></a> ";
+                                                if($issue['projectid'] != 0) echo "<a href='?route=projects/manage&id=".$issue['projectid']."'><span class='label' style=\"background-color:#FFF;color:#ff851b;border:1px solid #ff851b;\"><i class='fa fa-lightbulb-o'></i> " . getSingleValue("projects","tag",$issue['projectid']) . "</span></a> ";
+                                                ?></td>
+                                            <td>
+                                                <?php if($issue['status'] == "To Do") echo "<span class='badge bg-green'>To Do</span>"; ?>
+                                                <?php if($issue['status'] == "In Progress") echo "<span class='badge bg-blue'>In Progress</span>"; ?>
+                                                <?php if($issue['status'] == "Done") echo "<span class='badge bg-gray'>Done</span>"; ?>
+
+
+                                                <?php if($issue['status'] != "Done" && $issue['duedate'] < date('Y-m-d') && $issue['duedate'] != "") echo "<span class='badge bg-red'>Overdue</span>"; ?>
+                                            </td>
+                                            <td>
+                                                <div class='pull-right'>
+                                                    <a href="#" onClick='showM("ajax.php?modal=issueEdit&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $issue['id']; ?>&section=issues");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href="#" onClick='showM("ajax.php?modal=issueDelete&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $issue['id']; ?>&section=issues");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane <?php if ($section == 'usage') echo 'active'; ?>" id="tab-usage">
+                             <div class="table-responsive">
+                                <table id="dataTablesFullDesc" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th >Client ( Location )</th>
+                                            <th>Start Date</th>
+                                            <th>Cut Off Date</th>
+                                            <th>Start Mileage</th>
+                                            <th>End Mileage</th>
+                                            <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									<?php 
+								//	echo"<pre>";
+								//	print_r($asset_usages);
+									?>
+									
+                                        <?php foreach ($asset_usages as $asset_usage) { ?>
+                                        <tr>
+                                            <td><?php echo $asset_usage['id']; ?></td>
+                                            <td>
+                                                <?php echo getSingleValue("clients","name",$asset_usage['clientid']);?>
+                                            </td>
+                                            <td><?php echo $asset_usage['startdate']; ?></td>
+                                            <td><?php echo $asset_usage['enddate']; ?></td>
+                                            <td><span class='autoNumeric'><?php echo $asset_usage['start_mileage']; ?></span></td>
+                                            <td><span class='autoNumeric'><?php echo $asset_usage['end_mileage']; ?></span></td>
+                                            <td>
+                                                <div class='pull-right'>
+                                                    <a href="#" onClick='showM("ajax.php?modal=usageEdit&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $asset_usage['id']; ?>&section=usage");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href="#" onClick='showM("ajax.php?modal=usageDelete&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $asset_usage['id']; ?>&section=usage");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <!--
+                        <div class="tab-pane <?php if ($section == 'tickets') echo 'active'; ?>" id="tab-tickets">
+                             <div class="table-responsive">
+                                <table id="dataTablesFullDesc2" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Ticket #</th>
+                                            <th>Subject</th>
+                                            <th>Assigned To</th>
+                                            <th>Related Entities</th>
+                                            <th>Status</th>
+                                            <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($tickets as $ticket) { ?>
+                                        <tr>
+                                            <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['id']; ?></a></td>
+                                            <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['ticket']; ?></a></td>
+                                            <td><a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['subject']; ?></a></td>
+                                            <td><?php if($ticket['adminid'] != 0) echo getSingleValue("people","name",$ticket['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?></td>
+                                            <td><?php
+                                                if($ticket['clientid'] != 0) echo "<a href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$ticket['clientid']) . "</span></a> ";
+                                                if($ticket['assetid'] != 0) echo "<a href='?route=assets/manage&id=".$ticket['assetid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"><i class='fa fa-barcode'></i> " . getSingleValue("assets","tag",$ticket['assetid']) . "</span></a> ";
+                                                ?></td>
+                                            <td>
+                                                <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                                <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                                <?php if($ticket['status'] == "Answered") echo "<span class='badge bg-teal'>Answered</span>"; ?>
+                                                <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                                <?php if($ticket['status'] == "Closed") echo "<span class='badge bg-gray'>Closed</span>"; ?>
+                                            </td>
+                                            <td>
+                                                <div class='pull-right'>
+                                                    <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=ticketEdit&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $ticket['id']; ?>&section=tickets");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=ticketDelete&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $ticket['id']; ?>&section=tickets");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        -->
+                        <!-- /.tab-pane -->
+					
+						
+						
+
+                        <div class="tab-pane <?php if ($section == 'files') echo 'active'; ?>" id="tab-files">
+					
+							 <div class="table-responsive">
+							 	<div class="dropdown_opt">      
+								<?php $document_ty = getTable("document_type"); ?>
+								<!-- <label for="name">Document Type </label>        
+								<select class="form-control select2 select2-hidden-accessible" id="document_type" name="document_type" style="width: 46%;" tabindex="-1" aria-hidden="true">
+								<option value="0">Select Document Type</option>
+								<?php foreach ($document_ty as $document_t) { echo "<option value='".$document_t['document_name']."'"; echo ">".$document_t['document_name']."</option>"; } ?>
+								</select> -->
+   
+                                   </div>
+							   <table id="dataTablefulldes1" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th >Name</th>
+                                            <th>Document Type</th>
+                                            
+                                            <th>File</th>
+											<th>Document Memo</th>
+                                           <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									 <?php if(empty($files)) { ?>
+                             <div class="alert alert-info">
+                                <i class="icon fa fa-info"></i> No files have been uploaded yet!
+                            </div>
+                            <?php }  foreach($files as $file) { ?>
+								   
+                                        <tr>
+					<td><?php echo $file['id']; ?></td>
+					<td><?php echo $file['name']; ?></td>
+					<?php $document_ty = getSingleValue("document_type","document_name",$file['document_type']);?>
+					<td><?php echo $document_ty; ?></td>
+<td><a href="<?php echo "ajax.php?download=" . $file['id']; ?>" ><i title="<?php  echo $file['file'];?>"
+ 
+ style='color:#3c8dbc;cursor: pointer;' 
+ class="fa fa-file"aria-hidden="true"> </i></a>&nbsp;&nbsp;
+					
+                      </td>
+					<td><?php echo $file['document_memo']. ' ( ' .$file['serial_number']. ' ) ' ; ?></td>
+				   
+					<td>
+                 <div class="pull-right">
+                                        <a href="<?php echo "ajax.php?download=" . $file['id']; ?>" class='btn-right text-dark'><i class='fa fa-download'></i></a>&nbsp;
+										<a href='#' onClick='showM("ajax.php?modal=fileedit&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $file['id']; ?>&section=files");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+										 <a href="#" onClick='showM("ajax.php?modal=deleteFile&reroute=assets/manage&routeid=<?php echo $asset['id']; ?>&id=<?php echo $file['id']; ?>&section=files");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>	   
+							
+
+                            
+                        </div>
+                        <!-- /.tab-pane -->
+
+                        <div class="tab-pane <?php if ($section == 'edit') echo 'active'; ?>" id="tab-edit">
+							<div class="row">
+							
+                                <div class="col-xs-12">
+                                    <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateAssetForm();">
+									<?php if($asset['clientid']==0){ ?>
+									
+										<div class="form-group">
+										<input type="hidden" name="clientid" id="clientid" value="0">
+                                            <label for="warehouseid" class="col-sm-2 control-label">Warehouse Location</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="warehouseid" name="warehouseid" style="width: 100%;">
+                                                    <?php foreach ($warehouse as $client) { echo "<option value='".$client['id']."'"; if($asset['warehouseid']==$client['id']) echo " selected"; echo ">".$client['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+									
+									<?php } else { ?>
+                                        <div class="form-group">
+										<input type="hidden" name="warehouseid" id="warehouseid" value="<?= $asset['warehouseid'] ?>">
+                                            <label for="clientid" class="col-sm-2 control-label">Client ( Location )</label>
+                                            <div class="col-sm-8 nonepart">
+                                                <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option <?php if($asset['clientid']==999999) echo " selected";?> value="999999">Dispose Or Repair</option>
+                                                    <?php foreach ($clients as $client) { echo "<option value='".$client['id']."'"; if($asset['clientid']==$client['id']) echo " selected"; echo ">".$client['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+									<?php 
+									
+								//print_r($asset);
+									
+									
+									} ?>
+                                        <div class="form-group">
+                                            <label title="" for="categoryid" class="col-sm-2 control-label"> Asset Type *</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="categoryid" name="categoryid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <?php foreach ($categories as $category) { echo "<option value='".$category['id']."'"; if($asset['categoryid']==$category['id']) echo " selected"; echo ">".$category['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tag" class="col-sm-2 control-label">Asset Tag *</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="tag" name="tag" value="<?php echo $asset['tag']; ?>" required>
+                                            </div>
+                                        </div>
+										<div class="form-group">
+											<label for="serial" class="col-sm-2 control-label">SKU *</label>
+											<div class="col-sm-8" ">
+											<input  type="text" class="form-control"  value="<?php echo $asset['sku']; ?>" id="sku" name="sku" required="" readonly style="cursor:no-drop;">
+											</div>
+										</div>
+										
+										<div class="form-group">
+											<label title="Functional working condition of Hardware ( Asset)" for="status" class="col-sm-2 control-label">Asset Status *<br>Working Condition</label>
+											<div class="col-sm-8">
+												<select class="form-control select2 select2-hidden-accessible" id="status" name="status" style="width: 100%;" tabindex="-1" aria-hidden="true" required>
+													<option value="Available"<?php if($asset['status']=='Available'){ ?> selected = 'selected' <?php } ?> >Available</option>
+													<option value="In Service"<?php if($asset['status']=='In Service'){ ?> selected = 'selected' <?php } ?> >In Service</option>
+													<option value="Under Repair"<?php if($asset['status']=='Under Repair'){ ?> selected = 'selected' <?php } ?> >Under Repair</option>
+													<option value="For Disposal"<?php if($asset['status']=='For Disposal'){ ?> selected = 'selected' <?php } ?> >For Disposal</option>    
+												</select>
+											</div>
+										</div>
+										
+                                        <div class="form-group">
+                                            <label title="What type of asset" for="manufacturerid" class="col-sm-2 control-label">Asset Category</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="manufacturerid" name="manufacturerid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">None</option>
+                                                    <?php foreach ($manufacturers as $manufacturer) { echo "<option value='".$manufacturer['id']."'"; if($asset['manufacturerid']==$manufacturer['id']) echo " selected"; echo ">".$manufacturer['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-sm-2 control-label">M/C Type</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="mc_type" name="mc_type" value="<?php echo $asset['mc_type']; ?>">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-sm-2 control-label">Asset Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="name" name="name" value="<?php echo $asset['name']; ?>">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="serial" class="col-sm-2 control-label">Serial Number *</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $asset['serial']; ?>" required="">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label for="caseserial" class="col-sm-2 control-label">Case Serial Number *</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="caseserial" name="caseserial" value="<?php echo $asset['caseserial']; ?>">
+                                            </div>
+                                        </div>
+										<?php 
+											if($lia['role'] !='technician'){?>
+                                        <div class="form-group">
+										
+										
+                                            <label for="modelid" class="col-sm-2 control-label">Model *</label>
+											
+                                            <div class="col-sm-8" >
+                                                <select class="form-control select2 select2-hidden-accessible" id="modelid" name="modelid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">None</option>
+                                                    <?php foreach ($models as $model) { echo "<option value='".$model['id']."'"; if($asset['modelid']==$model['id']) echo " selected"; echo ">".getSingleValue("manufacturers","name",$model['manufacturerid'])." ".$model['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                            </div>
+											<?php } else{
+
+                                    foreach ($models as $mode){
+
+
+}
+											?>
+											 <div class="form-group">
+											 <label for="modelid" class="col-sm-2 control-label">Model *</label>
+											<div class="col-sm-8" >
+											
+				<input type="text" class="form-control" id="modelid" name="modelid"  value="<?php echo getSingleValue("manufacturers","name",$mode['manufacturerid']).$mode['name']; ?>" readonly></div> </div>
+										<?php  } ?>
+                                        <div class="form-group">
+                                            <label for="supplierid" class="col-sm-2 control-label">Supplier</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="supplierid" name="supplierid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">None</option>
+                                                    <?php foreach ($suppliers as $supplier) { echo "<option value='".$supplier['id']."'"; if($asset['supplierid']==$supplier['id']) echo " selected"; echo ">".$supplier['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label title="Asset Memo explains that asset condition like broken, for repair , parts waiting" for="statusid" class="col-sm-2 control-label">Asset Memo *</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="statusid" name="statusid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <?php foreach ($labels as $label) { echo "<option value='".$label['id']."'"; if($asset['statusid']==$label['id']) echo " selected"; echo ">".$label['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="adminid" class="col-sm-2 control-label">Asset Admin</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="adminid" name="adminid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">None</option>
+                                                    <?php foreach ($admins as $admin) { echo "<option value='".$admin['id']."'"; if($asset['adminid']==$admin['id']) echo " selected"; echo ">".$admin['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userid" class="col-sm-2 control-label">Asset User</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-hidden-accessible" id="userid" name="userid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">None</option>
+                                                    <?php foreach ($users as $user) { echo "<option value='".$user['id']."'"; if($asset['userid']==$user['id']) echo " selected"; echo ">".$user['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="purchase_date" class="col-sm-2 control-label">Purchase Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control datepicker-input" id="purchase_date" name="purchase_date" value="<?php echo ($asset['purchase_date'] == '0000-00-00' || $asset['purchase_date'] == null) ? '' : $asset['purchase_date']; ?>">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warranty_months" class="col-sm-2 control-label">Warranty</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="warranty_months" name="warranty_months" value="<?php echo $asset['warranty_months']; ?>">
+                                                    <span class="input-group-addon">months</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warranty_expiry" class="col-sm-2 control-label">Warranty Expired Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="warranty_expiry" name="warranty_expiry" value="<?php echo ($asset['warranty_expiry'] == '0000-00-00' || $asset['warranty_expiry'] == null) ? '' : $asset['warranty_expiry']; ?>">
+                                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                    <label for="invoice" class="col-sm-2 control-label">Invoice</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="invoice" name='invoice' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="warranty_card" class="col-sm-2 control-label">Warranty Card</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="file" id="warranty_card" name='warranty_card' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+                                        <div class="form-group">
+                                            <label for="notes" class="col-sm-2 control-label">Asset Notes</label>
+                                            <div class="col-sm-8">
+                                                <textarea class="form-control summernote" id="notes" name="notes">
+												<?php echo $asset['notes']; ?>
+												</textarea>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" name="route" value="assets/manage">
+                                        <input type="hidden" name="routeid" value="<?php echo $asset['id']; ?>">
+                                        <input type="hidden" name="section" value="edit">
+
+                                        <input type="hidden" name="editAsset">
+                                        <input type="hidden" name="id" value="<?php echo $asset['id']; ?>">
+
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label"></label>
+                                            <div class="col-sm-8">
+                                                <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+$(document).ready(function() {
+setTimeout(function() { $(".error_msg1").hide(); }, 5000);
+$("#dataTablefulldes1").dataTable();
+$('#document_type').change( function(e) { 
+		var letter = $(this).val();
+		if (letter === '0') {
+			$ ('tr').show ();
+		}else{
+			$("#dataTablefulldes1 tr td:nth-child(3)").each(
+			function(){
+				if($(this).text() != letter){
+					$(this).parent().hide();
+				}
+				else{
+					$(this).parent().show();
+				}
+			});
+		   }         
+	});
+	});
+
+ function validateAssetForm() {
+        var modelid = $('#modelid').val();
+        //console.log(assetid);
+        if (modelid == '0') {
+            $('html, body').animate({
+                scrollTop: $("#modelid").offset().top
+            }, 2000);
+            $('#modelid').addClass('invalid');
+            alert('Please select Model!');
+            return false;
+        }
+        $('#modelid').removeClass('invalid');
+        return true;
+    }
+    </script>
+	
+	
+	<style>
+	
+	.nonepart:before {
+    content: "";
+    position: absolute;
+    height: 37px;
+    width: 100%;
+    z-index: 999999;
+	cursor: no-drop;
+}
+.nonepart.select2-selection.select2-selection--single{
+background:#eee;
+}
+
+	</style>

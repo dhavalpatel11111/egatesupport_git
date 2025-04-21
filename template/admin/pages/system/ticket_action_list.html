@@ -1,0 +1,51 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Ticket Action List</h1>
+        <div class="pull-right"><a onClick='showM("ajax.php?modal=ticketactionAdd&reroute=system/ticket_action_list");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Ticket Action</a></div>
+        
+        <div style="clear:both"></div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table id="dataTablesFull" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>NO.</th>										
+                                        <th>Action Taken</th>
+                                        <th class="text-right"> Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php										$no= 1;
+                                    foreach ($subject as $sub) {
+                                    echo "<tr>";
+                                    echo "<td>".$no."</td>";																		
+                                    echo "<td>".$sub['action']."</td>";																	
+                                    echo "<td>
+                                    <div class='btn-group pull-right'>
+                                    <a onClick='showM(\"ajax.php?modal=ticketactionEdit&reroute=system/ticket_action_list&id=".$sub['id']."\");return false' class='btn btn-xs text-dark'><i class='fa fa-edit'></i></a>
+                                    <a onClick='showM(\"ajax.php?modal=ticketactionDelete&reroute=system/ticket_action_list&id=".$sub['id']."\");return false' class='btn btn-xs text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";									$no++;
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->

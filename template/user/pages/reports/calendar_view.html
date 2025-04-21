@@ -1,0 +1,79 @@
+<link rel="stylesheet" href="template/assets/plugins/fullcalendar/fullcalendar.min.css" />
+<script src="template/assets/plugins/fullcalendar/moment.min.js"></script>
+<script src="template/assets/plugins/fullcalendar/fullcalendar.min.js"></script>
+
+<aside class="right-side">
+
+<div class="response"></div>
+    <div id='calendar'></div>
+	</aside>
+	<script>
+$(document).ready(function () {
+    var calendar = $('#calendar').fullCalendar({
+        editable: true,
+        events: "http://egatesupport.com/?route=reports/calendarview",
+        displayEventTime: false,
+         eventRender: function (event, element, view) {
+		var etitle=event.title;
+		 if (event.allDay === 'true') {
+                event.allDay = true;
+            } else {
+                event.allDay = false;
+            }
+		//alert(etitle);
+		if(etitle.indexOf('-') != -1){
+		var res =etitle.split("-");
+		console.log(res);
+		element.find('.fc-title').html('<a href ="http://egatesupport.com/?route=tickets/manage&id='+res[1]+'" style="color:#fff;"><strong style="color:orange">'+res[0]+'</strong> - ' +res[1]+'</a><br/><strong style="color:orange">('+res[2]+')</strong>');
+           }
+		   else
+		   {
+		   if(etitle.indexOf('##') != -1){
+		   var res1 =etitle.split("##");
+		   element.find('.fc-title').html('<a href ="http://egatesupport.com/?route=tickets/manage&id='+res1[0]+'" style="color:#fff;">'+res1[1]+'</a><br/><strong style="color:orange">('+res1[2]+')</strong>');
+		   }
+		   }
+			
+        },
+        selectable: true,
+        selectHelper: true,
+        <!-- select: function (start, end, allDay) { -->
+            <!-- var title = prompt('Event Title:'); -->
+
+            <!-- if (title) { -->
+                <!-- var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss"); -->
+                <!-- var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss"); -->
+
+                <!-- $.ajax({ -->
+                    <!-- url: 'add-event.php', -->
+                    <!-- data: 'title=' + title + '&start=' + start + '&end=' + end, -->
+                    <!-- type: "POST", -->
+                    <!-- success: function (data) { -->
+                        <!-- displayMessage("Added Successfully"); -->
+                    <!-- } -->
+                <!-- }); -->
+                <!-- calendar.fullCalendar('renderEvent', -->
+                        <!-- { -->
+                            <!-- title: title, -->
+                            <!-- start: start, -->
+                            <!-- end: end, -->
+                            <!-- allDay: allDay -->
+                        <!-- }, -->
+                <!-- true -->
+                        <!-- ); -->
+            <!-- } -->
+            <!-- calendar.fullCalendar('unselect'); -->
+        <!-- }, -->
+        
+        
+        
+        
+
+    });
+});
+
+function displayMessage(message) {
+	    $(".response").html("<div class='success'>"+message+"</div>");
+    setInterval(function() { $(".success").fadeOut(); }, 1000);
+}
+</script>

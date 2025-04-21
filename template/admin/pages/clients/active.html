@@ -1,0 +1,1287 @@
+<style>
+    .technician_filter .select2-selection {
+        min-width: 168px;
+    }
+    .one_line{white-space:nowrap;} 
+    table#dataTablesFullr td:nth-child(5){min-width:108px!important;white-space: nowrap;}
+    table#dataTablesFullr td:nth-child(3){min-width:201px;}
+    table#dataTablesFullr td:nth-child(2){min-width:80px;}
+    table#dataTablesFullr td:nth-child(7){min-width:20px;}
+    table#dataTablesFullr td:nth-child(8){min-width:20px;}
+    /* table#dataTablesFullr td:nth-child(9){min-width:50px;} */
+    
+    
+    span.rrfgh.label{height:21px;display:inline-block;padding-top:4px;padding-bottom:0;border-radius:2px}
+    .badge{min-height:21px;border-radius:2px;cursor:pointer;}a.hegt21.btn.btn-success.btn-xs{padding-bottom:0;border-radius:2px;height:21px;display:inline-block}span.pulloutsq{border-radius:2px;height:25px;display:inline-block;line-height:18px}
+    .count_values_close {
+        font-weight: 800;
+        background: red;
+        color: #ff6;
+        padding: 0px;
+        border-radius: 50%;
+        line-height: 20px;
+        height: 20px;
+        min-width: 20px;
+        display: inline-block;
+        text-align: center; 
+    }
+    .close_d {
+        text-align: right;
+        padding-right: 23px !important;
+    }
+    .delete_css{display:none}#dataTablesFullr td.text-right{padding-right:25px}
+    .dataTable thead>tr>th.text_css{padding-right:15px;padding-left:15px;cursor:pointer;}.status_css{width:82px;font-size:15px;padding:5px}
+    .invoice_css { background-color: #3c8dbc; border-color: #3c8dbc;}
+    .invoice_css.btn-success:hover { color: #fff; background-color: #3c8dbc !IMPORTANT; border-color: #3c8dbc;}
+    .for_pull {  background: none !important;  color: #d4cbcb !important;}
+    #dataTablesFullr td:nth-child(7) {  white-space: nowrap;}
+    table#dataTablesFullr td:nth-child(5) {min-width: 10px!important;}
+    table#dataTablesFullr th:nth-child(5) {width: 10px !important;}
+    #dataTablesFullr th:nth-child(4) {width: 10px !important;}
+    #dataTablesFullr th:nth-child(5) {width: 10px !important;}
+    #dataTablesFullr th:nth-child(6) {width: 10px !important;}
+    #dataTablesFullr th:nth-child(7) { width: 20px !important;}
+    #dataTablesFullr th:nth-child(8) { width: 20px !important;}
+    table#dataTablesFullr td:nth-child(5) a { white-space: nowrap;}
+    .technician_filter {float: right;position: absolute;    right: 206px;top: 58px;}
+    .reduce_pding {    padding-right: 21px !important;}
+    table#dataTablesFullr td:nth-child(6) a {
+        white-space: nowrap;
+    }
+    .onholdd { text-align: center;}
+    .technician_filter {
+        float: left;
+        position: absolute;
+        right: 13%;
+        top: -34px;
+    }
+    table#dataTablesFullr {
+        border-top: 1px #ddd solid;
+    }
+    table#dataTablesFullr thead tr th:nth-child(8) {
+        width: 36px !important;
+        min-width: 20px;
+    }
+    table#dataTablesFullr thead tr th:nth-child(9) {
+        width: 20px !important;
+        min-width: 20px;
+    }
+    table#dataTablesFullr thead tr th:nth-child(10) {
+        width: 20px !important;
+        min-width: 20px;
+    }
+    
+    td.one_line a:nth-child(1) {
+        margin-right: 6px;
+        background: #337ab7;
+        color: #fff;
+        padding: 1px 7px;
+        position: relative;
+        top: 1px;
+        border-radius:2px;
+    }
+    span.badge {
+       
+        font-weight: 800;
+        background: red;
+        color: #fff;
+        padding: 0px;
+        border-radius: 50%;
+        line-height: 20px;
+        height: 20px;
+        min-width: 20px;
+        display: inline-block;
+        text-align: center;
+    }
+    span.explan {
+        margin-left: 8px;
+        font-size: 15px;
+    }
+    #dataTablesFullr_filter label {
+        color: #9B9B8C;
+    }
+    </style>
+    <?php if($_GET['status'] ==1)
+    {
+    ?>
+    <script>
+     $(document).ready(function() {
+     //$("#dataTablesFullr").dataTable({ "order": [[0, "asc"]] });
+     alert("Mail Sent Successfully");
+    });
+    </script>
+    <?php 
+    } 
+    ?>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- new disign for pc and mobile --> 
+        <section class="content-header" style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 30px; overflow-x: auto; margin-bottom: 10px;">
+            <!-- heading of page  -->
+            <span class="pull-left" style="font-size: 24px; text-wrap: nowrap;">
+                Client Overview
+            </span>
+            <!-- heading of page  -->
+
+            <?php
+            $total = count($clients);
+            $total_inact = count($clients_inact);
+            
+            $client_act = "<span>( ".$total." )</span>";
+            $total_inac1 = "<span>( ".$total_inact." )</span>";
+            $allb = $total_inact+$total;
+            $allc ="<span>( ".$allb." )</span>";
+            ?> 
+            <select id="view-options" class="form-control select2" style="min-width: 120px; max-width: 130px;">
+                <option value="all">All Clients <?php echo $allc; ?></option>                       
+                <option selected="" value="active">Active <?php echo $client_act; ?></option>
+                <option value="inactive">Inactive <?php echo $total_inac1; ?></option>
+            </select>
+
+
+            <?php $client_types = getTable("clienttype");?>
+            <select class="form-control select2 select2-accessible" id="client_type" name="client_type" style="min-width: 120px; max-width: 130px;" tabindex="-1" aria-hidden="true">
+                <option value="">Select Type</option>
+                <?php foreach ($client_types as $client_type) {
+                    echo "<option value='".$client_type['name']."'";   echo ">".$client_type['name']."</option>"; } ?>
+            </select>
+
+
+
+
+            <?php 
+            $invoice_page_detail = get_template_invoice_page_detail('client_email_template');
+            if(!empty($invoice_page_detail)){
+                $invoice_page_detail_value = $invoice_page_detail['value'];
+            }
+            ?>
+            <select class="form-control" id="defult_email_template" name="defult_email_template" style="min-width: 120px; max-width: 130px;">
+                <option value="">Select Template</option>
+                <?php 
+                foreach($notificationtemplates as $template){ 
+                    if($template['id'] == $invoice_page_detail_value){ ?>
+                        <option value="<?php echo $template['id']; ?>" selected><?php echo $template['name']; ?></option>    
+                    <?php }else{ ?> 
+                        <option value="<?php echo $template['id']; ?>"><?php echo $template['name']; ?></option>    
+                    <?php } ?>
+                <?php }
+                ?>
+            </select>
+
+
+
+            <i class="fa fa-eye" id="g_email_template_message_btn"></i>
+
+
+
+
+
+
+            <?php if($lia['role'] != 'technician'){ ?>
+                
+
+                <?php
+                $licenses_amount_total = 0;
+                foreach($clients as $each_client){
+                    $get_license_data = get_licenses_by_client($each_client['id']);
+                    if(!empty($get_license_data)){
+                        foreach($get_license_data as $each_license){
+                            $licenses_amount_total += $each_license['amount'];
+                        }
+                    }
+                }
+                ?>
+                
+                <span style="text-wrap: nowrap;">
+                    <span class="Amount">
+                        <span class="hidden-xs" style="font-size: 15px; color: black;"
+                            >Rental Amount :</span>
+                        <span class="hidden-lg" style="font-size: 20px; padding-left: 10px !important;font-size: 15px;color: black;"
+                            >Amt:</span>
+
+                        <span id="totalAmount" class="autoNumeric1 animated-number" style="color: red;">
+                            <?php
+                        
+                        foreach ($clients as $client) {
+
+                        $total1 += getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                        $total12 += getTotalAmount("licenses","amount","clientid",$client['id']);
+                        $total2 += countTableFiltered("assets","clientid",$client['id']);}
+                        $coto = $total1 + $total12;
+                        echo $total1;?>
+                            <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                        </span>
+                    </span>
+                    <br>
+                    <span class="licenses">
+                        <span class="hidden-xs" style="font-size: 15px; color: black;">License Amount: 
+                            <span style="color: red;"><?php echo number_format($licenses_amount_total); ?></span>
+                        </span>
+                        <span class="hidden-lg " style="font-size: 15px; padding-left: 10px !important;color: black;">License: 
+                            <span style="color: red;"><?php echo number_format($licenses_amount_total); ?></span>
+                        </span>
+                    </span>
+                </span>
+
+
+
+                <span style="text-wrap: nowrap;">
+                    <span class="Deposit">
+                        <span class="" style="font-size: 15px; color: black;">Assets: 
+                            <span class="" style="color: red;"><?php echo $total2; ?></span>
+                        </span>
+                        <!-- <span class="hidden-lg " style="font-size: 15px; padding-left: 10px !important;color: black;">Deposit: 
+                            <span class="" style="color: red;"></span>
+                        </span> -->
+                    </span>
+
+                    <br>
+
+                    <span class="Balance">
+                        <span style="font-size: 20px; color: black; font-size: 15px;">Total:</span>
+                        <span id="totalBalance" class="" style="color: red;">
+                            <?php 
+                            $total_amount_text = $total1 + $licenses_amount_total;
+                            echo number_format($total_amount_text);
+                                ?>
+                        </span>
+                    </span>
+                </span>
+
+                <span style="text-wrap: nowrap;">
+                    <span class="Deposit">
+                        <span class="hidden-xs" style="font-size: 15px; color: black;">Total Deposit: 
+                            <span class="total_deposit" style="color: red;"></span>
+                        </span>
+                        <span class="hidden-lg " style="font-size: 15px; color: black;">Deposit: 
+                            <span class="total_deposit" style="color: red;"></span>
+                        </span>
+                    </span>
+
+                    <br>
+
+                    <span class="Balance">
+                        <span class="hidden-xs" style="padding-left: 0px;color: black; font-size: 15px;">Receivable</span>
+                        <span class="hidden-lg" style="font-size: 20px; color: black; font-size: 15px;">Bal:</span>
+                        <span id="totalBalance" class="" style="color: red;">
+                            <?php 
+                                $total_balance = getTotalBalance('invoice','balance');
+                                echo number_format($total_balance); ?>
+                        </span>
+                    </span>
+                </span>
+
+
+                <span class="Assets" id="assets_span" style="text-wrap: nowrap;">
+                    <span class="hidden-xs"
+                        style="color: black; font-size: 15px;">Deployed Asset:</span>
+                    <span class="hidden-lg" style="padding-left: 10px !important;"
+                        style="color: black; font-size: 15px;">Assets:</span>
+                    <span id="totalAsset" class="animated-number" style="color: red; font-size: 15px;">
+                        <?php echo $total2;
+                    ?>
+                        <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                    </span>
+                </span>
+
+
+                <a target='_blank' href="?route=pdf/all_invoice">
+                    <input type="button" value="All Invoice" class="btn btn-success  status_css">
+                </a>
+                <a target='_blank' href="?route=pdf/all_status">
+                    <input type="button" value="All Status" class="btn btn-success  invoice_css">
+                </a>
+                <a target='_blank' href="?route=exportclientdata">
+                    <input type="button" value="Export" class="btn btn-success  invoice_css">
+                </a>
+
+
+
+            <?php } ?>
+
+            <div class="pull-right" style="width: 6%;"><a onClick='showM("ajax.php?modal=clientAdd&reroute=clients");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> NEW CLIENT</a></div>
+
+        </section>
+        <!-- new disign for pc and mobile -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- Content Header (Page header) -->
+        <!-- <section class="content-header" style="display: flex; align-items: center; padding-top: 0px;"> -->
+            <!-- <h1 style="width: 10%;" class="pull-left">Client Overview</h1> -->
+
+
+<!-- options  -->
+                <?php 
+                $technician_design_change = '';
+                $technician_design_change_1 = 'col-sm-4';
+                 if($lia['role'] == 'technician'){
+                    $technician_design_change = 'padding-bottom: 10px;';
+                    $technician_design_change_1 = 'col-sm-8';
+                }
+                ?>
+                <!-- <div class="row" style="width: 86%;">
+                    <div class="<?php echo $technician_design_change_1; ?> col-xs-12" style="padding-top: 20px; <?php echo $technician_design_change; ?>"> -->
+                        <!-- <div class="row">
+                            <div class="col-md-4">
+                                <?php
+                                $total = count($clients);
+                                $total_inact = count($clients_inact);
+                                
+                                $client_act = "<span>( ".$total." )</span>";
+                                $total_inac1 = "<span>( ".$total_inact." )</span>";
+                                $allb = $total_inact+$total;
+                                $allc ="<span>( ".$allb." )</span>";
+                                ?> 
+                                <select id="view-options" class="form-control select2" style="width:100%;">
+                                    <option value="all">All Clients <?php echo $allc; ?></option>
+                                                                        
+                                                                
+                                    <option selected="" value="active">Active <?php echo $client_act; ?></option>
+                                    <option value="inactive">Inactive <?php echo $total_inac1; ?></option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <?php $client_types = getTable("clienttype");?>
+                                <select class="form-control select2 select2-accessible" id="client_type" name="client_type" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="">Select Type</option>
+                                                    <?php foreach ($client_types as $client_type) {
+                                                    echo "<option value='".$client_type['name']."'";   echo ">".$client_type['name']."</option>"; } ?>
+                                </select>
+                            </div> -->
+                            <!-- <div class="col-md-5" style="padding-right: 7%;"> -->
+
+                                <!-- <div class="row" style="margin-right: -40px;"> -->
+                                    <!-- <div class="col-sm-10">
+                                        <?php 
+                                        $invoice_page_detail = get_template_invoice_page_detail('client_email_template');
+                                        if(!empty($invoice_page_detail)){
+                                            $invoice_page_detail_value = $invoice_page_detail['value'];
+                                        }
+                                        ?>
+                                        <select class="form-control" id="defult_email_template" name="defult_email_template" style="">
+                                            <option value="">Select Template</option>
+                                            <?php 
+                                            foreach($notificationtemplates as $template){ 
+                                                if($template['id'] == $invoice_page_detail_value){ ?>
+                                                    <option value="<?php echo $template['id']; ?>" selected><?php echo $template['name']; ?></option>    
+                                                <?php }else{ ?> 
+                                                    <option value="<?php echo $template['id']; ?>"><?php echo $template['name']; ?></option>    
+                                                <?php } ?>
+                                            <?php }
+                                            ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-sm-1" title="View Email Details" style="margin-top: 3%;">
+                                        <i class="fa fa-eye" id="g_email_template_message_btn"></i>
+                                    </div> -->
+
+                                    <!-- <div class="col-sm-2" style="margin-left: 10px; margin-top: 15px;">
+                                        <button class="btn btn-primary" id="send_email_to_all_invoice">Send All</button>
+                                    </div> -->
+                                <!-- </div>
+
+                            </div>
+                        </div>
+                    </div> -->
+                    
+                    <?php $people = getTable("people");?>
+                    <!-- <div class="col-md-2 col-xs-12" style="padding: 15px;">
+                    
+                                    <select class="form-control select2 select2-accessible" id="technician_name" name="technician_name" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                            <option value="0">Select Technician</option>
+                                                            <?php foreach ($people as $peop) {
+                                                            if($peop['role']=='technician'){ 
+                                                            echo "<option value='".$peop['name']."'";   echo ">".$peop['name']."</option>"; } }?>
+                                                        </select>
+                                                    </div> -->
+                    
+                   <?php if($lia['role'] != 'technician'){
+                        ?>    
+                    <!-- <div class="col-md-8 role-1 col-xs-12" style="padding: 15px; display: flex; align-items: center; gap: 20px;padding-left: 3%;"> -->
+
+                        <?php
+                        $licenses_amount_total = 0;
+                        foreach($clients as $each_client){
+                            $get_license_data = get_licenses_by_client($each_client['id']);
+                            if(!empty($get_license_data)){
+                                foreach($get_license_data as $each_license){
+                                    $licenses_amount_total += $each_license['amount'];
+                                }
+                            }
+                        }
+                        ?>
+                        <!-- <div class="row" style="width: 60%;">
+                            <span class="col-md-4">
+                                <span class="Amount">
+                                    <span class="hidden-xs" style="font-size: 15px; color: black;"
+                                        >Rental Amount :</span>
+                                    <span class="hidden-lg" style="font-size: 20px; padding-left: 10px !important;font-size: 15px;color: black;"
+                                        >Amt:</span>
+
+                                    <span id="totalAmount" class="autoNumeric1 animated-number" style="color: red;">
+                                        <?php
+                                    
+                                    foreach ($clients as $client) {
+
+                                    $total1 += getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                                    $total12 += getTotalAmount("licenses","amount","clientid",$client['id']);
+                                    $total2 += countTableFiltered("assets","clientid",$client['id']);}
+                                    $coto = $total1 + $total12;
+                                    echo $total1;?>
+                                        <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                                    </span>
+                                </span>
+                                <br>
+                                <span class="licenses">
+                                    <span class="hidden-xs" style="font-size: 15px; color: black;">License Amount: 
+                                        <span style="color: red;"><?php echo number_format($licenses_amount_total); ?></span>
+                                    </span>
+                                    <span class="hidden-lg " style="font-size: 15px; padding-left: 10px !important;color: black;">License: 
+                                        <span style="color: red;"><?php echo number_format($licenses_amount_total); ?></span>
+                                    </span>
+                                </span>
+                            </span>
+
+                            <span class="col-md-4">
+                                <span class="Deposit">
+                                    <span class="hidden-xs" style="font-size: 15px; color: black;">Assets: 
+                                        <span class="" style="color: red;"><?php echo $total2; ?></span>
+                                    </span>
+                                    <span class="hidden-lg " style="font-size: 15px; padding-left: 10px !important;color: black;">Deposit: 
+                                        <span class="" style="color: red;"></span>
+                                    </span>
+                                </span>
+
+                                <br>
+
+                                <span class="Balance">
+                                    <span class="hidden-xs" style="padding-left: 0px;color: black; font-size: 15px;">Total</span>
+                                    <span class="hidden-lg" style="font-size: 20px; color: black; font-size: 15px;">Total:</span>
+                                    <span id="totalBalance" class="" style="color: red;">
+                                        <?php 
+                                        $total_amount_text = $total1 + $licenses_amount_total;
+                                        echo number_format($total_amount_text);
+                                            ?>
+                                    </span>
+                                </span>
+                            </span>
+
+                            <span class="col-md-4">
+                                <span class="Deposit">
+                                    <span class="hidden-xs" style="font-size: 15px; color: black;">Total Deposit: 
+                                        <span class="total_deposit" style="color: red;"></span>
+                                    </span>
+                                    <span class="hidden-lg " style="font-size: 15px; padding-left: 10px !important;color: black;">Deposit: 
+                                        <span class="total_deposit" style="color: red;"></span>
+                                    </span>
+                                </span>
+
+                                <br>
+
+                                <span class="Balance">
+                                    <span class="hidden-xs" style="padding-left: 0px;color: black; font-size: 15px;">Receivable</span>
+                                    <span class="hidden-lg" style="font-size: 20px; color: black; font-size: 15px;">Bal:</span>
+                                    <span id="totalBalance" class="" style="color: red;">
+                                        <?php 
+                                            $total_balance = getTotalBalance('invoice','balance');
+                                            echo number_format($total_balance); ?>
+                                    </span>
+                                </span>
+                            </span>
+
+
+                            <span class="Assets" id="assets_span">
+                                <span class="hidden-xs"
+                                    style="color: black; font-size: 15px;">Deployed Asset:</span>
+                                <span class="hidden-lg" style="padding-left: 10px !important;"
+                                    style="color: black; font-size: 15px;">Assets:</span>
+                                <span id="totalAsset" class="animated-number" style="color: red; font-size: 15px;">
+                                    <?php echo $total2;
+                                ?>
+                                    <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                                </span>
+                            </span>
+
+                        </div> -->
+
+
+
+                        <!-- <a target='_blank' class="hidden-xs" href="?route=pdf/all_invoice">
+                            <input type="button" value="All Invoice" class="btn btn-success  status_css"></a>
+                        <a target='_blank' class="hidden-xs" href="?route=pdf/all_status"><input type="button" value="All Status"
+                                class="btn btn-success  invoice_css"></a>
+                        <a target='_blank' class="hidden-xs" href="?route=exportclientdata"><input type="button" value="Export"
+                                class="btn btn-success  invoice_css"></a>
+
+                        <div class="hidden-lg text-center">
+                            <a target='_blank' href="?route=pdf/all_invoice">
+                                <input type="button" value="All Invoice" class="btn btn-success  status_css"></a>
+                            <a target='_blank' href="?route=pdf/all_status"><input type="button" value="All Status"
+                                    class="btn btn-success  invoice_css"></a>
+                            <a target='_blank' href="?route=exportclientdata"><input type="button" value="Export"
+                                    class="btn btn-success  invoice_css"></a>
+                        </div>
+                    
+                    </div> -->
+                    <?php } ?>
+
+                <!-- </div> -->
+ <!-- options -->
+
+
+            <!-- <div class="pull-right" style="width: 6%;"><a onClick='showM("ajax.php?modal=clientAdd&reroute=clients");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> NEW CLIENT</a></div>
+            <div style="clear:both"></div>
+        </section> -->
+        <!-- Main content -->
+        <section class="content" style="margin-top: 0px; padding-top: 0px;">
+        
+    
+            <?php if(!empty($statusmessage)): ?>
+            <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+            <?php endif; ?>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box box-default">
+    
+                        <div class="box-body">
+                           
+        
+                            <div class="table-responsive">
+                            
+                                <table id="dataTablesFullr" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th class="hidden-xs" style="width:5%;">Type</th>
+                                            <th style="width: 13%;">Client(Location)</th>
+                                            <th title="The displayed dot indicated that there is no person responsible for invoicing">I</th>
+                                            <th title="The displayed dot indicated that there is no person responsible for Collection">C</th>
+                                            <th title="The displayed dot indicated that there is no person responsible for reporting the Pagecount">P</th>
+                                            <th title="Tax Identification Number">TIN Number</th>
+                                            <!-- <th class="reduce_pding" title="Open Ticket"><i style="color:red;" class="fa fa-ticket" title="Open Tickets" aria-hidden="true"></i></th>
+                                            <th class="reduce_pding" title="Closed Ticket"><i style="color:red;" class="fa fa-ticket" title="Closed Ticket" aria-hidden="true"></i></th> -->
+                                            <th style="text-align:center; padding-right: 16px; padding-left: 16px;
+                                            " class="text-right"></th>
+                                            <!-- <th>Client Highlights<span title="Record only highlights which need to be notified to office admin & technician regarding
+                                                any issue If resolved, need to delete immediately to avoid any confusion. Client memo should
+                                                 be monitored every day for updates." class="explan"><i class="fa fa-info-circle" aria-hidden="true"></i></span></th> -->
+                                           <?php if($lia['role'] != 'technician'){ ?> <th title="Contract Amount" style="width: 60px !important;">Rental</th><?php } ?>
+                                            <th>License</th>
+                                            <th>Total</th>
+                                            <th title="Not Paid Invoice" style="width: 2% !important;">NP</th>
+                                            <th title="Not Cleared Invoice" style="width: 2% !important;">NC</th>
+                                            <th>Balance</th>
+                                            <th style="width:10%;">For month of</th>
+                                            <th title="Expired Contract" style="width: 2.5% !important;">EC</th>
+                                            <th title="Number of Contracts Approaching Expiration" style="width: 2.5% !important;">AC</th>
+                                            <th style="width: 2.5% !important;">Sent</th>
+                                            <th style="width: 2.5% !important;">Email</th>
+                                            <th>Deposit</th>
+                                            
+                                            <!-- <th>Technician<span title="
+    Technician who is in charge 
+    for this company" class="explan"><i class="fa fa-info-circle" aria-hidden="true"></i></span></th> -->
+                                           
+                                            <!-- <th class="text_css" title="Remaining Days of Contract">1</th>
+                                            <th class="text_css" title="Assets">2</th>
+                                            <th class="text_css" title="Licenses">3</th>
+                                     <th class="text_css" title="Asset on hold">4</th>
+                                      <th class="text_css" title="For Pull Out"> 5 <span title="	
+        If you replace unit or stop contract . There will be Old unit to be pulled out
+    You can process pull out  this page
+    Client Page- Create Ticket Tab There is Asset Already for pull out
+    "><i class="fa fa-info-circle" aria-hidden="true"></i></span></th> -->
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        //echo"<pre>";
+                                        //print_r($clients);
+                                        
+                                        foreach ($clients as $client) {
+                                        
+                                        $hassets = getTableFiltered("assets", "clientid", $client['id']);
+                                        $hcontracts = getTableFiltered2("contract", ["clientid" => $client['id']], "*", "id", "DESC");
+                                        $deposit_count = 0;
+                                        foreach($hcontracts as $hcontract){
+                                            $deposit_count += $hcontract['deposit'];
+                                        }
+                                        $lics = getTableFiltered2("licenses", ["clientid" => $client['id']], "*", "id", "DESC");
+                                        
+                                        $pull_out_array = array();
+                                         foreach ($hcontracts as $contacts) {
+                                        $modelid = getSingleValue("assets","modelid",$contacts['assetid']);
+                                        $modelname = getSingleValue("models","name",$modelid);
+                                        $asset_serial = getSingleValue("assets","serial",$contacts['assetid']);
+                                        $hovertext = getSingleValue("assets","tag",$contacts['assetid']). " : " . $modelname . " : " . $asset_serial;
+                                        $asset_status = getSingleValue("assets","status",$contacts['assetid']);
+                                        
+                                        $counpull = countTableFiltered("assets", "clientid", $client['id'],"status", "For Pullout");
+    
+                                        $counthold = countTableFiltered("assets", "clientid", $client['id'],"status", "On Hold");
+                                        
+                                         }
+                                         
+    
+                                        echo "<tr>";
+                                        echo "<td><a href='?route=clients/manage&id=".$client['id']."&tab=department&status=d'>".$client['id']."</a></td>";
+                                        $ctypes = getSingleValue("clienttype","name",$client['clienttypes']);
+                                        echo "<td class='hidden-xs'>".$ctypes."</td>";
+                                        echo "<td class='onhover client_name' data-client_name='". $client['name'] ."'><a href='?route=clients/manage&id=".$client['id']."&tab=department'>".$client['name']."</a><span class='hovertext'>";
+                                         foreach ($hcontracts as $contacts) {
+                                        $modelid = getSingleValue("assets","modelid",$contacts['assetid']);
+                                        $modelname = getSingleValue("models","name",$modelid);
+                                        $asset_serial = getSingleValue("assets","serial",$contacts['assetid']);
+                                        $hovertext = getSingleValue("assets","tag",$contacts['assetid']). " : " . $modelname . " : " . $asset_serial;
+                                           if($contacts['is_end'] != 1){
+                                                echo $hovertext ."<br>";
+                                            }
+                                         }
+                                          foreach ($lics as $lic) { 
+                                          echo $lic['tag']." : ".$lic['name']."<br>";
+                                          }
+                                         
+                                        ?>
+                                        
+                                        </span></td>
+
+                                        <!-- person -->
+
+                                        <td>
+                                            <?php
+                                            $invoice_person_count = get_responsible_person_by_client($client['id'] , 'invoice');
+                                            if($invoice_person_count > 0){
+                                                echo $invoice_person_count;
+                                            }else{
+                                                $person_redirect_url = "?route=clients/manage&id=".$client['id']."&tab=users";
+                                                echo "<a href='".$person_redirect_url."'><span style='height: 15px; width: 15px; background-color: orange; border-radius: 50%; display: block;'></span></a>";
+                                            }
+                                            ?>
+                                        </td>
+
+                                        <td>
+                                            <?php
+                                            $collection_change_person_count = get_responsible_person_by_client($client['id'] , 'collection_change');
+                                            if($collection_change_person_count > 0){
+                                                echo $collection_change_person_count;
+                                            }else{
+                                                $person_redirect_url = "?route=clients/manage&id=".$client['id']."&tab=users";
+                                                echo "<a href='".$person_redirect_url."'><span style='height: 15px; width: 15px; background-color: orange; border-radius: 50%; display: block;'></span></a>";
+                                            }
+                                            ?>
+                                        </td>
+
+                                        <td>
+                                            <?php
+                                            $user_page_count_check_person_count = get_responsible_person_by_client($client['id'] , 'user_page_count_check');
+                                            if($user_page_count_check_person_count > 0){
+                                                echo $user_page_count_check_person_count;
+                                            }else{
+                                                $person_redirect_url = "?route=clients/manage&id=".$client['id']."&tab=users";
+                                                echo "<a href='".$person_redirect_url."'><span style='height: 15px; width: 15px; background-color: orange; border-radius: 50%; display: block;'></span></a>";
+                                            }
+                                            ?>
+                                        </td>
+                                        <!-- person -->
+
+                                        <td><?php echo $client['tax_identification_number']; ?></td>
+                                        <?php
+                                        $totalss = getTableFiltered("tickets", "status[!]", "Closed","clientid",$client['id']);
+            $count=0;
+                foreach($totalss as $tickete){
+    
+    
+                  if($client['id'] == $tickete['clientid']){
+    
+                   $count++;
+    
+                 }
+    }
+    
+    $totals = getTableFiltered("tickets", "status", "Closed","clientid",$client['id']);
+            $countt=0;
+                foreach($totals as $ticket){
+    
+    
+                  if($client['id'] == $ticket['clientid']){
+    
+                   $countt++;}
+    }
+    //if(!empty($count)){
+    //echo "<td  title='Open Tickets'><span class='count_values_close'>".$count."</span></td>";
+    //}else{
+    //echo "<td></td>";
+    //}
+    //echo "<td class='close_d'><span class='closed_css' title='Closed Tickets'>".$countt."</span></td>";
+                                      echo "<td class='action_button'>
+                                        <div class='pull-right' style='text-wrap: nowrap;'>
+                                        <a href='?route=clients/manage&id=".$client['id']."' class='btn-right text-dark'><i class='fa fa-bars' aria-hidden='true'></i></a>&nbsp;
+                                        <a title='".$client['client_memo']."' href='#' onClick='showM(\"ajax.php?modal=clientEdit&reroute=clients/active&id=".$client['id']."\");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <a href='#' onClick='showM(\"ajax.php?modal=clientDelete&reroute=clients&id=".$client['id']."\");return false' class='btn-right text-red delete_css'><i class='fa fa-trash-o'></i></a>
+    
+                                        <i class='fa fa-eye see_client_memo_eye' style='cursor: pointer;' data-client_memo='".$client['client_memo']."'></i>
+                                        </div>
+                                        </td>";
+                                         
+                                        // echo "<td ><a href='?route=clients/manage&id=".$client['id']."'>".$client['client_memo']."</a>
+                                        //</td>";
+                                        
+                                        //Calculate total amount
+                                        
+                                        $total = getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                                        $total1 = getTotalAmount("licenses","amount","clientid",$client['id']);
+                                        $to = $total + $total1;
+                                        $cr_date = getCRDate("assets","contract_expiry","clientid",$client['id']);
+                                        if($lia['role'] != 'technician'){ 
+                                        echo "<td class='text-right'><span class=''>".number_format($total)."</span></td>";
+                                        }
+                                        $get_license_data = get_licenses_by_client($client['id']);
+                                        $licenses_amount = 0;
+                                        if(!empty($get_license_data)){
+                                            foreach($get_license_data as $each_license){
+                                                $licenses_amount += $each_license['amount'];
+                                            }
+                                        }
+                                        if($licenses_amount > 0){
+                                            $formated_licenses_amount = number_format($licenses_amount);
+                                        }else{
+                                            $formated_licenses_amount = '';
+                                        }
+                                        echo "<td class='text-right license'>".$formated_licenses_amount."</td>";
+                                        $rental_and_licenses = $total + $licenses_amount;
+                                        echo "<td class='text-right license'>".number_format($rental_and_licenses)."</td>";
+                                        
+                                        $invoices = getTableFiltered("invoice", "clintid", $client['id']);
+                                            $countPaidInvoices = 0;
+    
+                                            foreach ($invoices as $invoice) {
+                                                if ($invoice['paid'] == 0) {
+                                                    $countPaidInvoices++;
+                                                }
+                                            }
+    
+                                            if($countPaidInvoices=='0'){
+                                                echo "<td title='Quantity of Invoice to pay'  class='text-right' ><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'><span class='badge bg-blue badge for_pull'>".$countPaidInvoices."</span></a></td>";
+                                                }else{
+                                                 echo "<td title='Quantity of Invoice to pay' class='text-right'><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'><span class='badge' style='border-radius: 5px; background-color:#8A8A7B; border-radius: 3px;'>".$countPaidInvoices."</span></a></td>";
+                                                }
+                                                $not_cleared_count = get_not_cleared_invoice_count_by_client($client['id']);
+                                                if($not_cleared_count == 0){
+                                                    $not_clear_html = $not_cleared_count;
+                                                }else{
+                                                    $not_clear_html = '<span class="badge" style="border-radius: 5px; background-color:#8A8A7B; border-radius: 3px;">'. $not_cleared_count .'</span>';
+                                                }
+                                                echo "<td style='color: #d4cbcb;border-radius: 3px; font-weight: 800;'>" . $not_clear_html ."</td>";
+    
+                                         $total_balance = getTotalAmount('invoice', 'balance', 'clintid', $client['id']);
+                                         echo "<td class='text-right'><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'>" . number_format($total_balance) . "</a></td>";
+                                        $m = $client['for_the_month'] == 0 ? '1' : $client['for_the_month'];
+                                        $formonth = $months[$m];
+    
+                                         $invoice = getTableFiltered2("invoice", ["clintid" => $client['id']], "*", "id", "DESC");
+    
+                                       $month_name = "";
+                                        $background_color = ""; // Initialize background color variable
+    
+                                        if ($invoice[0]['month'] == 1) {
+                                            $month_name = "Jan";
+                                            $background_color = "#FF0000"; // Red for January
+                                        } elseif ($invoice[0]['month'] == 2) {
+                                            $month_name = "Feb";
+                                            $background_color = "#0000FF"; // Blue for February
+                                        } elseif ($invoice[0]['month'] == 3) {
+                                            $month_name = "Mar";
+                                            $background_color = "#0000FF"; // Blue for March
+                                        } elseif ($invoice[0]['month'] == 4) {
+                                            $month_name = "Apr";
+                                            $background_color = "#FF00FF"; // Magenta for April
+                                        } elseif ($invoice[0]['month'] == 5) {
+                                            $month_name = "May";
+                                            $background_color = "#000000"; // Black for May
+                                        } elseif ($invoice[0]['month'] == 6) {
+                                            $month_name = "Jun";
+                                            $background_color = "#FF7F00"; // Orange for June
+                                        } elseif ($invoice[0]['month'] == 7) {
+                                            $month_name = "Jul";
+                                            $background_color = "#007FFF"; // Aqua for July
+                                        } elseif ($invoice[0]['month'] == 8) {
+                                            $month_name = "Aug";
+                                            $background_color = "#664C00"; // Brown for August
+                                        } elseif ($invoice[0]['month'] == 9) {
+                                            $month_name = "Sep";
+                                            $background_color = "#1A6600"; // Dark green for September
+                                        } elseif ($invoice[0]['month'] == 10) {
+                                            $month_name = "Oct";
+                                            $background_color = "#23008C"; // Purple for October
+                                        } elseif ($invoice[0]['month'] == 11) {
+                                            $month_name = "Nov";
+                                            $background_color = "#FFFF00"; // Yellow for November
+                                        } elseif ($invoice[0]['month'] == 12) {
+                                            $month_name = "Dec";
+                                            $background_color = "#26FFFF"; // Cyan for December
+                                        } else {
+                                            $month_name = "N/A";
+                                            $background_color = "#CCCCCC"; // White for N/A
+                                        }
+    
+                                        echo "<td class='one_line'>
+                                            <a id='email_notification_btn' title='Click to send email regarding payment collection follow up email - Email contents is provided at email template setting' 
+                                            onclick=\"showM('ajax.php?modal=notificationTemplate&reroute=clients&id=7&clientid=".$client['id']."'); return false;\">
+                                            <i class='fa fa-envelope-o'></i>
+                                         </a>
+    <span class='rrfgh label' style='text-transform:uppercase;color:#ffffff;background-color:" . $background_color . "'>".$month_name."</span> <a title='Print QR code Inventory List for QR code inventory if needed
+    
+    
+    '  class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/issue_invoice&clientid=".$client['id']."&month=".$m."'>QR</a>&nbsp;&nbsp;<a title='Print this inventory with price list for attachment to commercial 
+    invoice / So that customer will know accurate inventory status as of today' class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/invoice&clientid=".$client['id']."&month=".$m."'>INV</a>
+                                        <a title='
+    Print Printer Inventory list, check actual model & department 
+    and get signature from end user to confirm that inventory mentioned is correct.'class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/inv&clientid=".$client['id']."&month=".$m."'>A/S</a>
+                                        
+                                        </td>";
+
+                                        $expired_contract_count =  get_expierd_contract_count_by_client($client['id']);
+                                        if($expired_contract_count > 0){
+                                            $contract_redirect_url = "?route=clients/manage&id=".$client['id']."&tab-contract";
+                                            $formet_deposit_count = number_format($expired_contract_count);
+                                            $formeted_expired_contract_count = "<a href='".$contract_redirect_url."'><span class='badge' style='border-radius: 5px; background-color:red; border-radius: 3px; padding: 0px 5px;'>". $formet_deposit_count ."</span></a>";
+                                        }else{
+                                            $formeted_expired_contract_count = '';
+                                        }
+                                        echo "<td style='text-align: center;'>".$formeted_expired_contract_count."</td>";
+
+                                        $ac_count = get_ac_count_by_client($client['id']);
+                                        if($ac_count > 0){
+                                            $contract_redirect_url = "?route=clients/manage&id=".$client['id']."&tab-contract";
+                                            $formet_ac_count = number_format($ac_count);
+                                            $formeted_ac_count = "<span class='badge' style='border-radius: 5px; background-color:#0000FF; border-radius: 3px; padding: 0px 5px;'>". $formet_ac_count ."</span>";
+                                        }else{
+                                            $formeted_ac_count = '';
+                                        }
+                                        echo '<td style="text-align: center;">'.$formeted_ac_count.'</td>';
+
+                                    //email functionality send_count  and email send
+                                        if($client['client_email_send_1'] == 0 || $client['send_date_time'] == '0000-00-00' || $client['send_date_time'] == NULL){
+                                            $email_send_count_with_date = '';
+                                        }else{
+                                            $email_send_count_with_date = $client['client_email_send_1'] . ' ( ' .$client['send_date_time'] . ' )';
+                                        }
+                                        echo '<td class="text-center" style="text-wrap: nowrap;">'. $email_send_count_with_date .'</td>';
+                                        echo "<td class='text-center'>
+                                            <a id='email_notification_btn_1' class='email_notification_btn_1' data-client_id='". $client['id']."' style='cursor: pointer;'>
+                                                <i class='fa fa-envelope-o'></i>&nbsp; Send
+                                            </a>
+                                        </td>";
+                                    //email functionality send_count  and email send
+
+
+                                        if($deposit_count > 0){
+                                            $formeted_deposit_count = number_format($deposit_count);
+                                        }else{
+                                            $formeted_deposit_count = '';
+                                        }
+                                        echo "<td style='text-align: right;' class='deposit_count'>".$formeted_deposit_count."</td>";
+                                        
+                                   //echo "<td>".getSingleValue("people","name",$client['tech_incharge'])."</td>";
+                                    echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside><!-- /.right-side -->
+    
+    <div class="modal fade" id="client_memo_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body" id="client_memo_modal_body">
+    
+    
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="g_email_template_message_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+    
+              <div class="form-group">
+                    <label for="message" class="control-label">Message</label>
+                    <textarea class="form-control summernote2" id="g_email_template_message"></textarea>
+              </div>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+        
+            $("#email_notification_btn").on('click' , function(){
+                $("#myModal .modal-dialog").addClass('modal-lg');
+            })
+            $("#myModal").on("hidden.bs.modal" , function(){
+                $("#myModal .modal-dialog").removeClass('modal-lg');
+                $("#client_email_send_1").val('');
+            })
+
+            $(".email_notification_btn_1").on('click' , function(){
+
+                let parentRow = $(this).closest("tr");
+                let clientNameTd = parentRow.find(".client_name");
+                let clientName = clientNameTd.data("client_name");
+
+                $("#myModal .modal-dialog").addClass('modal-lg');
+
+                var client_id = $(this).data('client_id');
+                // var invoice_id = $(this).data('invoice_id');
+                $('#myModal .modal-content').empty().load('ajax.php?modal=emailtemplete&id=' + client_id + '&for_who=client', function() {
+                    var defaultEmailTemplate = $("#defult_email_template").val();
+                    $('#myModal').modal('show');
+                    $("#myModal").on('shown.bs.modal', function () {
+                        // email_template_title
+                        $(".email_template_title").html('');
+                        $(".email_template_title").html('Email To ' + clientName);
+                        $("#client_email_send_1").val('1');
+                        var modalDropdown = $(".templateSelect_d");
+
+                        if (modalDropdown.length > 0) {
+                            var dropdownOption = modalDropdown.find("option[value='" + defaultEmailTemplate + "']");
+                            if (dropdownOption.length > 0) {
+                                modalDropdown.val(defaultEmailTemplate);
+                                modalDropdown.trigger('change');
+                            }
+                        }
+                    });
+                });   
+
+            })
+        
+            $('#view-options').change(function() {
+                var v = $(this).val();
+                switch(v) {
+                    case 'all' :
+                        window.location = '?route=clients/all';
+                        break;
+                    case 'active' :
+                        window.location = '?route=clients/active';
+                        break;
+                    case 'inactive' :
+                        window.location = '?route=clients/inactive';
+                        break;
+                    
+                }
+            });
+            $('#technician_name').change( function(e) { 
+            var letter = $(this).val();
+            if (letter === '0') {
+                $ ('tr').show ();
+            }else{
+                $("#dataTablesFullr tr td:nth-child(9)").each(
+                function(){
+                    if($(this).text() != letter){
+                        $(this).parent().hide();
+                    }
+                    else{
+                        $(this).parent().show();
+                    }
+                });
+               }         
+        });
+    
+        $('#client_type').change( function(e) { 
+            var type = $(this).val();
+    
+            var totalAmountIndex = 0;
+            var totalAmountSum = 0;
+            var totalbalanceIndex = 0;
+            var totalBalanceSum = 0;
+            var totalAssetIndex = 0;
+            var totalAssetSum = 0;
+           
+            var table = $('#dataTablesFullr').DataTable();
+    
+            $("#dataTablesFullr.dataTables_filter").append($("#client_type"));
+    
+            var categoryIndex = 0;
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Type") {
+                categoryIndex = i; 
+                return false;
+                }
+            });
+    
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Amount") {
+                totalAmountIndex = i; 
+                return false;
+                }
+            });
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Total Balance") {
+                    totalbalanceIndex = i; 
+                return false;
+                }
+            });
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "2") {
+                    totalAssetIndex = i; 
+                return false;
+                }
+            });
+    
+            
+             $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+              var selectedItem = $('#client_type').val()
+              var category = data[categoryIndex];
+              var total_amount = data[totalAmountIndex];
+              var totalbalance = data[totalbalanceIndex];
+              var totalasset = data[totalAssetIndex];
+              var numericTotalAmount = parseFloat(total_amount.replace(/,/g, ''));
+              var numericTotalBalance = parseFloat(totalbalance.replace(/,/g, ''));
+              var numericTotalAsset = parseFloat(totalasset.replace(/,/g, ''));
+              if (selectedItem === "" || category ===selectedItem ) {
+                    totalAmountSum += numericTotalAmount;
+                    totalBalanceSum += numericTotalBalance;
+                    totalAssetSum += numericTotalAsset;
+                // var formattedTotalAmount = totalAmountSum.toLocaleString();
+                return true;
+              }
+             
+              return false;
+            }
+          );
+         
+          table.draw();
+          $("#totalAmount").text(totalAmountSum.toLocaleString());
+          $("#totalBalance").text(totalBalanceSum.toLocaleString());
+          $("#totalAsset").text(totalAssetSum.toLocaleString());
+        });
+            
+                
+            $("#dataTablesFullr").dataTable( { "order": [[ 2, "asc" ]],"pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "Search" }, "columnDefs": [ { "orderable": false,} ] } );
+            
+                
+        $(".autoNumeric1").text( $(".autoNumeric1").text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                
+        });
+    
+    
+        $(document).on("click", ".see_client_memo_eye", function() {
+            var client_memo = $(this).data("client_memo");
+            if (client_memo.trim() != "") {
+                $("#client_memo_modal").modal("show");
+                $("#client_memo_modal_body").html('');
+                $("#client_memo_modal_body").html(client_memo);
+            }else{
+                $("#client_memo_modal").modal("show");
+                $("#client_memo_modal_body").html('');
+                $("#client_memo_modal_body").html('No client memo found');
+            }
+    
+        });
+
+        // dataTablesFullr
+
+        $(document).ready(function() {
+            $("#assets_span").hide();
+            var totalAmount_text = $("#totalAmount").html();
+            if (totalAmount_text != undefined) {
+                console.log('totalAmount_text:', totalAmount_text);
+                var totalAsset_text = $("#totalAsset").html();
+                $("#totalAmount").html('');
+                totalAmount_text = totalAmount_text.trim();
+                console.log('totalAmount_text ' , totalAmount_text );
+                
+                $("#totalAmount").html('<span>'+ totalAmount_text +'</span>');                
+            }
+
+            var total = 0;
+
+            $('#dataTablesFullr tr').each(function() {
+                // Get the text content of the 'td' with class 'deposit_count' in each row
+                var amount = parseFloat($(this).find('.deposit_count').text().replace(/[^0-9.-]+/g, ""));
+                
+                // Check if the amount is a valid number before adding it to the total
+                if (!isNaN(amount)) {
+                    total += amount;
+                }
+            });
+            let formattedTotal = total.toLocaleString();
+
+            // Display the total sum (you can log it or display it somewhere on the page)
+            $(".total_deposit").html('');
+            $(".total_deposit").html(formattedTotal);
+        });
+
+        $("#defult_email_template").on('change' , function(){
+            $.ajax({
+                url : "ajax.php?insert_client_page_detail&client_email_template="+$(this).val(),
+            })
+        })
+
+        $(document).on('click', "#g_email_template_message_btn" , function(){
+            var template_id = $("#defult_email_template").val();
+
+            if(template_id != ''){
+
+                $.ajax({
+                url : "ajax.php?get_templete_subject&templete_id="+template_id,
+                success: function(res){
+                    var data = JSON.parse(res);
+                    console.log('data:', data);
+                    if (data.res.status == 1) {
+                        var template_data = data.res ?.data;                     
+                        var message = template_data[0].message;
+                        // $("#email_template_message").val('');
+                        // $("#email_template_message").val(message);
+                        $('#g_email_template_message').summernote({height: 300});
+                        $('#g_email_template_message').summernote('code', message);
+                        $("#g_email_template_message_modal").modal('show');
+                    }
+                }
+            })
+                
+            }else{
+                alert("Plz Select Email Template");
+            }
+        })
+
+
+        $(document).on('click' , "#send_email_to_all_invoice" , function(){
+            var defult_email_template = $("#defult_email_template").val();
+            if (defult_email_template != '') {
+                $("#myModal .modal-dialog").addClass('modal-lg');
+
+                $('#myModal .modal-content').empty().load('ajax.php?modal=emailtemplete', function() {
+                    var defaultEmailTemplate = $("#defult_email_template").val();
+                    $('#myModal').modal('show');
+                    $("#myModal").on('shown.bs.modal', function () {
+                        // // email_template_title
+                        // $(".email_template_title").html('');
+                        // $(".email_template_title").html('Email To ' + clientName);
+                        $("#client_email_send_1").val('1');
+                        
+                        var modalDropdown = $(".templateSelect_d");
+
+                        if (modalDropdown.length > 0) {
+                            var dropdownOption = modalDropdown.find("option[value='" + defaultEmailTemplate + "']");
+                            if (dropdownOption.length > 0) {
+                                modalDropdown.val(defaultEmailTemplate);
+                                modalDropdown.trigger('change');
+                            }
+                        }
+                    });
+                });
+
+            }else{
+                alert("Plz Select Email Template");
+            }
+        })
+
+    </script>
+    
+    <style>
+    @media only screen and (max-width:1366px) and (min-width:768px){
+     .technician_filter {
+        float: left;
+        position: absolute;
+        right: 0%;
+        top: -34px;
+    }
+    .col-md-7.role-1 {
+        width: 59% !important;
+    }
+    }
+    </style>
+    
+    <style>
+    a.hegt21.btn.btn-success.btn-xs {
+        font-size: 12px !important;
+    }
+    span.rrfgh.label {
+        height: 21px;
+        display: inline-block;
+        padding-top: 6px;
+        padding-bottom: 0px;
+        border-radius: 2px;
+    }
+    </style>
+    
+    
+    
+    
+    
+    

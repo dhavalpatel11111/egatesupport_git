@@ -1,0 +1,2325 @@
+<style>
+/* .datepicker.dropdown-menu {
+    right: 0px !important;
+    left: auto !important;
+} */
+.padd_lft_7{ padding-left:7px;}
+.table-wrappr.text-center {
+        display: inline-block;
+        width: 100%;
+    }
+
+    .datepicker table tr td.disabled, .datepicker table tr td.disabled{
+        color: #777 !important;
+    }
+    .table-wrappr {
+        width: calc(33.33% - 10px);
+        display: flex;
+        gap: 15px;
+    }
+
+    .table-wrappr .bank-charges .text-center {
+        border-collapse: collapse;
+        border: unset !important;
+    }
+
+    .table-wrappr.bank-charges,
+    .table-row th,
+    .table-row td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .table-wrappr .bank-charges input {
+        border: unset !important;
+    }
+
+    .table-row tr,
+    .table-row td {
+        border-collapse: collapse !important;
+    }
+
+    .main-table-wrapper {
+        margin: 21px 5px 30px;
+    }
+
+    #tab-usage .bank-charges input {
+        width: 50px !important;
+        text-align: center;
+    }
+    table.text-center.bank-charges tfoot th,
+    table.text-center.bank-charges tfoot td {
+        border: none; /* or use border-style: none; */
+    }
+
+    .all-cal thead tr th,
+    .all-cal tbody tr th {
+        padding: 2px 18px 0px 18px;
+    }
+
+    .all-cal tfoot tr th {
+        display: block ruby;
+    }
+    .all-cal input {
+        width: 50px !important;
+    }
+
+    [data-tooltip] {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    [data-tooltip]::after {
+        content: attr(data-tooltip);
+        display: none;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px;
+        background-color: #eee;
+        border: 1px solid #333;
+        border-radius: 5px;
+        white-space: nowrap;
+    }
+
+    [data-tooltip]:hover::after {
+        display: block;
+    }
+   
+
+</style>
+
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+	<?php $asset_status=$lastcontract[0]['statusid'];?>
+        <h1><a href="?route=clients/manage&id=<?php echo $contract['clientid']; ?>&tab=department"><?php echo $clientname;?></a> : <?php echo $contract['contractno']; ?><span>&nbsp;&nbsp; Status :&nbsp;&nbsp;<?php if($asset_status !='On Service'){?><button type="button" class="btn btn-danger"><?php echo $asset_status;?></button>
+		<?php }else{?><button type="button" class="btn btn-success"><?php echo $asset_status;?></button><?php } ?>
+		</span><span><a title="Click to go previous page" href="?route=clients/manage&id=<?php echo $contract['clientid']; ?>&tab=department"><button style="background-color: #3c8dbc;color: white; font-weight: 700;" type="button" class="btn">Back To Ticket</button></a></span></h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="?route=contract">Contract</a></li>
+            <li class="active"><a href="?route=clients/manage&section=contract&id=<?php echo $contract['clientid']; ?>"><?php echo $clientname;?></a> : <?php echo $contract['contractno']; ?></li></ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-md-12">
+			
+			<?php 
+			$section = $_GET['section'];
+			?>
+                <!-- Custom Tabs (Pulled to the right) -->
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <?php 
+                            if(isset($is_page_plan) && $is_page_plan != 'yes'){ 
+                                $section = 'history';
+                            }
+
+                            if(isset($is_section) && $is_section == 'tickets'){
+                                $section = 'tickets';
+                            }
+
+                            if(isset($_GET['is_view_history']) && $_GET['is_view_history'] == 1){
+                                $section = 'tickets';
+                            }
+
+                        ?>
+                        <li <?php if ($section == "history") echo 'class="active"'; ?> ><a href="#tab-history" data-toggle="tab">History</a></li>
+                        <li <?php if ($section == "tickets") echo 'class="active"'; ?> ><a href="#tab-tickets" data-toggle="tab">Tickets</a></li>
+
+                        <?php 
+                        if(isset($is_page_plan) && $is_page_plan == 'yes'){ ?>
+                            <li <?php if ($section == ""  || $section == "contract") echo 'class="active"'; ?> ><a href="#tab-usage" data-toggle="tab">Usage Computation</a></li>
+                        <?php }
+                        ?>
+
+
+                        <li <?php if ($section == "page_count_report") echo 'class="active"'; ?> >
+                            <a href="#tab-page_count_report" data-toggle="tab">Page Count Report</a>
+                        </li>
+                        <li <?php if ($section == "files") echo 'class="active"'; ?> >
+                            <a href="#tab-files" data-toggle="tab">Files</a>
+                        </li>
+                        <li <?php if ($section == "edit") echo 'class="active"'; ?> >
+                            <a href="#tab-edit" data-toggle="tab">Update Contract</a>
+                        </li>
+						<li <?php if ($section == "consumable") echo 'class="active"'; ?> >
+                            <a href="#tab-consumable" data-toggle="tab">Consumable</a>
+                        </li>
+
+                        <div class="btn-group pull-right" style="padding:6px;">
+
+                            <a data-toggle='tooltip' title='New Ticket' class="btn btn-primary btn-sm " href="#" onClick='showM("ajax.php?modal=contractTicketAdd&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&contractid=<?php echo $contract['id']; ?>&clientid=<?php echo $contract['clientid']; ?>&section=tickets");return false'>New Ticket</i></a>
+                            <a data-toggle='tooltip' title='New Usage' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=contractUsageAdd&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&contractid=<?php echo $contract['id']; ?>&section=usage");return false'><i class="fa fa-tasks"></i></a>
+                            <a data-toggle='tooltip' title='Upload File' class="btn btn-default btn-sm " href="#" onClick='showM("ajax.php?modal=uploadContractFile&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&contractid=<?php echo $contract['id']; ?>&section=files");return false'><i class="fa fa-upload"></i></a>
+
+                        </div>
+
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <div class="tab-pane <?php if ($section == "history") echo 'active'; ?>" id="tab-history">
+
+                             <div class="table-responsive">
+                                <table id="dataTablesFull9" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Asset</th>
+                                            <!--<th>Asset Name</th>
+                                            <th>Model</th>
+                                            <th>Serial No.</th>-->
+                                            <th>Deployed Date</th>
+                                            <th>Pulled Out Date</th>
+                                            <th>Transaction Memo</th>
+                                            <th>Maintenance Notes</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        foreach ($histories as $key => $history) {
+                                        echo "<tr>";
+                                        echo "<td>".$history['history_id']."</td>";
+                                        echo "<td><a href='?route=assets/manage&id=".$history['id']."'>".$history['tag']. " : " . $history['name']. " : " . $history['model_name'] ." : " . $history['serial']. "</a></td>";                                      
+                                        //echo "<td>".$history['name']."</td>";
+                                        //echo "<td>".$history['model_name']."</td>";
+                                        //echo "<td>".$history['serial']."</td>";
+                                        $deployeddate = ($history['deployeddate'] == '0000-00-00' || $history['deployeddate'] == null) ? '' : $history['deployeddate'];
+                                        echo "<td>".$deployeddate."</td>";
+                                        $pulledoutdate = ($history['pulledoutdate'] == '0000-00-00' || $history['pulledoutdate'] == null) ? '' : $history['pulledoutdate'];
+                                        echo "<td>".$pulledoutdate."</td>";
+                                        echo "<td>".$history['memo']."</td>";
+                                        echo "<td>".$history['maintenance']."</td>";
+                                        echo "<td>
+                                        <div class='pull-right'>
+                                        <a target='_blank' href='?route=pdf/contract_history&id=".$history['history_id']."&contractid=".$contract['id']."&section=contract' class='btn-right text-dark'><i class='fa fa-file-pdf-o'></i></a>&nbsp;
+                                        <a href='#' onClick='showM(\"ajax.php?modal=contractHistoryEdit&reroute=contract/manage&routeid=".$contract['id']."&historyid=".$history['history_id']."\");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <!--<a href='#' onClick='showM(\"ajax.php?modal=contractHistoryDelete&reroute=clients/manage&routeid=".$contract['clientid']."&historyid=".$history['history_id']."\");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>-->
+                                        </div>
+                                        </td>";
+                                        echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane <?php if ($section == 'tickets') echo 'active'; ?>" id="tab-tickets">
+                            <div style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 10px;">
+                                <span class="form-group" style="margin-bottom: 0px;">
+                                    <?php 
+                                    if(isset($_GET['sfdate']) && $_GET['sfdate'] != ''){
+                                        $sfdate = 'value="'.$_GET['sfdate'] .'"';
+                                    }else{
+                                        $first_day_previous_month = date('Y-m-01', strtotime('first day of last month'));
+                                        $sfdate = 'placeholder="Start Date" value="'.$first_day_previous_month.'"';
+                                    }
+                                    ?>
+                                    <input type="text" style="width: 150px;" class="form-control datepicker-input" id="f_sfdate" name="f_sfdate" <?php echo $sfdate; ?> data-url_pera="<?php echo isset($_GET['id']) ? $_GET['id'] : 0; ?>" >
+                                    <!-- <span class="input-group-addon"><i class="fa fa-calendar"></i></span> -->
+                                </span>
+                
+                                <span class="form-group" style="margin-bottom: 0px;">
+                                    <?php 
+                                    if(isset($_GET['efdate']) && $_GET['efdate'] != ''){
+                                        $efdate = 'value="'.$_GET['efdate'] .'"';
+                                    }else{
+                                        $efdate_db = get_pending_frequency_filter_val('efdate');
+                                        if($efdate_db != ''){
+                                            $efdate = 'placeholder="End Date" value="'.$efdate_db.'"';
+                                        }else{
+                                            $current_date = date('Y-m-d');
+                                            $efdate = 'placeholder="End Date" value="'. $current_date .'"';
+                                        }
+                                    }
+                                    ?>
+                                    <input type="text" style="width: 150px;" class="form-control datepicker-input" id="f_efdate" name="f_efdate" <?php echo $efdate; ?> data-url_pera="<?php echo isset($_GET['id']) ? $_GET['id'] : 0; ?>">
+                                    <!-- <span class="input-group-addon"><i class="fa fa-calendar"></i></span> -->
+                                </span>
+
+                                <span style="margin-bottom: 0px;">
+                                    <?php 
+                                    $quick_filter = isset($_GET['quick_filter']) ? $_GET['quick_filter'] : '';
+                                    ?>
+                                    <select name="quick_filter" id="quick_filter" class="form-control select2 select2-accessible select2-hidden-accessible" style="width: max-content;">
+                                        <option value="">Select Quick Filter</option>
+                                        <option value="30" <?php echo $quick_filter == 30 ? 'selected' : ''; ?> >30</option>
+                                        <option value="60" <?php echo $quick_filter == 60 ? 'selected' : ''; ?> >60</option>
+                                        <option value="90" <?php echo $quick_filter == 90 ? 'selected' : ''; ?> >90</option>
+                                        <option value="120" <?php echo $quick_filter == 120 ? 'selected' : ''; ?> >120</option>
+                                        <option value="150" <?php echo $quick_filter == 150 ? 'selected' : ''; ?> >150</option>
+                                        <option value="180" <?php echo $quick_filter == 180 ? 'selected' : ''; ?> >180</option>
+                                        <option value="210" <?php echo $quick_filter == 210 ? 'selected' : ''; ?> >210</option>
+                                        <option value="240" <?php echo $quick_filter == 240 ? 'selected' : ''; ?> >240</option>
+                                        <option value="270" <?php echo $quick_filter == 270 ? 'selected' : ''; ?> >270</option>
+                                        <option value="300" <?php echo $quick_filter == 300 ? 'selected' : ''; ?> >300</option>
+                                        <option value="330" <?php echo $quick_filter == 330 ? 'selected' : ''; ?> >330</option>
+                                        <option value="360" <?php echo $quick_filter == 360 ? 'selected' : ''; ?> >360</option>
+                                    </select>
+                                </span>
+                
+                                <!-- <span class="form-group" style="margin-top: 6px; margin-bottom: 0px;">
+                                    <a class='set_val' style='background: #3C8DBC; color: #fff; cursor:pointer; padding: 6px 10px 8px 10px;' >Set</a>
+                                </span> -->
+
+                                <span class="form-group" style="margin-top: 6px; margin-bottom: 0px; margin-left: 10px;">
+                                    <span style="font-size: 17px; text-wrap: nowrap;">Total Ticket Counts: <span style="color: red;"><?php echo isset($tickets_count) ? $tickets_count : 0; ?> </span></span>
+                                </span>
+                                
+                            </div>
+                            <div class="table-responsive">
+                                <table id="dataTablesFullTickects" class="table table-striped table-hover" style="width: 100%; overflow-x: scroll;">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Ticket #</th>
+                                            <th>Date</th>
+                                            <th>Subject</th>
+                                            <!--<th>Assigned To</th>-->
+                                            <th>Related Entities</th>
+                                            <!-- new added th -->
+                                            <th>Diagnose Comment</th>
+                                            <th><i class="fa fa-info-circle" aria-hidden="true" title="Problem Image"></i></th>
+                                            <th>Technician Comments</th>
+                                            <th><i class="fa fa-info-circle" aria-hidden="true"  title="Fixed Image"></i></th>
+                                            <th>Action Taken</th>
+                                            <th title="Technician who completed this ticket">Technician </th>
+                                            <!-- new added th -->
+                                            <th>Status</th>
+                                            <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($tickets as $ticket) { ?>
+                                        <tr>
+                                            <td>
+                                                <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['id']; ?></a>
+                                            </td>
+
+                                            <td>
+                                                <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'><?php echo $ticket['ticket']; ?></a>
+                                            </td>
+
+                                            <td class="oneline" style="text-wrap: nowrap;"><?php echo $ticket['timestamp']?></td>
+
+                                            <td style="text-wrap: nowrap;">
+                                                <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>'>
+                                                    <?php echo getSingleValue("ticketsubject","subject",$ticket['subject']); ?>
+                                                </a>
+                                            </td>
+                                            <!--<td><?php if($ticket['adminid'] != 0) echo getSingleValue("people","name",$ticket['adminid']); else echo "<span class='text-muted'>Nobody</span>"; ?></td>-->
+                                            <td style="text-wrap: nowrap;"><?php
+                                                if($ticket['clientid'] != 0) 
+                                                    //echo "<a href='?route=clients/manage&id=".$ticket['clientid']."'><span class='label' style=\"background-color:#FFF;color:#0073b7;border:1px solid #0073b7;\">" . getSingleValue("clients","name",$ticket['clientid']) . "</span></a> ";
+                                                $assetid = getSingleValue("contract","assetid",$ticket['contractid']);
+                                                $assettag = getSingleValue("assets","tag",$assetid);
+                                                $modelid = getSingleValue("assets","modelid",$assetid);
+                                                $assetmodel = getSingleValue("models","name",$modelid);
+                                                if($ticket['contractid'] != 0) echo "<a href='?route=contract/manage&id=".$ticket['contractid']."'><span class='label' style=\"background-color:#FFF;color:#001F3F;border:1px solid #001F3F;\"> " . getSingleValue("contract","contractno",$ticket['contractid']) . " | " .$assettag .":" . $assetmodel . "</span></a>";
+                                                ?>
+                                            </td>
+
+                                            <!-- new added  -->
+                                            <td>
+                                                <?php
+                                               $detail =  get_ticket_detail_for_contract_manage($ticket['id']);
+                                                ?>
+                                                <?php 
+                                                    if(!empty($detail)){
+                                                        $diagnose_comment = isset($detail['diagnose_comment']) ? $detail['diagnose_comment'] : '';
+                                                        echo $diagnose_comment;
+                                                    }
+                                                ?>
+                                            </td>
+
+                                            <td>
+                                                <?php 
+                                                if(isset($detail['technician_file']) && $detail['technician_file'] != ''){ ?>
+                                                    <a target="_blank" title="<?php echo $detail['technician_file']; ?>"
+                                                        href="<?php echo $baseurl; ?>uploads/technician_file/<?php echo $detail['technician_file']; ?>">
+                                                        <i class="fa fa-file"></i>
+                                                    </a> 
+                                                <?php }
+                                                ?>
+                                           
+                                            </td>
+
+                                            <td>
+                                                <?php 
+                                                    if(!empty($detail)){
+                                                        $technician_comment = isset($detail['technician_comment']) ? $detail['technician_comment'] : '';
+                                                        echo $technician_comment;
+                                                    }
+                                                ?>
+                                            </td>
+
+                                            <td class="oneline">
+                                                <?php 
+                                                if(isset($detail['fixed_image']) && $detail['fixed_image'] != ''){ ?>
+                                                <a target="_blank" title="<?php echo $detail['fixed_image']; ?>"
+                                                    href="<?php echo $baseurl; ?>uploads/fixed_image/<?php echo $detail['fixed_image']; ?>">
+                                                    <i class="fa fa-file"></i>
+                                                </a>
+                                                <?php }
+                                                ?>
+                                            </td>
+
+                                            <td>
+                                                <?php 
+                                                    echo get_ticket_action_name($detail['problem_category']);
+                                                ?>
+                                            </td>
+
+                                            <td>
+                                                <?php 
+                                                    if($ticket['status'] == "Closed"){
+                                                        //echo get_closed_tickets_person($ticket['id']);
+                                                        echo get_user_name_by_id($ticket['closed_by']);
+                                                    }else{
+                                                        echo get_user_name_for_updateed_tickets_detail_from_technician($ticket['id']);
+                                                    }
+                                                ?>
+                                            </td>
+
+                                            <!-- new added  -->
+                                            <td>
+                                                <?php if($ticket['status'] == "Open") echo "<span class='badge bg-green'>Open</span>"; ?>
+                                                <?php if($ticket['status'] == "In Progress") echo "<span class='badge bg-navy'>In Progress</span>"; ?>
+                                                <?php if($ticket['status'] == "Answered") echo "<span class='badge bg-teal'>Answered</span>"; ?>
+                                                <?php if($ticket['status'] == "Reopened") echo "<span class='badge bg-orange'>Reopened</span>"; ?>
+                                                <?php if($ticket['status'] == "Closed") echo "<span class='badge bg-gray'>Closed</span>"; ?>
+                                            </td>
+                                            <td>
+                                                <div class='pull-right' style="text-wrap: nowrap;">
+                                                    <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=contractTicketEdit&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $ticket['id']; ?>&section=tickets");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=contractTicketDelete&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $ticket['id']; ?>&section=tickets");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <style>
+                           
+                        </style>
+						
+                        <!-- /.tab-pane -->
+
+                        <div class="tab-pane <?php if (($section == "" || $section == "contract") && $is_page_plan == 'yes' ) echo 'active'; ?>" id="tab-usage">
+
+
+      
+                        <div class="main-table-wrapper">
+                                <div class="table-wrappr" style="gap: 40px; padding-left: 90px;">
+                                    <div>
+
+                                        <div class="table-row" style="margin-bottom: 15px;">
+                                            <table class="text-center bank-charges">
+                                                <tr>
+                                                    <th colspan="5" style="background: #E2E2E2;">BASIC CHARGES ( FREE PRINT PAGES )</th>
+                                                    <!-- <th colspan="1">
+                                                        <a href="#" onClick='showM("ajax.php?modal=basic_chargies&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&contractid=<?php echo $contract['id']; ?>&section=usage");return false' class='btn btn-danger btn-block text-dark'>Update</a>&nbsp;
+                                                    </th> -->
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">Black</td>
+                                                    <td colspan="2">Color</td>
+                                                    <td rowspan="2">Basic Charge</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>A4</td>
+                                                    <td>A3</td>
+                                                    <td>A4</td>
+                                                    <td>A3</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a4', $contract['id']);?>" name="basic_black_a4" disabled>
+                                                    </td>
+
+                                                    <td><input type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a3', $contract['id']);?>" name="basic_black_a3" disabled></td>
+
+                                                    <td><input type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a4', $contract['id']);?>" name="basic_color_print_a4" disabled></td>
+                                                    <td><input type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a3', $contract['id']);?>" name="a3c" disabled></td>
+                                                    <td>
+                                                        <input type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_charges', $contract['id']); ?>" name="basic_charges" id="basic_charges" disabled>
+                                                    </td>
+                                                    
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="table-row">
+                                            <table class="text-center bank-charges">
+                                                <tr>
+                                                    <th colspan="5" style="background: #E2E2E2; color: blue;">RATE PER ADDITIONAL PAGES</th>
+                                                    <!-- <th colspan="1"><a href="#" onClick='showM("ajax.php?modal=extra_basic_chargies&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&contractid=<?php echo $contract['id']; ?>&section=usage");return false' class='btn btn-danger btn-block text-dark'>Update</a>&nbsp;
+                                                    </th> -->
+                                                </tr>
+                                                <tr>
+                                                    <td rowspan="3"  style="padding: 7px 14px;"><p>Charge / Page</p></td>
+                                                    <td colspan="2">Black</td>
+                                                    <td colspan="2">Color</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>A4</td>
+                                                    <td>A3</td>
+                                                    <td>A4</td>
+                                                    <td>A3</td>
+                                                </tr>
+                                                <tr>
+                                                    
+                                                    <td><input type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a4', $contract['id']);?>" name="extra_black_a4" disabled></td>
+
+                                                    <td><input type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a3', $contract['id']);?>" name="extra_black_a3" disabled></td>
+
+                                                    <td><input type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a4', $contract['id']);?>" name="extra_color_print_a4" disabled></td>
+
+                                                    <td><input type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a3', $contract['id']);?>" name="extra_color_print_a3" disabled></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="table-row">
+                                        <table class="text-center bank-charges all-cal">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2" rowspan="2" style="background: #E2E2E2;"></th>
+                                                    <!-- <th colspan="2" rowspan="2" style="background: #E2E2E2;">Period</th> -->
+                                                    <th colspan="1" rowspan="2" style="background: #E2E2E2;">
+                                                        <div data-tooltip="Total Number of Pages Printed During Specified Timeframe">PRINTED</div>
+                                                    </th>
+                                                   
+                                                    <th colspan="1" rowspan="2" style="background: #E2E2E2;"><div data-tooltip="Total Number of  Pages Covered by Basic Charges">FREE</div></th>
+                                                    <th colspan="1" rowspan="2" style="background: #E2E2E2;"><div data-tooltip="Total Number of Pages Printed Beyond the Free Allocation">EXCESS</div></th>
+                                                    <th colspan="1" rowspan="2" style="background: #E2E2E2;"><div data-tooltip="Rate Per Additional Pages">RATE</div></th>
+                                                    <th colspan="1" rowspan="2" style="background: #E2E2E2;">AMOUNT</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="2" style="padding: 0px 9px; writing-mode: vertical-rl; ">Black</td>
+                                                <td style="padding: 0px 18px; ">A4</td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="black_a4" id="black_a4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a4', $contract['id']);?>" name="basic_ba4" id="basic_ba4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="exess_black_a4" id="exess_black_a4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a4', $contract['id']);?>" name="exce_charge_ba4" id="exce_charge_ba4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="cost_ba4" id="cost_ba4" disabled></td>
+                                            </tr>
+                                            <tr>
+                                                <td>A3</td>
+                                                <!-- <td><input type="text" value="" name="a3"></td>
+                                                <td><input type="text" value="" name="a3"></td> -->
+                                                <td><input style="width: 75px !important;" type="text" value="" name="black_a3" id="black_a3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a3', $contract['id']);?>" name="basic_ba3" id="basic_ba3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="exess_black_a3" id="exess_black_a3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a3', $contract['id']);?>" name="exce_charge_ba3" id="exce_charge_ba3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="cost_ba3" id="cost_ba3" disabled></td>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="2" style="padding: 0px 9px; writing-mode: vertical-rl; ">color</td>
+                                                <td>A4</td>
+                                                <!-- <td><input type="text" value="" name="c3"></td>
+                                                <td><input type="text" value="" name="c4"></td> -->
+                                                <td><input style="width: 75px !important;" type="text" value="" name="color_a4" id="color_a4"  disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a4', $contract['id']);?>" name="basic_ca4" id="basic_ca4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="exess_black_ca4" id="exess_black_ca4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a4', $contract['id']);?>" name="exce_charge_ca4" id="exce_charge_ca4" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="cost_ca4" id="cost_ca4" disabled></td>
+                                            </tr>
+                                            <tr>
+                                                <td>A3</td>
+                                                <!-- <td><input type="text" value="" name="c3"></td>
+                                                <td><input type="text" value="" name="c3"></td> -->
+                                                <td><input style="width: 75px !important;" type="text" value="" name="color_a3" id="color_a3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a3', $contract['id']);?>" name="basic_ca3" id="basic_ca3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="exess_black_ca3" id="exess_black_ca3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a3', $contract['id']);?>" name="exce_charge_ca3" id="exce_charge_ca3" disabled></td>
+                                                <td><input style="width: 75px !important;" type="text" value="" name="cost_ca3" id="cost_ca3" disabled></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="3"></td>
+                                                <td colspan="3" style="border: 1px solid; font-weight: 700;" scope="row">ADDITIONAL CHARGES</td>
+                                                <td style="border: 1px solid;"><input style="width: 75px !important;" type="text" value="" name="totalcost" id="totalcost" disabled></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3"></td>
+                                                <td colspan="3" style="border: 1px solid; font-weight: 700;" scope="row">BASIC CHARGES</td>
+                                                <td style="border: 1px solid;">
+                                                    <input style="width: 75px !important;" type="text" style="width: 100px;" value="<?php echo getSingleBasicformValue('print_chargies','basic_charges', $contract['id']); ?>"
+                                                        name="basic_charges" disabled>
+                                                </td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3"></td>
+                                                <td colspan="3" style="border: 1px solid; font-weight: 700;" scope="row">TOTAL BILL AMOUNT</td>
+                                                <td style="border: 1px solid;"><input style="width: 75px !important;" type="text" value="" name="grand_total" id="grand_total" disabled></td>
+                                            </tr>
+                                        </tfoot>
+                                        </table>
+                                    </div>
+
+                                <!-- <div class="table-wrappr"> -->
+                                    
+                                    <div>
+                                        <div class="table-row" style="margin-bottom: 15px;">
+                                            <table class="text-center bank-charges">
+                                                <tr>
+                                                    <th colspan="5" style="background: #E2E2E2;">PER PAGE PLAN NOTES & REMARKS</th>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5"><textarea name="extrachargies" id="extrachargies" cols="50" ><?php echo getSingleBasicformValue('print_chargies', 'extrachargies', $contract['id']);?></textarea>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="table-row">
+                                            <table class="text-center bank-charges">
+                                                <tr>
+                                                    <th colspan="5" style="background: #E2E2E2;">FILE ATTACHMENT</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <form role="form" enctype="multipart/form-data" method="post">
+                                                                <input type="hidden" name="addimageContract">
+                                                                <input type="hidden" name="contract_hid" id="contract_hid">
+                                                                <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+                                                                <input type="hidden" id="clientidin" name="routeid" value="<?php echo $contract['id']; ?>">
+                                                                
+                                                                <!-- <div class="form-group">
+                                                                    <input  style="width: 387px !important;" type="file" class="form-control" id="attachment" data-contract-id="<?php echo $contract['id']; ?>" name="attachment[]" multiple>
+                                                    
+                                                                    <button type="submit" class="btn btn-success mt-2" id="savee">
+                                                                        <i class="fa fa-save"></i> Save
+                                                                    </button>
+                                                                </div> -->
+                                                                <div class="file_attachment" style="width: 350px; margin: 0px 0px 18px;">
+                                                                    <p>No File Attached</p>
+                                                                </div>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                <!-- </div> -->
+                            </div>
+                            <hr>
+							
+                            <div class="table-responsive filterhide">
+							
+							<?php 
+							
+							if($contract['is_end'] != 1){ 
+							
+							if($lastcontract[0]['statusid'] != "On Hold"){ 
+						
+							echo "<a href='#' onClick='showM(\"ajax.php?modal=contractUsageAdd&reroute=contract/manage&routeid=".$contract['id']."&contractid=".$contract['id']."&section=contract\");return false' class='btn btn-primary' style='float: right; margin-top: 16px;'>Add New Usage</a>";
+							}
+							}
+							?>
+
+
+							<form method="POST" name="fil">
+							<div class="col-md-3">
+							<div class="form-group">
+							<label for="sfdate">Start Date</label>
+							<div class="input-group">
+							<input type="text" class="form-control datepicker-input" id="sfdate" name="sfdate" value="<?php echo $_GET['sfdate']; ?>">
+							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+							</div>
+							</div>
+							</div>
+							<div class="col-md-3">
+							<div class="form-group">
+							<label for="efdate">End Date</label>
+							<div class="input-group">
+							<input type="text" class="form-control datepicker-input" id="efdate" name="efdate" value="<?php echo $_GET['efdate']; ?>">
+							<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+							</div>
+							</div>
+							</div>
+							<div class="col-md-1" style="margin-top:30px;"><?php	echo "<a class='rest' style='background: #3C8DBC;
+								color: #fff; padding: 6px 6px 8px 7px;' href='?route=contract/manage&id=".$contract['id']."&reroute=clients/manage&routeid=".$client['id']."&contractid=".$contract['id']."&section=contract'>Reset</a>"; ?></div>
+							</form>
+						
+							
+							
+							<?php foreach ($contract_usages as $key => $contract_usage) { } ?>
+
+                            
+								
+							
+							
+							
+                                <table id="dataTablesFullDesc" class="table table-striped table-hover">
+                                    <thead>
+									
+									<!-- 	<tr>
+										<th colspan="4" style="text-align:center; background: #E2E2E2;"></th>
+										<th colspan="5" style="text-align:center; background: #E2E2E2;">Start Milage</th>
+										<th colspan="5" style="text-align:center; background: #DBFCDB;">Cut Off Milage</th>
+										<th colspan="5" style="text-align:center; background: #D2D2D2;">Total Milage</th>
+										</tr> -->
+									
+                                        <tr>
+                                            <!-- <th style=""></th> -->
+                                            <th>#</th>
+                                            <!-- <th><input type="checkbox" id="chkticketall"></th> -->
+                                            <th></th>
+                                            <th>Client</th>
+                                            <th>Reference No.</th>
+                                            <th>Bill Month</th>
+                                            <th>SKU</th>
+                                            <th>Modal</th>
+                                            <th>Start Date</th>
+											<th style="text-align: center;">A3-Color</th>
+											<th style="text-align: center;">A3-Black</th>
+											<th style="text-align: center;">A4-Color</th>
+											<th style="text-align: center;">A4-Black</th>
+											<th>Usage Remarks</th>
+											<th style="text-align: center;">A3-Color</th>
+											<th style="text-align: center;">A3-Black</th>
+											<th style="text-align: center;">A4-Color</th>
+											<th style="text-align: center;">A4-Black</th>
+											<th style="">Remarks</th>
+                                            <th></th>
+                                            <th style=""></th>
+                                        </tr>
+									
+										
+                                    </thead>
+                                    <tbody>
+									
+									<?php 	$tcolora3 = 0;
+											$tcolora4 = 0;
+											$tblacka3 = 0;
+											$tblacka4 = 0;
+											
+											
+									?>
+									
+											
+                                        <?php foreach ($contract_usages as $key => $contract_usage) { 
+                            
+										if($contract_usage['statusid'] == 'For Pullout'){
+										?>
+										
+										<?php } ?>
+                                        <tr>
+      
+                                            <td><?php echo ($key + 1); ?></td>
+                                            <td><input type='checkbox' data-contraxt_id="<?php echo $contract_usage['id']; ?>" name='checkticket[]' id="check_<?php echo ($key + 1); ?>" value='<?php echo ($key + 1); ?>'></td>
+                                            <td><?php echo getSingleValue("clients","name",$contract_usage['clientid']);?></td>
+                                            <td><?php echo $contract_usage['ref_no']?></td>
+                                            <td><?php echo $contract_usage['billofmonth']?></td>
+                                            <td><?php echo getSingleValue("assets","sku",$contract_usage['assetid']);?></td>
+                                            <td><?php 
+											
+												$modlid = getSingleValue("assets","modelid",$contract_usage['assetid']);
+												echo getSingleValue("models","name",$modlid);
+											
+											?></td>
+                                             
+                            <td> <div data-tooltip="Cut Off Date"><p style="margin: 0px;color: blue;font-weight: 700;"><?php echo $contract_usage['enddate']; ?></p></div><br><div data-tooltip="StartDate"><p style="margin: 0px;margin: 0px;color: black;font-weight: 700;"><?php echo $contract_usage['startdate']; ?></p></div></td>
+
+                            <td>
+                                <?php 
+                                    if (isset($contract_usages[$key + 1]['assetid']) && $contract_usage['assetid'] != $contract_usages[$key + 1]['assetid']) { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['ecolora3']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['scolora3']); ?>
+                                        </p>
+                                    <?php } else { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['ecolora3']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usages[$key + 1]['ecolora3']); ?>
+                                        </p>
+                                    <?php } ?>
+                            </td>
+
+                            <!-- $contract_usage['scolora3'] -->
+
+                            <td>
+                                <?php 
+                                    if (isset($contract_usages[$key + 1]['assetid']) && $contract_usage['assetid'] != $contract_usages[$key + 1]['assetid']) { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['eblacka3']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['sblacka3']); ?>
+                                        </p>
+                                    <?php } else { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['eblacka3']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usages[$key + 1]['eblacka3']); ?>
+                                        </p>
+                                    <?php } ?>
+                            </td>
+
+                            <!-- $contract_usage['sblacka3'] -->
+
+                            <!-- Repeat the similar structure for the next two sections -->
+
+                            <td>
+                                <?php 
+                                    if (isset($contract_usages[$key + 1]['assetid']) && $contract_usage['assetid'] != $contract_usages[$key + 1]['assetid']) { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['ecolora4']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['scolora4']); ?>
+                                        </p>
+                                    <?php } else { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['ecolora4']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usages[$key + 1]['ecolora4']); ?>
+                                        </p>
+                                    <?php } ?>
+                            </td>
+
+                            <!-- $contract_usage['scolora4'] -->
+
+                            <td>
+                                <?php 
+                                    if (isset($contract_usages[$key + 1]['assetid']) && $contract_usage['assetid'] != $contract_usages[$key + 1]['assetid']) { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['eblacka4']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['sblacka4']); ?>
+                                        </p>
+                                    <?php } else { ?>
+                                        <p class="usagedata" style="margin: 0px; color: blue; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usage['eblacka4']); ?>
+                                        </p>
+                                        <p class="usagedata" style="margin: 0px; color: black; font-weight: 700; text-align: center;">
+                                            <?php echo number_format($contract_usages[$key + 1]['eblacka4']); ?>
+                                        </p>
+                                    <?php } ?>
+                            </td>
+
+                                <!-- $contract_usage['sblacka4'] -->
+
+								<?php if($contract_usage['enddate'] == ''){ ?>
+                                <!-- <td style="color: blue;font-weight: 700;text-align: center;"><?php echo $contract_usage['enddate']; ?></td> -->
+								<!-- <td class="usagedata" style="color: blue;font-weight: 700;text-align: center;"><?php echo $contract_usage['ecolora3']; ?></td>
+								<td class="usagedata" style="color: blue;font-weight: 700;text-align: center;"><?php echo $contract_usage['eblacka3']; ?></td>
+								<td class="usagedata" style="color: blue;font-weight: 700;text-align: center;"><?php echo $contract_usage['ecolora4']; ?></td>
+								<td class="usagedata" style="color: blue;font-weight: 700;text-align: center;"><?php echo $contract_usage['eblacka4']; ?></td> -->
+                                
+								<!-- <td style="color: red;font-weight: 700;"><?php echo $contract_usage['description']; ?></td> -->
+                                
+                                    <?php 
+                                        if($contract_usage['description'] == "New Unit-Replaced"){ ?>
+                                            <td><span class="label" style="background-color:#808080;border:1px solid #808080"><?php echo $contract_usage['description']; ?></span></td>
+                                       <?php  } elseif($contract_usage['description'] == "Old Unit-Closed") { ?>
+                                            <td><span class="label" style="background-color:#FF0000;border:1px solid #FF0000"><?php echo $contract_usage['description']; ?></span></td>
+                                        <?php } else { ?>
+                                            <td style="color: red;font-weight: 700;"><?php echo $contract_usage['description']; ?></td>
+                                    <?php } ?>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo $contract_usage['tcolora3']; ?></td>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo $contract_usage['tblacka3']; ?></td>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo $contract_usage['tcolora4']; ?></td>
+								<td class="usagedata" style="text-align: center;"><?php echo $contract_usage['tblacka4']; ?></td>
+								<?php }else{ ?>
+
+								<!-- <td style="color: red;font-weight: 700;"><?php echo $contract_usage['description']; ?></td> -->
+                                <?php 
+                                if($contract_usage['description'] == "New Unit-Replaced"){ ?>
+                                    <td><span class="label" style="background-color:#808080;border:1px solid #808080"><?php echo $contract_usage['description']; ?></span></td>
+                               <?php  } elseif($contract_usage['description'] == "Old Unit-Closed") { ?>
+                                    <td><span class="label" style="background-color:#FF0000;border:1px solid #FF0000"><?php echo $contract_usage['description']; ?></span></td>
+                                <?php } else { ?>
+                                    <td style="color: red;font-weight: 700;"><?php echo $contract_usage['description']; ?></td>
+                                <?php } ?>
+
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo number_format($contract_usage['tcolora3']); ?></td>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo number_format($contract_usage['tblacka3']); ?></td>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo number_format($contract_usage['tcolora4']); ?></td>
+								<td class="usagedata" style="color: red;font-weight: 700;text-align: center;"><?php echo number_format($contract_usage['tblacka4']); ?></td>
+								<?php } ?> 
+											<td style=""><?php echo $contract_usage['statusid']; ?></td>
+                                            <td>
+                                                <?php
+                                                if (!empty($contract_usage['attachment'])) {
+                                                    $attachmentArray = unserialize($contract_usage['attachment']);
+                                                    global $scriptpath;
+                                                
+                                                    $host = $_SERVER['HTTP_HOST'];
+                                                    $host_upper = strtoupper($host);
+                                                    $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                                                    $baseurl = "http://" . $host . $path . "/";
+                                                    $targetdir = $baseurl . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'usage_file_attachment' . DIRECTORY_SEPARATOR;
+                                                
+                                                    foreach ($attachmentArray as $filename) {
+                                                        $imagePath = $targetdir . $filename;
+                                                        $from = preg_replace('/\.[^.]+$/','',$filename);
+                                                        $class_file = pathinfo($filename, PATHINFO_FILENAME); 
+                                                    
+                                                        if ($imagePath && $filename) {
+                                                            echo '<div class="usuageimageList_' . $class_file . '">';
+                                                            echo '<a href="' . $imagePath . '" target="_blank">';
+                                                            echo '<i class="fa fa-file" aria-hidden="true"></i></a> ';
+                                                            echo '</div>';
+                                                        } 
+                                                    }
+                                                } 
+                                            ?>
+                                            </td>
+                                            <td><a href="#" onClick='showM("ajax.php?modal=contractUsageEdit&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $contract_usage['id']; ?>&section=usage");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a></td>
+                                            <td>
+                                                <?php 
+                                                  if($contract_usage['flag'] != 'yes') {
+                                                    if ($key === 0) {
+                                                ?>
+                                                <a class="btn btn-default btn-sm" href="#" data-id="<?php echo $contract_usage['id']; ?>" onClick="DeleteContarctRecord(<?php echo $contract_usage['id']; ?>); return false;">X</a>
+                                                <?php } } ?>
+                                            </td>
+                                            
+                                            <!--td><span class='autoNumeric'><?php // echo $contract_usage['start_mileage']; ?></span></td>
+                                            <td><span class='autoNumeric'><?php // echo $contract_usage['end_mileage']; ?></span></td>
+                                            <td><span class='autoNumeric'>
+											<?php
+													//echo "dfs";
+												//echo '12345';
+											// echo $usage= getTotalAmount('contract_usages','month_mileage','contractid',$_GET['contractid']);
+											
+											$tcolora3 = $tcolora3 + $contract_usage['tcolora3'];
+											$tcolora4 = $tcolora4 + $contract_usage['tblacka3'];
+											$tblacka3 = $tblacka3 + $contract_usage['tcolora4'];
+											$tblacka4 = $tblacka4 + $contract_usage['tblacka4'];
+											
+											
+											?></span></td--->
+                                            
+                                        </tr>
+                                        <?php } ?>
+										<div class="colorit" style="text-align:center; color:red; margin-top: 20px;">
+										<?php
+										echo "<span class='labe' style='font-size: 18px; font-weight: 600;'>Total Milage  :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>";
+										
+										echo "<span class='labe' style='font-size: 18px; font-weight: 600;'> Color A3 :&nbsp;&nbsp;</span><span class='valu' style='color: #3c8dbc; font-size: 18px; font-weight: 600;'>".number_format($tcolora3)."</span>";
+										echo "&nbsp;&nbsp;/<span class='labe' style='font-size: 18px; font-weight: 600;'> Black A3 :&nbsp;&nbsp;</span><span class='valu' style='color: #3c8dbc; font-size: 18px; font-weight: 600;'>".number_format($tcolora4)."</span>";
+											echo "&nbsp;&nbsp;/<span class='labe' style='font-size: 18px; font-weight: 600;'> Color A4 :&nbsp;&nbsp;</span><span class='valu' style='color: #3c8dbc; font-size: 18px; font-weight: 600;'>".number_format($tblacka3)."</span>";
+											echo "&nbsp;&nbsp;/<span class='labe' style='font-size: 18px; font-weight: 600;'> Black A4 :&nbsp;&nbsp;</span><span class='valu' style='color: #3c8dbc; font-size: 18px; font-weight: 600;'>".number_format($tblacka4)."</span>"; ?>
+										</div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane <?php if ($section == 'files') echo 'active'; ?>" id="tab-files">
+                            <?php if(empty($files)) { ?>
+                            <div class="alert alert-info">
+                                <i class="icon fa fa-info"></i> No files have been uploaded yet!
+                            </div>
+                            <?php } ?>
+
+                            <ul class="todo-list list-inline" id="fileslist">
+                                <?php foreach($files as $file) { ?>
+                                <li id="" style="width:28%;margin:10px;padding:12px;">
+                                    <div class="row">
+                                        <div class="col-xs-1" style="vertical-align:middle"><i class="fa fa-<?php echo fileIcon($file['file']); ?>"></i></div>
+                                        <div class="col-xs-10">
+                                            <?php echo $file['name'] . "<br><small>" . $file['file'] . "</small>"; ?>
+                                            <?php
+                                            //if(exif_imagetype($file['file'] > 0) {
+                                            echo "<a class='preview ' data-toggle='lightbox' href='http://" . $_SERVER['SERVER_NAME']  . "/uploads/". $file['file'] ."' >Preview</a>";
+                                            //}
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="<?php echo "ajax.php?contract_files=1&download=" . $file['id']; ?>" class='btn-right text-dark'><i class='fa fa-download'></i></a>&nbsp;
+                                        <a href="#" onClick='showM("ajax.php?modal=deleteContractFile&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $file['id']; ?>&section=files");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                </li>
+                                <?php } ?>
+                            </ul>
+
+                        </div>
+                        <div class="tab-pane <?php if ($section == 'edit') echo 'active'; ?>" id="tab-edit">
+                            <div class="row">
+                                <div class="col-xs-12">
+								
+								
+                                    <form id="edit-contract-form" role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateContractForm()">
+                                        <div class="form-group">
+                                            <label for="clientid" class="col-sm-2 control-label">Client *</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" value="<?php echo $clientname; ?>" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+    <label  title="Service Item " for="categoryid" class="col-sm-2 control-label">Contract Categories*</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-accessible" id="categoryid" name="categoryid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <?php foreach ($categories as $category) { echo "<option value='".$category['id']."'"; if($contract['categoryid']==$category['id']) echo " selected"; echo ">".$category['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contractno" class="col-sm-2 control-label">Contract No  *</label>
+                                            <div class="col-sm-2">
+                                                <input type="text" class="form-control" id="contractno" name="contractno" value="<?php echo $contract['contractno']; ?>" required readonly="">
+                                            </div>
+                                            <label for="contract_condition" class="col-sm-1 control-label">Contract Condition</label>
+                                            <div class="col-sm-5">
+                                                <input type="radio" class="form-check-input" value="Unlimited" id="unlimited" name="contract_condition" <?php echo ($contract['contract_condition'] == 'Unlimited') ? 'checked' : ''; ?>>
+                                                <label for="unlimited" class="form-check-label control-label ml-2">Unlimited</label>
+                                                
+                                                <input type="radio" class="form-check-input" value="page_plan" id="page_plan" name="contract_condition" <?php echo ($contract['contract_condition'] == 'page_plan') ? 'checked' : ''; ?>>
+                                                <label for="page_plan" class="form-check-label control-label ml-2">Page Plan</label>
+                                                
+                                                <input type="radio" class="form-check-input" value="consumable" id="consumable" name="contract_condition" <?php echo ($contract['contract_condition'] == 'consumable') ? 'checked' : ''; ?>>
+                                                <label for="consumable" class="form-check-label control-label ml-2">Consumable</label>
+                                                
+                                                <input type="radio" class="form-check-input" value="free_or_demo" id="free_or_demo" name="contract_condition" <?php echo ($contract['contract_condition'] == 'free_or_demo') ? 'checked' : ''; ?>>
+                                                <label for="free_or_demo" class="form-check-label control-label ml-2">Free or Demo</label>
+                                                
+                                                <input type="radio" class="form-check-input" value="others" id="others" name="contract_condition" <?php echo ($contract['contract_condition'] == 'others') ? 'checked' : ''; ?>>
+                                                <label for="others" class="form-check-label control-label ml-2">Others</label>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contracttype" class="col-sm-2 control-label">Contract Type *</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2 select2-accessible" id="contracttype" name="contracttype" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">Select Contract Type</option>
+                                                    <?php foreach ($contracttypes as $contracttype) { echo "<option value='".$contracttype['id']."'"; if($contract['contracttype']==$contracttype['id']) echo " selected"; echo ">".$contracttype['name']."</option>"; } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <?php
+
+                                            $selected_asset = array();
+                                            ?>
+                                            <label for="assetid" class="col-sm-2 control-label">Contract Asset ( Printer ) *</label>
+                                            <div class="col-sm-4">
+                                                <select class="form-control select2 select2-accessible" id="assetid" name="assetid" style="width: 100%;" tabindex="-1" aria-hidden="true" >
+                                                    <?php foreach ($assets as $asset) { 
+                                                    $selected = "";
+                                                    if($contract['assetid']==$asset['id']) {
+                                                    $selected_asset = $asset;
+                                                    $selected = " selected";
+													$oldassetid = $asset['id'];
+													$contractid = $contract['id'];
+													$cclientid = $contract['clientid'];
+													echo "<option value='".$asset['id'] ."'" . $selected . ">".$asset['tag'] . " : " .$asset['model_name']  . " : " .$asset['serial'] ."</option>";
+                                                    }
+                                                     } ?>
+                                                </select>
+                                            </div>
+											
+											<?php 
+											$enddate = getlastdata('contract_usages','enddate',['contractid'=>$contractid]);
+											$statusid =	getSingleValue("assets","statusid",$contract['assetid']);
+											if($enddate[0] == '' && $statusid == 7){ ?>
+									
+											<?php } ?>
+											
+											<div class="col-sm-4">
+                                           
+										 
+									<?php	
+									$enddate = getlastdata('contract_usages','enddate',['contractid'=>$contractid]);
+									$today = date("Y-m-d");
+									
+								
+											$statusid =	$contract['statusid'];
+											if($asset_status=='On Hold'){
+											?>
+											
+                                                <a href="?route=contract/Resume&contractid=<?php echo $contractid ;?>" class="btn btn-warning" style="margin-top:2px; margin-right:4px" onclick="return  confirm('Are you sure?');"> Resume </a>
+											<?php }
+											if($statusid == 8){
+											
+									     echo  " <a style='pointer-events: none; opacity: 0.5;
+                                            cursor: no-drop;' href='?route=contract/replaceassets&reroute=&cid=".$cclientid."&oaid=".$oldassetid."&coid=".$contractid."\"' class='btn btn-success'><i style='margin-right:5px;' class='fa fa-refresh'></i>Replace Asset</a>&nbsp;&nbsp;<a onClick='showM(\"ajax.php?modal=pullout&reroute=&cid=".$cclientid."&oaid=".$oldassetid."&coid=".$contractid."\");return false' class='btn btn-danger'><i style='margin-right:5px;' class='fa fa-danger'></i>Pull Out</a>
+                                            
+									<p>This asset is for pull out , can not be replaced !</p>";
+									} elseif($enddate[0] == ''){
+									?>
+									
+						                <!-- <a href="#" onClick='showM("ajax.php?modal=contractUsageEdit&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $contract_usage['id']; ?>&section=usage&forend=1");return false' title="Put on hold this contract before asset replacement or ending of contract" class='btn btn-danger'></i>Put On Hold</a> -->
+
+                                        <?php 
+                                        if($lastcontract[0]['statusid'] == "On Service"){ ?>
+
+                                            <a href="?route=contract/OnHold&contractid=<?= $contract['id']; ?>" class="btn btn-warning"  onclick="return  confirm('Are you sure?');">Put Contract On Hold</a>
+            
+                                        <?php } ?>
+                                    
+                                       <span title='Pls update print page count before asset replacement' data="<?php echo $contractid; ?>"><a href='?route=contract/replaceassets&cid=<?php echo $cclientid; ?>&oaid=<?php echo $oldassetid; ?>&coid=<?php echo $contractid; ?>' class='btn btn-success'><i style='margin-right:5px;' class='fa fa-refresh'></i>Replace Asset</a></span>
+
+                                        <?php   
+                                        if($lastcontract[0]['statusid'] != "On Service"){ ?>
+                                                <a href="?route=contract/endcontract&reroute=clients/manage&id=<?= $cclientid ?>&coid=<?php echo $contract['id']; ?>" class="btn btn-danger"onclick="return  confirm('Do You Want To End This Contract Y/N')">End Contract</a>
+                                        <?php } ?>
+
+                                    <!-- <span title='Pls update print page count before asset replacement' data="<?php echo $contractid; ?>"><a href='?route=contract/replaceassets&cid=<?php echo $cclientid; ?>&oaid=<?php echo $oldassetid; ?>&coid=<?php echo $contractid; ?>' class='btn btn-success'><i style='margin-right:5px;' class='fa fa-refresh'></i>Replace Asset</a></span>
+                                    <a href="?route=contract/endcontract&reroute=clients/manage&id=<?= $cclientid ?>&coid=<?php echo $contract['id']; ?>" class="btn btn-danger"onclick="return  confirm('Do You Want To End This Contract Y/N')">End Contract</a> -->
+
+
+									<?php	
+										
+									}else{
+										if($statusid == 2){
+										echo"<span title='Pls update print page count before asset replacement'><a title='Pls update print page count before asset replacement' style='pointer-events: none; opacity: 0.5;cursor: no-drop;float:left;' class='btn btn-success'><i style='margin-right:5px;' class='fa fa-refresh'></i>Replace Asset</a></span>";
+											
+										echo"<a style='pointer-events: none; opacity: 0.5;cursor: no-drop;float:left;' class='btn btn-danger'><i style='margin-right:5px;' class='fa fa-refresh'></i>End Contract</a>
+									<p style='width: 250px;'> Contract End Alredy !</p>";
+										}else{
+									 ?>
+
+
+                                    
+                                    <?php 
+                                    if($lastcontract[0]['statusid'] == "On Service"){ ?>
+
+                                    <a href="?route=contract/OnHold&contractid=<?= $contract['id']; ?>" class="btn btn-warning"  onclick="return  confirm('Are you sure?');">Put Contract On Hold</a>
+    
+                                    <?php } else {  ?>
+                                        <span title='Pls update print page count before asset replacement' data="<?php echo $contractid; ?>"><a href='?route=contract/replaceassets&cid=<?php echo $cclientid; ?>&oaid=<?php echo $oldassetid; ?>&coid=<?php echo $contractid; ?>' class='btn btn-success'><i style='margin-right:5px;' class='fa fa-refresh'></i>Replace Asset</a></span>
+                                        <?php } ?>
+									<a href="?route=contract/endcontract&reroute=clients/manage&id=<?= $cclientid ?>&coid=<?php echo $contract['id']; ?>" class="btn btn-danger"onclick="return  confirm('Do You Want To End This Contract Y/N')">End Contract</a>
+									<?php 
+										}
+									}
+										  ?> 
+											</div>
+											
+                                    <!-- <div class="col-sm-2">
+                                               <?php	
+											if($statusid == 8){
+											   
+									echo	" <a onClick='showM(\"ajax.php?modal=pullout&reroute=&cid=".$cclientid."&oaid=".$oldassetid."&coid=".$contractid."\");return false' class='btn btn-danger'><i style='margin-right:5px;' class='fa fa-danger'></i>Pull Out</a>";
+												}
+										 ?> 
+                                            </div> -->
+                                        </div>
+										<div class="form-group">
+						<div class="col-sm-5 control-label">
+<div class="form-group"> <label for="page_limit_per_month" class="col-sm-5 control-label">PL/M <span title="Page Limit Per Month" class="circle-1"><i  class="fa fa-info-circle" aria-hidden="true"></i></span>	</label>
+   <div class="col-sm-7 padd_lft_7"><div class="input-group">
+  <input type="number" class="form-control " id="page_limit_per_month" name="page_limit_per_month" value="<?php echo $contract['page_limit_per_month']?>"></div> </div> </div> </div><div class="col-sm-6">
+					 <div class="form-group">
+                                  
+    <label for="actual_pages_per_month" class="col-sm-5 control-label text-right">Actual pages per month</label>
+                  <div class="col-sm-5">
+                       <div class="input-group" style="width:100%;">
+               <input type="number" class="form-control " id="actual_pages_per_month" name="actual_pages_per_month" value="<?php echo $contract['actual_pages_per_month']?>">
+                                        </div></div></div></div></div>
+										
+                                        <!-- dhaval -->
+										<div class="form-group hidden-xs">
+                                            <label for="current_service_asset" class="col-sm-2 control-label">Current Service Asset</label>
+                                            <div class="col-sm-4">
+                                                <select class="form-control select2 select2-accessible" id="current_service_asset" name="current_service_asset" style="width: 100%;" tabindex="-1" aria-hidden="true" >
+                                                    <option value="" selected>-- Select Current Service Asset -- </option>
+                                                    <?php
+                                                     foreach ($assets as $asset) { 
+                                                        if($asset['status'] == 'Available'){
+                                                        
+                                                    $selected = "";
+                                                    if($contract['current_service_asset']==$asset['id']) {
+                                                    $selected_asset = $asset;
+                                                    $selected = " selected";
+													$oldassetid = $asset['id'];
+													$contractid = $contract['id'];
+													$cclientid = $contract['clientid'];
+													echo "<option value='".$asset['id'] ."'" . $selected . ">".$asset['tag'] . " : " .$asset['model_name']  . " : " .$asset['serial'] ."</option>";
+                                                    }else{
+                                                        echo "<option value='".$asset['id'] ."'" . $selected . ">".$asset['tag'] . " : " .$asset['model_name']  . " : " .$asset['serial'] ."</option>";
+                                                    }
+                                                }
+                                                     } ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- dhaval -->
+										<div class="form-group">
+                                            <label for="memo" class="col-sm-2 control-label">Deployment Memo</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="memo" name="memo" value="<?php echo $contract['memo']?>">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+								<label for="department" class="col-sm-2 control-label">Department</label>
+									<div class="col-sm-8">
+									
+	               <select  class="form-control select2" id="department" name="department" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                <span><option value=" " >Select Department -  If There is No Department Name , Pls Register Department  First</option></span>
+                                            <?php foreach ($dpname as $dpna) { 
+											
+							if($cclientid== $dpna['client_name']){
+		echo "<option value='".$dpna['id']."'"; echo(($dpna['id'] == $contract['department'])? "selected='selected'":'');  echo ">".$dpna['name']."</option>"; }} ?>
+                                        </select>
+                                    </div>
+                                </div>	
+										 <div class="form-group">
+                                    <label for="technician_name" class="col-sm-2 control-label"> Technician in Charge *</label>
+                                    <div class="col-sm-8 alnful">
+                                    <div class="row">
+									 <div class="col-sm-5">
+                       <select class="form-control select2 select2-accessible" id="technician_name" name="technician_name" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">Select Technician</option>
+                                            <?php foreach ($people as $peop) {
+											if($peop['role']=='technician'){ 
+											echo "<option value='".$peop['id']."'"; echo(($peop['id'] == $contract['technician_name'])? "selected='selected'":'');  echo ">".$peop['name']."</option>"; } }?>
+                                        </select>
+                                    </div>
+									 <div class="col-sm-5">
+									  <div class="form-group">
+									 <div class="col-sm-11">
+               <div class="input-group" style="width:100%;">
+                                            <input type="mail" class="form-control " placeholder="Mail id" id="mail_id" name="mail_id" value="<?php echo $contract['technician_mail_id']?>" readonly>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+									 <div class="col-sm-2">
+									  <div class="form-group">
+                                  <div class="col-sm-12">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control mobile_no" placeholder="Mobile No." id="mobile_no"value="<?php echo $contract['technician_mobile_no']?>" name="mobile_no" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+									
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+										
+										
+										
+									   <div class="form-group">
+                                            <label for="Status" class="col-sm-2 control-label">Contract - Service Status</label>
+                                            <div class="col-sm-8">
+											
+											<?php 
+										$assetss = getTable("contract");	
+                                  foreach($assetss as $asset){
+								    if($asset['contractno']== $contract['contractno']){
+								  
+										$status_id   = $asset['statusid'] ;
+										$nameatatus = getSingleValue("labels","name",$status_id);
+										
+										}
+										}
+											?>
+                                                <input type="text" class="form-control" id="slable" name="slable" value="<?= $nameatatus ?>" readonly>
+                                            </div>
+                                        </div>
+										
+										
+                                        <div class="form-group">
+                                            <label for="maintenance" class="col-sm-2 control-label">Maintenance Notes</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="maintenance" name="maintenance" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="asset_tag" class="col-sm-2 control-label">Asset Tag</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="asset_tag" name="asset_tag" readonly="" value="<?php echo $selected_asset['tag']?>">
+                                            </div>
+                                        </div>
+										<div class="form-group">
+                                            <label for="SKU" class="col-sm-2 control-label">SKU</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="SKU" name="SKU" readonly="" value="<?php echo $selected_asset['sku']?>">
+                                            </div>
+                                        </div>
+										
+										 <div class="form-group">
+                                            <label for="asset_type" class="col-sm-2 control-label">Asset Category</label>
+                                            <div class="col-sm-8">
+                                                <?php
+                                                    $asset_type = getSingleValue("manufacturers","name",$selected_asset['manufacturerid']);
+                                                ?>
+                                                <input type="text" class="form-control" id="asset_type" name="asset_type" readonly="" value="<?php echo $asset_type?>">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mc_type" class="col-sm-2 control-label">M/C Type</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="mc_type" name="mc_type" readonly="" value="<?php echo $selected_asset['mc_type'] ?>">
+                                            </div>
+                                        </div><div class="form-group">
+                                            <label for="asset_name" class="col-sm-2 control-label">Asset Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="asset_name" name="asset_name" readonly="" value="<?php echo $selected_asset['name'] ?>">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="serial" class="col-sm-2 control-label">Serial Number</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $selected_asset['serial'] ?>" readonly="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modelid" class="col-sm-2 control-label">Model</label>
+                                            <div class="col-sm-8">
+                                                <input type="hidden" class="form-control" id="modelid" name="modelid" value="<?php echo $selected_asset['modelid'] ?>">
+                                                <input type="text" class="form-control" id="modelname" name="modelname" value="<?php echo $selected_asset['model_name'] ?>" readonly="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="display: flex; margin: auto; margin-bottom: 10px; width: 94%;">
+                                            <div style="display: flex; width: 32%; gap: 30px;">
+                                                <label for="contract_amount" class="control-label" style="text-wrap: nowrap;width: 79%; ">Contract Amount</label>
+                                                <input type="number" class="form-control " id="contract_amount" name="contract_amount" value="<?php echo $contract['contract_amount'] ?>" >
+                                            </div>
+
+                                            <div style="display: flex; width: 30%; gap: 10px; align-items: baseline;">
+                                                <label for="monthly_usage_fees_advance" class="control-label text-right" style="width: 80%;">Monthly Usage fees are to be paid in advance? Yes</label>
+                                                <?php 
+                                                    if(isset($contract['monthly_usage_fees_advance']) && $contract['monthly_usage_fees_advance'] == 1) {
+                                                        $checked = 'checked';
+                                                    } else {
+                                                        $checked = '';
+                                                    }
+                                                ?>
+                                                 <input type="checkbox" id="monthly_usage_fees_advance" name="monthly_usage_fees_advance" value="1" <?php echo $checked; ?>>
+                                            </div>
+
+                                            <div style="display: flex; gap: 10px;">
+                                                <label for="contract_amount" class="control-label text-right" style="text-wrap: nowrap;">Security Deposit</label>
+                                                <input type="number" class="form-control" id="deposit" name="deposit"  value="<?php echo $contract['deposit'] ?>">
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contract_expiry" class="col-sm-2 control-label">Customer Contract End Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control datepicker-input" id="contract_expiry" name="contract_expiry" value="<?php echo ($contract['contract_expiry'] == '0000-00-00' || $contract['contract_expiry'] == null) ? '' : $contract['contract_expiry']; ?>">
+                                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="template" class="col-sm-2 control-label">Template</label>
+                                            <div class="col-sm-8">
+                                                <textarea class="form-control summernote" id="template" name="template"><?php echo $contract['template'] ?></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="notes" class="col-sm-2 control-label">Admin Notes</label>
+                                            <div class="col-sm-8">  <textarea class="form-control summernote" id="notes" name="notes"><?php echo $contract['notes']; ?></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="print_page" style="display: none;">
+
+                                            <div class="form-group">
+                                                <label for="bank
+                                                _charges_pages" class="col-sm-6 control-label">Page Plan Details</label>
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="basic_charges" class="col-sm-2 control-label">Basic Charges</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="basic_charges" name="basic_charges" value="<?php echo getSingleBasicformValue('print_chargies','basic_charges', $contract['id']);?>">
+                                                </div>
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="black_printing" class="col-sm-2 control-label text-right">Black Printing</label>
+                                                <label for="color_printing" class="col-sm-5 control-label">Color Printing</label>
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="basic_black_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                            <input type="number" class="form-control" id="basic_black_a3" name="basic_black_a3" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a3', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="basic_black_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="basic_black_a4" name="basic_black_a4" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','basic_black_a4', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="basic_color_print_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="basic_color_print_a3" min="0" step="0.05" name="basic_color_print_a3" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a3', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="basic_color_print_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="basic_color_print_a4" name="basic_color_print_a4" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','basic_color_print_a4', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            <div class="form-group">
+                                                <label for="extra_chargeies" class="col-sm-2 control-label">Extra Charges</label>
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="black_printing" class="col-sm-2 control-label text-right">Black Printing</label>
+                                                <label for="color_printing" class="col-sm-5 control-label">Color Printing</label>
+                                            </div>
+            
+                                            <div class="form-group">
+                                                <label for="extra_black_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="extra_black_a3" name="extra_black_a3" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a3', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="extra_black_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="extra_black_a4" name="extra_black_a4" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','extra_black_a4', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="extra_color_print_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="extra_color_print_a3" name="extra_color_print_a3" min="0" step="0.05" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a3', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                                <label for="extra_color_print_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                                <div class="col-sm-1">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control " id="extra_color_print_a4" min="0" step="0.05" name="extra_color_print_a4" value="<?php echo getSingleBasicformValue('print_chargies','extra_color_print_a4', $contract['id']);?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            <div class="form-group">
+                                                <label for="extra_chargeies" class="col-sm-2 control-label">Page Plan Note</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group">
+                                                        <textarea name="extrachargies" id="extrachargies" cols="127" rows="5"><?php echo getSingleBasicformValue('print_chargies','extrachargies', $contract['id']);?></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+            
+                                            </div>
+
+                                        <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+                                        <input type="hidden" name="routeid" value="<?php echo $contract['clientid']; ?>">
+                                        <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+
+                                        <input type="hidden" name="editContract" id="editContract" value="">
+                                        <input type="hidden" name="redirect" id="redirect" value="">
+                                        <input type="hidden" name="id" value="<?php echo $contract['id']; ?>">
+
+                                        <div class="form-group save_button">
+                                            <label class="col-sm-2 control-label"></label>
+                                            <div class="col-sm-8">
+                                                <?php if($contract['is_end'] == 0) { ?>
+                                                <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </form><!-- /.form -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane <?php if ($section == 'consumable') echo 'active'; ?>" id="tab-consumable">
+							<form method="POST" name="fil">
+
+							    <div class="col-md-3">
+							        <div class="form-group">
+							            <label for="sfdate">Start Date</label>
+							            <div class="input-group">
+							                <input type="text" class="form-control datepicker-input" id="sfdate" name="sfdate" value="<?php echo $_GET['sfdate']; ?>">
+							                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+							            </div>
+							        </div>
+							    </div>
+
+							    <div class="col-md-3">
+							        <div class="form-group">
+							            <label for="efdate">End Date</label>
+							            <div class="input-group">
+							                <input type="text" class="form-control datepicker-input" id="efdate" name="efdate" value="<?php echo $_GET['efdate']; ?>">
+							                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+							            </div>
+							        </div>
+							    </div>
+							</form>
+							
+							<div style="margin-right:30px;">
+								<a data-toggle='tooltip' title='New Consumable' style="float:right;" class="btn btn-primary btn-sm " href="#" onClick='showM("ajax.php?modal=contractconsumableAdd&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&asetid=<?php echo $contract['assetid']; ?>&clientid=<?php echo $contract['clientid']; ?>&section=consumable");return false'>New Consumable</i></a>
+							</div>
+							<div style="clear:both"></div>
+                            <div class="table-responsive">
+                                <table id="dataTablesFull" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Date</th>
+                                            <th>Consumable Description</th>
+                                            <th>Cyan</th>
+                                            <th>Magenta</th>
+                                            <th>Yellow</th>
+                                            <th>Black</th>
+                                            <th>Others</th>
+                                            <th>Serviced By</th>
+                                            <th class="text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+										$cntv = 1;
+										foreach ($consumable as $ticket) { ?>
+                                        <tr>
+                                            <td><?php echo $cntv; ?></td>
+                                            <td><?php echo $ticket['date']; ?></td>
+                                            <td><?php echo getSingleValue("consumable_list","name",$ticket['consumable_type']); ?></td>
+                                            <td><?php echo $ticket['cyan']; ?></td>
+                                            <td><?php echo $ticket['magenta']; ?></td>
+                                            <td><?php echo $ticket['yellow']; ?></td>
+                                            <td><?php echo $ticket['black']; ?></td>
+                                            <td><?php echo $ticket['others']; ?></td>
+                                            <td><?php echo getSingleValue("people","name",$ticket['servced']); ?></td>
+                                            <td>
+                                                <div class='pull-right'>
+                                                   <!-- <a href='?route=tickets/manage&id=<?php echo $ticket['id']; ?>' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp; -->
+                                                    <a href='#' onClick='showM("ajax.php?modal=contractconsumabletEdit&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $ticket['id']; ?>&section=consumable");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                                    <a href='#' onClick='showM("ajax.php?modal=contractconsumableDelete&reroute=contract/manage&routeid=<?php echo $contract['id']; ?>&id=<?php echo $ticket['id']; ?>&section=consumable");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php $cntv++; } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane <?php if ($section == 'page_count_report') echo 'active'; ?>" id="tab-page_count_report">
+                            <div class="table-responsive">
+                                <!-- <table id="dataTablesFull" class="table table-striped table-hover" data-order="DESC" data-order-column="2"> -->
+                                    <table id="page_count_report_table" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Dup</th>
+                                            <th>Reference No.</th>
+                                            <th>Contract No</th>
+                                            <th>Date</th>
+                                            <th>Department</th>
+                                            <th>Model Name</th>
+                                            <th style="color: red;">A3</th>
+                                            <th>A3</th>
+                                            <th style="color: red;">A4 </th>
+                                            <th>A4</th>
+                                            <th>Remark</th>
+                                            <th>File</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+										$cntv = 1;
+										foreach ($page_count_report as $page_count) { 
+                                           $is_duplicate = check_dup_usage_report($page_count_report , $page_count['ref_no'] , $page_count['contract_id'] , $page_count['date'] , $page_count['id']);
+                                                if($is_duplicate){
+                                                        $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                                            <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                                                <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                                              </svg>
+                                                        </span>";
+                                                }else{
+                                                        $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                                                }
+                                            ?>
+                                        <tr>
+                                          <td><?php echo $page_count['id']; ?></td>
+                                          <td><?php echo $dup_html; ?></td>
+                                          <td><?php echo $page_count['ref_no']; ?></td>
+                                          <td><?php echo $page_count['contract_no']; ?></td>
+                                          <?php 
+                                          $date = $page_count['date'];
+                                          $dateParts = explode(' ', $date);
+                                          $formattedDate = $dateParts[0];
+                                          ?>
+                                          <!-- <td><?php // echo $formattedDate; ?></td> -->
+                                          <td><?php echo $page_count['date']; ?></td>
+                                          <td><?php echo $page_count['department']; ?></td>
+                                          <td><?php echo $page_count['modal_name']; ?></td>
+                                          <td><?php echo $page_count['A3clr']; ?></td>
+                                          <td><?php echo $page_count['A3blk']; ?></td>
+                                          <td><?php echo $page_count['A4clr']; ?></td>
+                                          <td><?php echo $page_count['A4blk']; ?></td>
+                                          <td><?php echo $page_count['remark']; ?></td>
+                                          <?php
+                                          $host = $_SERVER['HTTP_HOST'];
+                                          $host_upper = strtoupper($host);
+                                          $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                                          $baseurl = "http://" . $host . $path . "/";
+                                          $targetdir = $baseurl . 'uploads' . DIRECTORY_SEPARATOR . 'usage_report' . DIRECTORY_SEPARATOR; 
+                                          if($page_count['image'] != ''){
+                                              $imagePath = $targetdir . $page_count['image'];
+                                          }else{
+                                            $imagePath = '';
+                                          }
+                                          ?>
+                                          <!-- <td><img src="<?php echo $imagePath; ?>" height="80px"></td> -->
+                                          <td>
+                                            <?php
+                                            if($imagePath != ''){ ?>
+                                                <a href="<?php echo $imagePath; ?>" target="_blank">
+                                                    <i style="color:#3c8dbc;cursor: pointer;" class="fa fa-file" aria-hidden="true"> </i>
+                                                  </a>
+                                           <?php } ?>
+                                          </td>
+                                          <td>
+                                            <?php 
+                                           echo "<a href='#' onClick='showM(\"ajax.php?modal=EditUsagereport&reroute=clients&id=".$page_count['id']."\"); return false;' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                            <a href='#' onClick='showM(\"ajax.php?modal=DeleteUsagereport&reroute=clients&id=".$page_count['id']."&routeid=".$page_count['contract_id']."\"); return false;' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>";
+                                            ?>
+                                          </td>
+
+                                        </tr>
+                                        <?php $cntv++; } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+
+<script src=" https://cdn.jsdelivr.net/npm/toastr@2.1.4/toastr.min.js "></script>
+<link href=" https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css " rel="stylesheet">
+
+<script type="text/javascript">
+    $(document).ready(function () {
+	
+	
+		<!-- var rep = $("#repls").val(); -->
+		<!-- if(rep!=""){ -->
+		<!-- //alert('vfgvbbt'); -->
+		<!-- $( "#abcd" ).trigger( "click" ); -->
+		<!-- }; -->
+		$(".rest").click(function(){
+			
+			$("input.sfdate,input.efdate").val("");
+			var string_url = url + "&sfdate=" +sdate +"&efdate="+edate;	
+		window.location.replace(string_url);
+	
+		});
+   
+   
+	 $('#efdate').change(function () {
+	 
+	 var edate = $('#efdate').val();
+	 
+	 if($('#sfdate').val() == ''){
+	 
+	 
+      
+   }else{
+	 
+	 var sdate = $('#sfdate').val();
+	 
+		var lenthdate = $('#efdate').val().length;
+		
+		//alert(lenthdate);
+		var url      = window.location.href;
+		
+		var updatedString = url.replace("&status=20", "");
+		
+		var string_url = updatedString + "&sfdate=" +sdate +"&efdate="+edate;
+		//alert(string_url);
+		
+		window.location.replace(string_url);
+
+	}
+	});
+	  $('#template').summernote({height: 200});
+    $('#notes').summernote({height: 100});
+	 $('#technician_name').change(function () {
+            $.ajax({
+                url: "index.php?route=contract/get_technician&id=" + $(this).val(),
+                dataType: "json",
+                success: function (responde) {
+				
+                
+				$('#mail_id').val(responde.email);
+                    $('#mobile_no').val(responde.mobile);
+                    
+                }
+            });
+        });
+    $('#assetid').change(function () {
+    $.ajax({
+    url: "index.php?route=contract/get_asset&id=" + $(this).val(),
+            dataType: "json",
+            success: function (responde) {
+            //console.log(responde);
+            $('#asset_tag').val(responde.tag);
+            $('#asset_type').val(responde.asset_type);
+            $('#mc_type').val(responde.mc_type);
+            $('#asset_name').val(responde.name);
+            $('#serial').val(responde.serial);
+            $('#modelid').val(responde.modelid);
+            $('#modelname').val(responde.model_name);
+            }
+    });
+    });
+    $('#contracttype').change(function () {
+    $.ajax({
+    url: "index.php?route=contract/get_contracttype&id=" + $(this).val(),
+            dataType: "json",
+            success: function (responde) {
+            $('#template').summernote('code', responde.template);
+            }
+    });
+    });
+    $("#dataTablesFull9").dataTable({ "order": [[0, "desc"]], "pageLength": <?php echo getConfigValue("table_records"); ?> , "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "Search" }, "columnDefs": [ { "orderable": false, "targets": - 1 } ] });
+    $("#dataTablesFullTickects").dataTable({ "order": [[4, "desc"], [0, "desc"]], "pageLength": <?php echo getConfigValue("table_records"); ?> , "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, "columnDefs": [ { "orderable": false, "targets": - 1 } ] });
+    });
+    
+    function validateContractForm() {
+    var contracttype = $('#contracttype').val();
+    //console.log(contracttype);
+    if (contracttype == '0') {
+    $('html, body').animate({
+    scrollTop: $("#contracttype").offset().top
+    }, 2000);
+    $('#contracttype').addClass('invalid');
+    alert('Please select Contract Type!');
+    return false;
+    }
+
+    var assetid = $('#assetid').val();
+    //console.log(assetid);
+    if (assetid == '0') {
+    $('html, body').animate({
+    scrollTop: $("#assetid").offset().top
+    }, 2000);
+    $('#assetid').addClass('invalid');
+    alert('Please select Asset!');
+    return false;
+    }
+    $('#assetid').removeClass('invalid');
+    return true;
+    }
+    $('#end-contract-btn').click(function() {
+    $('#editContract').val('end');
+    $('#edit-contract-form').submit();
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+	//alert("hiii");
+	// ('#tab-edit').addClass('active');
+	 //('#tab-usage').removeClass('active');
+	// $("#contract_expiry").{ dateFormat: 'YY-mm-dd' };
+	 });
+	
+</script>
+
+
+<script>
+    function clear_all_data(){
+        $('input[name="black_a4"]').val('');
+        $('input[name="black_a3"]').val('');
+        $('input[name="color_a4"]').val('');
+        $('input[name="color_a3"]').val('');
+        $('input[name="exess_black_a4"]').val('');
+        $('input[name="exess_black_a3"]').val('');
+        $('input[name="exess_black_ca4"]').val('');
+        $('input[name="exess_black_ca3"]').val('');
+        $('input[name="cost_ba4"]').val('');
+        $('input[name="cost_ba3"]').val('');
+        $('input[name="cost_ca4"]').val('');
+        $('input[name="cost_ca3"]').val('');
+        $('input[name="totalcost"]').val('');
+        $('input[name="grand_total"]').val('');
+    }
+    $(document).ready(function () {
+
+       $("[id^=check_]").click(function() {
+           var checkboxId = $(this).attr("id");
+           var currentRow=$(this).closest("tr");
+           var contract_id = $(this).attr('data-contraxt_id');
+
+           $("#contract_hid").val(contract_id);
+
+           if ($(this).prop("checked")) {
+                $("[id^=check_]").not(this).prop("checked", false);
+                $(this).prop("checked")
+            } else {
+                $("[id^=check_]").prop("checked", false);
+                clear_all_data();
+                return;
+            }
+
+
+           var color_ta3 = currentRow.find("td:eq(13)").text();
+           var black_ta3 = currentRow.find("td:eq(14)").text();
+           var color_ta4 = currentRow.find("td:eq(15)").text();
+           var black_ta4 = currentRow.find("td:eq(16)").text();
+
+           $("#black_a4").val(black_ta4);
+           $("#black_a3").val(black_ta3);
+           $("#color_a4").val(color_ta4);
+           $("#color_a3").val(color_ta3);
+
+           //basic count
+           var basic_ba4 = $("#basic_ba4").val();
+           var basic_ba3 = $("#basic_ba3").val();
+           var basic_ca4 = $("#basic_ca4").val();
+           var basic_ca3 = $("#basic_ca3").val();
+           if(basic_ba4 == ''){
+            basic_ba4 = 0;
+           }
+           if(basic_ba3 == ''){
+            basic_ba3 = 0;
+           }
+           if(basic_ca4 == ''){
+            basic_ca4 = 0;
+           }
+           if(basic_ca3 == ''){
+            basic_ca3 = 0;
+           }
+
+           // var exess_black_a4 = parseInt(black_ta4.replace(',', '')) - parseInt(basic_ba4);
+           // var exess_black_a3 = parseInt(black_ta3.replace(',', '')) - parseInt(basic_ba3);
+           // var exess_black_ca4 = parseInt(color_ta4.replace(',', '')) - parseInt(basic_ca4);
+           // var exess_black_ca3 = parseInt(color_ta3.replace(',', '')) - parseInt(basic_ca3);
+           var exess_black_a4 = parseInt(black_ta4.replace(',', '')) - basic_ba4;
+           var exess_black_a3 = parseInt(black_ta3.replace(',', '')) - basic_ba3;
+           var exess_black_ca4 = parseInt(color_ta4.replace(',', '')) - basic_ca4;
+           var exess_black_ca3 = parseInt(color_ta3.replace(',', '')) - basic_ca3;
+
+           if (exess_black_a4 < 0) {
+                exess_black_a4 = 0;
+            } else if(isNaN(exess_black_a4)) {
+                exess_black_a4 = 0;
+            }
+
+           if (exess_black_a3 < 0) {
+                exess_black_a3 = 0;
+           } else if(isNaN(exess_black_a3)) {
+                exess_black_a3 = 0;
+           }
+
+           if (exess_black_ca4 < 0 ) {
+                exess_black_ca4 = 0;
+           } else if(isNaN(exess_black_ca4)) {
+                exess_black_ca4 = 0;
+           }
+
+           if (exess_black_ca3 < 0 ) {
+                exess_black_ca3 = 0;
+           } else if(isNaN(exess_black_ca3)) {
+                exess_black_ca3 = 0;
+           }
+
+           // Exess Count
+           $("#exess_black_a4").val(exess_black_a4.toLocaleString());
+           $("#exess_black_a3").val(exess_black_a3.toLocaleString());
+           $("#exess_black_ca4").val(exess_black_ca4.toLocaleString());
+           $("#exess_black_ca3").val(exess_black_ca3.toLocaleString());
+
+           var exce_charge_ba4 = $("#exce_charge_ba4").val();
+           var exce_charge_ba3 = $("#exce_charge_ba3").val();
+           var exce_charge_ca4 =  $("#exce_charge_ca4").val();
+           var exce_charge_ca3 =  $("#exce_charge_ca3").val();
+
+           if(exce_charge_ba4 == ''){
+            exce_charge_ba4 = 0;
+           }
+           if(exce_charge_ba3 == ''){
+            exce_charge_ba3 = 0;
+           }
+           if(exce_charge_ca4 == ''){
+            exce_charge_ca4 = 0;
+           }
+           if(exce_charge_ca3 == ''){
+            exce_charge_ca3 = 0;
+           }
+          
+          //  var exess_black_a4 = parseInt(exess_black_a4) * parseInt(exce_charge_ba4);
+          // var exess_black_a3 = parseInt(exess_black_a3) * parseInt(exce_charge_ba3);
+          // var exess_black_ca4 = parseInt(exess_black_ca4) * parseInt(exce_charge_ca4);
+          // var exess_black_ca3 = parseInt(exess_black_ca3) * parseInt(exce_charge_ca3);
+           var exess_black_a4 = exess_black_a4 * exce_charge_ba4;
+           var exess_black_a3 = exess_black_a3 * exce_charge_ba3;
+           var exess_black_ca4 = exess_black_ca4 * exce_charge_ca4;
+           var exess_black_ca3 = exess_black_ca3 * exce_charge_ca3;
+           
+           $("#cost_ba4").val(exess_black_a4);
+           $("#cost_ba3").val(exess_black_a3);
+           $("#cost_ca4").val(exess_black_ca4);
+           $("#cost_ca3").val(exess_black_ca3);
+
+
+        //    var total_cost = parseInt(exess_black_a4) + parseInt(exess_black_a3) + parseInt(exess_black_ca4) + parseInt(exess_black_ca3) 
+           var total_cost = exess_black_a4 + exess_black_a3 + exess_black_ca4 + exess_black_ca3;
+
+           $("#totalcost").val(total_cost.toLocaleString());
+
+           var basic_charges = $("#basic_charges").val();
+
+           var basCharge =  basic_charges.replace(",", "");
+
+           var grand_total = parseFloat(total_cost) + parseFloat(basCharge);
+
+           if (isNaN(grand_total)) {
+            grand_total = 0;
+            }
+
+           //Grand_total
+           $("#grand_total").val(grand_total.toLocaleString());
+
+             $.ajax({
+                url: "index.php?route=contract/show_contarct_image&id=" + contract_id,
+                type: "GET",
+                data: contract_id,
+                success: function (response) {
+                    if (response && response !== "") {
+                        $(".file_attachment").html(response);
+                    } else {
+                        $(".file_attachment").html("<p>No File Attached</p>");
+                    }
+                }
+            });
+       });
+
+   //     $('#chkticketall').change(function() {
+   //     var checkboxes = $(this).closest('table').find(':checkbox');
+   //     if ($(this).is(':checked')) {
+       
+   //         checkboxes.prop('checked', true);
+   //     } else {
+   //         checkboxes.prop('checked', false);
+   //     }
+   // });
+
+
+   // $('table').on('change', ':checkbox:not(#chkticketall)', function() {
+   //     var checkboxes = $(this).closest('table').find(':checkbox:not(#chkticketall)'),
+       
+   //     allchecked = (checkboxes.length === checkboxes.filter(':checked').length);
+   //     $('#chkticketall').prop('checked', allchecked);
+   // });
+});
+</script>
+
+<script>
+    $(document).ready(function () {
+        var contract_condition = $('input[name="contract_condition"]:checked').val();
+
+        if (contract_condition === 'page_plan') {
+                $('.print_page').show();
+            } else {
+                $('.print_page').hide();
+            }
+
+        $('input[name="contract_condition"]').change(function () {
+            if ($(this).val() === 'page_plan') {
+                $('.print_page').show();
+            } else {
+                $('.print_page').hide();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        // $("#page_count_report_table").dataTable({
+		// 			"order": [[ 3, "desc" ]], // Change "asc" to "desc" for descending order
+		// 			"pageLength": "<?php echo getConfigValue("table_records"); ?>",
+		// 			"dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">',
+		// 			"oLanguage": { "sSearch": "" },
+		// 			"columnDefs": [
+		// 			{ "type": "date", "targets": 3 }, // Specify date type for column 2 if it's a date
+		// 				{ "orderable": false, "targets": -1 } // Keeps last column unsortable
+		// 			]
+		// 		});
+
+        $("#cc").on("click", function () {
+            var formData = new FormData($("#attachmentForm")[0]);
+
+            $.ajax({
+                url: "index.php?route=contract/contarct_imageimage&id=" + $(this).val(),
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    // Handle the success response
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+        var enddate_val  = "";
+        var ecolora3_val = "";
+        var ecolora4_val = "";
+        var eblacka3_val = "";
+        var eblacka4_val = "";
+        var startdate_val = "";
+        var scolora3_val = "";
+        var scolora4_val = "";
+        var sblacka3_val = "";
+        var sblacka4_val = "";
+
+        $(document).on('change', "#ecolora3", function(event) {
+            ecolora3_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#ecolora4", function(event) {
+            ecolora4_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#eblacka3", function(event) {
+            eblacka3_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#eblacka4", function(event) {
+            eblacka4_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#eblacka4", function(event) {
+            eblacka4_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#enddate", function(event) {
+            enddate_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#startdate", function(event) {
+            startdate_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#scolora3", function(event) {
+            scolora3_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#scolora4", function(event) {
+            scolora4_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#sblacka3", function(event) {
+            sblacka3_val = $(this).val(); 
+        });
+
+        $(document).on('change', "#sblacka4", function(event) {
+            sblacka4_val = $(this).val(); 
+        });
+
+
+        $(document).on('click', "#submitdata", function(event) {
+           
+            if (enddate_val == "") {
+                enddate_val = $("#enddate").val()
+            }
+
+            if (startdate_val == "") {
+                startdate_val = $("#startdate").val()
+            }
+
+            if (ecolora3_val == "") {
+                ecolora3_val = $("#ecolora3").val()
+            }
+
+            if (ecolora4_val == "") {
+                ecolora4_val = $("#ecolora4").val()
+            }
+
+            if (eblacka3_val == "") {
+                eblacka3_val = $("#eblacka3").val()
+            }
+
+            if (eblacka4_val == "") {
+                eblacka4_val = $("#eblacka4").val()
+            }
+
+            if (scolora3_val == "") {
+                scolora3_val = $("#scolora3").val()
+            }
+
+            if (scolora4_val == "") {
+                scolora4_val = $("#scolora4").val()
+            }
+
+            if (sblacka3_val == "") {
+                sblacka3_val = $("#sblacka3").val()
+            }
+            
+            if (sblacka4_val == "") {
+                sblacka4_val = $("#sblacka4").val()
+            }
+
+            if (enddate_val < startdate_val) {
+                toastr.error("The End Date must not be smaller than the Start Date.");
+            } else if (ecolora3_val < scolora3_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (ecolora4_val < scolora4_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (eblacka3_val < sblacka3_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (eblacka4_val < sblacka4_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } 
+        });
+
+        $(document).on('click', "#savee", function(event) {
+
+            if (enddate_val == "") {
+                enddate_val = $("#enddate").val()
+            }
+
+            if (startdate_val == "") {
+                startdate_val = $("#startdate").val()
+            }
+
+            if (ecolora3_val == "") {
+                ecolora3_val = $("#ecolora3").val()
+            }
+
+            if (ecolora4_val == "") {
+                ecolora4_val = $("#ecolora4").val()
+            }
+
+            if (eblacka3_val == "") {
+                eblacka3_val = $("#eblacka3").val()
+            }
+
+            if (eblacka4_val == "") {
+                eblacka4_val = $("#eblacka4").val()
+            }
+
+            if (scolora3_val == "") {
+                scolora3_val = $("#scolora3").val()
+            }
+
+            if (scolora4_val == "") {
+                scolora4_val = $("#scolora4").val()
+            }
+
+            if (sblacka3_val == "") {
+                sblacka3_val = $("#sblacka3").val()
+            }
+            
+            if (sblacka4_val == "") {
+                sblacka4_val = $("#sblacka4").val()
+            }
+
+            if (enddate_val < startdate_val) {
+                toastr.error("The End Date must not be smaller than the Start Date.");
+            } else if (ecolora3_val < scolora3_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (ecolora4_val < scolora4_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (eblacka3_val < sblacka3_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } else if (eblacka4_val < sblacka4_val) {
+                toastr.error("The new usage must not be smaller than the previous record.");
+            } 
+        });
+</script>
+
+<script>
+
+    var startdate_val = "";
+
+    $(document).on('change', "#startdate", function(event) {
+        startdate_val = $(this).val(); 
+    });
+    // $(document).on('change', ".datepicker-enddate", function(event) {
+    //     var startdate_val = $(".datepicker-enddate").val(); 
+    //     var parts = startdate_val.split("-");
+    //     var formattedDate = parts.join(",");
+  
+    //     $(".datepicker-startdate").datepicker("setEndDate", formattedDate);
+    // });
+    // $(document).on('change', ".datepicker-startdate", function(event) {
+    //     var startdate_val = $(".datepicker-startdate").val(); 
+    //     var parts = startdate_val.split("-");
+    //     var formattedDate = parts.join(",");
+  
+    //     $(".datepicker-enddate").datepicker("setStartDate", formattedDate);
+    // });
+
+    $(document).on('focus', '.datepicker-startdate', function() {
+        var startdate_val = $(".datepicker-enddate").val(); 
+        var parts = startdate_val.split("-");
+        var formattedDate = parts.join(",");
+
+        $('.datepicker-startdate').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: 'true',
+                weekStart: '<?php echo getConfigValue("week_start"); ?>',
+                autoclose: true,
+                endDate: new Date(formattedDate),
+        });
+
+    });
+    $(document).on('focus', '.datepicker-enddate', function() {
+        var startdate_val = $(".datepicker-startdate").val(); 
+        var parts = startdate_val.split("-");
+        var formattedDate = parts.join(",");
+
+        $('.datepicker-enddate').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: 'true',
+                weekStart: '<?php echo getConfigValue("week_start"); ?>',
+                autoclose: true,
+                startDate: new Date(formattedDate),
+        });
+
+    });
+
+    $(document).on('focus', '.datepicker-usuage', function() {
+        var startdate_val = $("#startdate").val(); 
+        var parts = startdate_val.split("-");
+        var formattedDate = parts.join(",");
+
+        $('.datepicker-usuage').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: 'true',
+                weekStart: '<?php echo getConfigValue("week_start"); ?>',
+                autoclose: true,
+                startDate: new Date(formattedDate),
+        });
+
+    });
+    
+
+    
+
+    $(document).on('focus', '.datepicker-input', function() {
+        if (!$(this).prop('readonly')) {
+            $(this).datepicker({
+                format: 'yyyy-mm-dd',
+					clearBtn: 'true',
+					weekStart: '<?php echo getConfigValue("week_start"); ?>',
+					autoclose: true
+            });
+        }
+    });
+
+    $(document).on('change' , "#f_sfdate" , function(){
+        var sdate = $(this).val();
+        var edate = $('#f_efdate').val();
+        var url_pera = $(this).attr('data-url_pera');
+		var url = "?route=contract/manage&id=" + url_pera;
+        var new_url = url + "&sfdate=" + sdate + "&efdate=" + edate;
+        window.location.href = new_url;
+    })
+
+    $(document).on('change' , "#f_efdate" , function(){
+        var sdate = $(this).val();
+        var edate = $('#f_sfdate').val();
+        var url_pera = $(this).attr('data-url_pera');
+		var url = "?route=contract/manage&id=" + url_pera;
+        var new_url = url + "&sfdate=" + sdate + "&efdate=" + edate;
+        window.location.href = new_url;
+    })
+
+    // $(".set_val").on("click" , function(){
+    //     var sfdate = $("#f_sfdate").val();
+    //     var efdate = $("#f_efdate").val();
+    //     $.ajax({
+    //         url : 'ajax.php?add_pending_frequency_filter_val=""',
+    //         type : "POST",
+    //         data : {
+    //             sfdate : sfdate,
+    //             efdate : efdate
+    //         },
+    //         success: function(){
+    //             if($('#f_sfdate').val() != '' &&  $('#f_efdate').val() != ''){
+    //                 var sdate = $('#f_sfdate').val();
+    //                 var edate = $('#f_efdate').val();
+
+    //                 var url_pera = $('#f_efdate').attr('data-url_pera');
+    //                 var url = "?route=contract/manage&id=" + url_pera;
+    //                 var new_url = url + "&sfdate=" + sdate + "&efdate=" + edate;
+
+    //                 window.location.href = new_url;
+    //             }
+    //         }
+    //     });
+    // })
+
+    // quick_filter
+    $(document).on('change' , "#quick_filter" , function(){
+        var filter_val = $(this).val();
+        var url_pera = $('#f_sfdate').attr('data-url_pera');
+        var url = "?route=contract/manage&id=" + url_pera;
+        var new_url = url + "&quick_filter=" + filter_val;
+        window.location.href = new_url;
+    })
+</script>
+
+<style>
+table#dataTablesFull {
+    border-top: 1px #ddd solid !important;
+}
+
+</style>

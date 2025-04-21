@@ -1,0 +1,205 @@
+<style>
+    table.dataTable th, 
+  table.dataTable td {
+      white-space: nowrap; /* Prevent text wrapping */
+  }
+</style>
+<aside class="right-side">
+    <section class="content-header">
+        <h1>Payment Method List</h1>
+        <ol class="breadcrumb">
+            <li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Payment Method List</li>
+        </ol>
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <i class="fa fa-tag"></i>
+                        <h3 class="box-title">Payment Method List</h3>
+                        <button class="btn btn-primary" style="float: right; padding: 5px 20px; font-size: 16px; margin-bottom: 10px;" id="payment_method_modal_btn">Add</button>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-sm-12 table-responsive">
+                                <table id="dataTablesFull" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Payment Method Name</th>
+                                            <th>Payment Code</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        if(isset($payment_method_data) && !empty($payment_method_data)){
+                                            foreach($payment_method_data as $payment_method){ ?>
+                                        <tr>
+                                            <td>
+                                                <?php echo $payment_method['id']; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $payment_method['name']; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $payment_method['code']; ?>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <button style="border: none; background: none;"
+                                                        class="edit_payment_mothod"
+                                                        data-id="<?php echo $payment_method['id']; ?>"><i
+                                                            class="fa fa-edit"></i></button>&nbsp;
+                                                    <button style="border: none; background: none;"
+                                                        class="btn-right text-red delete_payment_mothod" id=""
+                                                        data-id="<?php echo $payment_method['id']; ?>"><i
+                                                            class="fa fa-trash-o"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php  }
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+
+
+<div class="modal fade" id="payment_method_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="" method="post" role="form" id="payment_method_form" onsubmit="return false;">
+                <div class="modal-header">
+                    <h4 style="display: inline;" class="modal-title add_title" id="exampleModalLabel">Add Payment Method
+                    </h4>
+                    <h4 style="display: inline;" class="modal-title edit_title" id="exampleModalLabel">Edit Payment
+                        Method</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input type="hidden" id="hid" name="hid">
+                            <div class="form-group">
+                                <label for="name">Payment Method Name</label>
+                                <input type="text" id="name" name="name" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name">Payment Code</label>
+                                <input type="text" id="code" name="code" class="form-control">
+                            </div>
+
+                            <input type="hidden" name="add_payment_method">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#payment_method_modal_btn").on("click", function () {
+            $(".edit_title").hide();
+            $(".add_title").show();
+            $("#payment_method_modal").modal("show");
+        })
+
+        $("#payment_method_form").submit(function () {
+            $.ajax({
+                url: "ajax.php?payment_method=''",
+                type: "POST",
+                data: {
+                    'name': $("#name").val(),
+                    'code': $("#code").val(),
+                    'hid': $("#hid").val(),
+                },
+                success: function (res) {
+                    var data = JSON.parse(res);
+                    if (data.res?.status == 1) {
+                        $("#payment_method_modal").modal("hide");
+                        window.location.reload();
+                    } else {
+                        alert(data.res?.msg);
+                    }
+                }
+            })
+        })
+
+
+        $(".edit_payment_mothod").on('click', function () {
+            var id = $(this).data('id');
+            $.ajax({
+                url: "ajax.php?get_payment_method=''",
+                type: "POST",
+                data: {
+                    'id': id,
+                },
+                success: function (res) {
+                    var data = JSON.parse(res);
+                    $(".edit_title").show();
+                    $(".add_title").hide();
+                    if (data.res?.status == 1) {
+                        var payment_data = data.res?.data;
+                        $("#name").val(payment_data.name);
+                        $("#code").val(payment_data.code);
+                        $("#hid").val(payment_data.id);
+                        $("#payment_method_modal").modal("show");
+                    }
+                }
+            })
+        })
+
+
+        $(".delete_payment_mothod").on('click', function () {
+            var id = $(this).data('id');
+            var confirm = window.confirm(" Are you sure you want to delete this?");
+            if (confirm) {
+                $.ajax({
+                    url: "ajax.php?delete_payment_method=''",
+                    type: "POST",
+                    data: {
+                        'id': id,
+                    },
+                    success: function (res) {
+                        var data = JSON.parse(res);
+                        if (data.res?.status == 1) {
+                            window.location.reload();
+                        } else {
+                            alert(data.res?.msg);
+                        }
+                    }
+                })
+            }
+        })
+
+
+
+    })
+</script>

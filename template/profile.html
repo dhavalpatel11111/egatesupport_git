@@ -1,0 +1,121 @@
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>Profile<small> Edit profile</small></h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Profile</li></ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-primary">
+          			<div class="box-header with-border">
+						<h3 class="box-title"><?php echo $lia['name']; ?></h3>
+					</div><!-- /.box-header -->
+                    <div class="box-body">
+						<div class="row">
+							<form role="form" method="post" class="form-horizontal">
+
+
+								<div class="form-group">
+									<label for="name" class="col-sm-2 control-label">Name *</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="name" name="name" value="<?php echo $lia['name']; ?>" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="email" class="col-sm-2 control-label">Email Address *</label>
+									<div class="col-sm-8">
+										<input type="email" class="form-control" id="email" name="email" value="<?php echo $lia['email']; ?>" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="title" class="col-sm-2 control-label">Job Title</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="title" value="<?php echo $lia['title']; ?>" name="title">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="password" class="col-sm-2 control-label">Password</label>
+									<div class="col-sm-8">
+										<input type="password" class="form-control" id="password" name="password" placeholder="Enter to change">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="theme" class="col-sm-2 control-label">Theme</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="theme" name="theme" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="skin-blue" <?php if($lia['theme']=="skin-blue") echo "selected"; ?>>Blue</option>
+											<option value="skin-black" <?php if($lia['theme']=="skin-black") echo "selected"; ?>>Black</option>
+											<option value="skin-purple" <?php if($lia['theme']=="skin-purple") echo "selected"; ?>>Purple</option>
+											<option value="skin-green" <?php if($lia['theme']=="skin-green") echo "selected"; ?>>Green</option>
+											<option value="skin-red" <?php if($lia['theme']=="skin-red") echo "selected"; ?>>Red</option>
+											<option value="skin-yellow" <?php if($lia['theme']=="skin-yellow") echo "selected"; ?>>Yellow</option>
+											<option value="skin-blue-light" <?php if($lia['theme']=="skin-blue-light") echo "selected"; ?>>Blue Light</option>
+											<option value="skin-black-light" <?php if($lia['theme']=="skin-black-light") echo "selected"; ?>>Black Light</option>
+											<option value="skin-purple-light" <?php if($lia['theme']=="skin-purple-light") echo "selected"; ?>>Purple Light</option>
+											<option value="skin-green-light" <?php if($lia['theme']=="skin-green-light") echo "selected"; ?>>Green Light</option>
+											<option value="skin-red-light" <?php if($lia['theme']=="skin-red-light") echo "selected"; ?>>Red Light</option>
+											<option value="skin-yellow-light" <?php if($lia['theme']=="skin-yellow-light") echo "selected"; ?>>Yellow Light</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="sidebar" class="col-sm-2 control-label">Sidebar</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="sidebar" name="sidebar" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="opened" <?php if($lia['sidebar']=="opened") echo "selected"; ?>>Opened</option>
+											<option value="collapsed" <?php if($lia['sidebar']=="collapsed") echo "selected"; ?>>Collapsed</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="layout" class="col-sm-2 control-label">Layout</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="layout" name="layout" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="" <?php if($lia['layout']== "") echo "selected"; ?>>Standard</option>
+											<option value="fixed" <?php if($lia['layout']=="fixed") echo "selected"; ?>>Fixed</option>
+											<option value="layout-boxed" <?php if($lia['layout']=="layout-boxed") echo "selected"; ?>>Boxed</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="notes" class="col-sm-2 control-label">Notes</label>
+									<div class="col-sm-8">
+										<textarea class="form-control summernote" id="notes" name="notes" value="<?php echo $lia['notes']; ?>"></textarea>
+									</div>
+								</div>
+
+											<input type="hidden" name="editUser">
+											<input type="hidden" name="route" value="profile">
+											<input type="hidden" name="routeid" value="">
+											<input type="hidden" name="id" value="<?php echo $lia['id']; ?>">
+
+											<input type="hidden" name="clientid" value="<?php echo $lia['clientid']; ?>">
+
+
+								<div class="col-sm-2"></div><div class="col-sm-8">
+									<button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+								</div>
+
+
+							</form><!-- /.form -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

@@ -1,0 +1,24 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Ticket Type<small> Manage ticket type</small></h1>
+        <div class="pull-right"></div>
+        <div style="clear:both"></div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-body">															<div class="allcheckbox">										<h3>Select Pages Under Tickets</h3>										<form role="form" method="post">										<?php											foreach($configtable as $config){												if($config['name']=='client_handle_mistake' && $config['value']=='1'){						$CHM = 1;						}						if($config['name']=='technical_improvement' && $config['value']=='1'){						$TI = 1;						}						if($config['name']=='refill' && $config['value']=='1'){						$RE = 1;						}						if($config['name']=='parsts_replacments' && $config['value']=='1'){						$PR = 1;						}						}					?>															 						<div class="client_handle_mistake" >						<div class="form-group">							<label >Client Handling Mistake</label><input type="checkbox" class="checkboxxx"  name="client_handle_mistake" value="1" <?php if($CHM =='1'){echo "checked= checked";};?>><br>						</div>						<div class="form-group">							<label >Technical Improvement</label><input type="checkbox" class="checkboxxx"  name="technical_improvement" value="1" <?php if($TI =='1'){echo "checked= checked";};?>><br>						</div>						<div class="form-group">							<label >Refill</label><input type="checkbox" class="checkboxxx"  name="refill" value="1" <?php if($RE =='1'){echo "checked= checked";};?>><br>						</div>						<div class="form-group">							<label >Parsts & Replacments</label><input type="checkbox" class="checkboxxx"  name="parsts_replacments" value="1" <?php if($PR =='1'){echo "checked= checked";};?>>						</div></div>												<div class="form-group">						<button type="submit" name="ticketpages" class="btn btn-success btn-sm pull-right"><i class="fa fa-save"></i> Save</button>						</div>						</form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->

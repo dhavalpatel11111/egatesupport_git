@@ -1,0 +1,55 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Add Ticket</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="subject">Amount</label>
+        <?php 
+        $invoice_contract_amount = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["invoiceid"],"contract_id",$_GET['contractid'],"invoice",0,"amount");
+        if(!empty($invoice_contract_amount)){
+          $contract_amount =  $invoice_contract_amount[0];
+        }else{
+          $contract_amount = $_GET['amount'];
+        }
+        ?>
+        <input type="text" value="<?php echo  $contract_amount; ?>" class="form-control" name="amount" />
+    </div>
+
+    
+
+    <div class="form-group">
+      <?php 
+      $invoice_contract_amount_notes = getTableFiltereddc2("invoice_contract","invoice_id",$_GET["invoiceid"],"contract_id",$_GET['contractid'],"invoice",0,"notes");
+        if(!empty($invoice_contract_amount_notes)){
+          $contract_amount_notes =  $invoice_contract_amount_notes[0];
+        }
+      ?>
+        <label for="message" class="control-label">Notes</label>
+        <textarea class="form-control summernote-modal" id="message" name="message"><?php echo $contract_amount_notes; ?></textarea>
+        <span id="message_error"></span>
+    </div>
+
+    <input type="hidden" name="addContractInvoice">
+    <input type="hidden" name="route" value="clients/invoice">
+    <input type="hidden" name="invoice_id" value="<?php echo $_GET['invoiceid']; ?>">
+    <input type="hidden" name="contract_id" value="<?php echo $_GET['contractid']; ?>">
+    
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary" id="submit"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+        $(function() { $(".select2").select2(); });
+        $(document).ready(function() { $('.summernote-modal').summernote({height: 200}); });
+
+        $("#myModal form").submit(function(e){
+            var summernoteContent = $('.summernote-modal').summernote('code'); // Get Summernote content
+            // Remove HTML tags to check if it's empty
+            if ($.trim($(summernoteContent).text()) === '') {
+                alert('Notes field is required.');
+                e.preventDefault(); // Prevent form submission
+            }
+        })
+
+</script>

@@ -1,0 +1,250 @@
+<?php
+error_reporting(0);
+##### DATA PROCESSING #####
+// LOGOUT
+if ($route == "logout")
+    logOut($lia['id']);
+// FILES
+if (isset($_POST['uploadContractFile'])) {
+    $status = uploadContractFile($_POST, $_FILES);
+    header("Location:?route=" . $_POST['route'] . "&id=" . $_POST['routeid'] . "&status=" . $status . "&section=" . $_POST['section']);
+}
+if (isset($_POST['deleteContractFile'])) {
+    $status = deleteContractFile($_POST['id']);
+    header("Location:?route=" . $_POST['route'] . "&id=" . $_POST['routeid'] . "&status=" . $status . "&section=" . $_POST['section']);
+}
+
+// TICKETS
+if (isset($_POST['addTicket'])) {
+//    cs_debug($_FILES);
+    $status = addTicket($_POST, $_FILES);
+    header("Location:?route=" . $_POST['route'] . "&id=" . $_POST['routeid'] . "&status=" . $status . "&section=" . $_POST['section']);
+}
+if (isset($_POST['addTicketReply'])) {
+    $status = addTicketReply($_POST, $_FILES);
+    header("Location:?route=" . $_POST['route'] . "&id=" . $_POST['routeid'] . "&status=" . $status);
+}
+
+// USER PROFILE
+if (isset($_POST['editUser'])) {
+    $status = editUser($_POST);
+    header("Location:?route=" . $_POST['route'] . "&id=" . $_POST['routeid'] . "&status=" . $status);
+}
+
+##### GET DATA FOR MODALS #####
+if (isset($_GET['modal'])) {
+    switch ($_GET['modal']) {
+        case "viewProject":
+            $project = getRowById("projects", $_GET['id']);
+            break;
+        case "ticketAdd":
+            $assets = getTableFiltered("assets", "clientid", $lia['clientid']);
+            break;
+        case "contractTicketAdd":
+            //$contracts = getTableFiltered("contract", "clientid", $lia['clientid']);
+            //$clients = getTable("clients");
+            $cliendid = $lia['clientid'];
+            $where = " WHERE contract.clientid=".$cliendid . " AND contract.is_end=0";
+            $where .= (!empty($_GET['contractid'])) ? " AND contract.id=".$_GET['contractid'] : "";
+//            $contracts = $database->select("contract", [
+//                // Here is the table relativity argument that tells the relativity between the table you want to join.
+//                // The row author_id from table post is equal the row user_id from table account
+//                "[>]assets" => ["contract.assetid" => "assets.id"],
+//                "[><]models" => ["assets.modelid", "models.id"],
+//                    ], [
+//                "contract.id",
+//                "contract.contractno",
+//                "assets.tag",
+//                "assets.serial",
+//                "models.name",
+//                    ], [
+//                "contract.clientid" => $lia['clientid'],
+//                "ORDER" => "contract.id DESC",
+//                //"LIMIT" => 50
+//            ]);
+            $sql = "SELECT contract.id,contract.contractno,assets.tag,assets.serial,models.name as model_name "
+            . "FROM contract "
+            . "LEFT JOIN assets ON assets.id = contract.assetid "
+            . "LEFT JOIN models ON assets.modelid = models.id " 
+            . $where;
+//    cs_debug($sql);
+            $query = $database->query($sql);
+            $contracts = $query->fetchAll();
+//            cs_debug($database->error());
+            break;
+        case "contractTicketEdit":
+            $ticket = getRowById("tickets", $_GET['id']);
+            $query = $database->query("SELECT contract.id,contract.contractno,assets.tag,assets.serial,models.name as model_name "
+            . "FROM contract "
+            . "JOIN assets ON assets.id = contract.assetid "
+            . "JOIN models ON assets.modelid = models.id "
+            //. "WHERE contract.id = ".$contractid
+                    );
+            $contracts = $query->fetchAll();
+            break;
+        case "contractTicketDelete":
+            $ticket = getRowById("tickets", $_GET['id']);
+            break;
+    }
+}
+
+##### GET THE DATA #####
+// GENERAL
+$openTicketsCount = $database->count("tickets", [ "AND" => [ "status" => ["Open", "Reopened"], "clientid" => $lia['clientid']]]);
+
+// DASHBOARD
+if ($route == "dashboard") {
+    global $database;
+	
+    $sumContract = countTableFiltered("contract","clientid", $lia['clientid']);
+    $sumAssets = countTableFiltered("assets", "clientid", $lia['clientid']);
+    $sumLicenses = countTableFiltered("licenses", "clientid", $lia['clientid']);
+    $sumProjects = countTableFiltered("projects", "clientid", $lia['clientid']);
+    $sumIssues = $database->count("issues", [ "AND" => [ "status[!]" => "Done", "clientid" => $lia['clientid']]]);
+    $sumTickets = $database->count("tickets", [ "AND" => [ "status" => ["Open", "Reopened"], "clientid" => $lia['clientid']]]);
+
+    $categories = getTable("assetcategories");
+    $openIssues = $database->select("issues", "*", [ "AND" => ["status[!]" => "Done", "clientid" => $lia['clientid']]]);
+//    $openTickets = $database->select("tickets", "*", [ "AND" => [ "status" => ["Open", "Reopened"], "clientid" => $lia['clientid']]]);
+    $recentAssets = $database->select("assets", "*", ["clientid" => $lia['clientid'], "ORDER" => "id DESC", "LIMIT" => 5]);
+    $recentLicenses = $database->select("licenses", "*", ["clientid" => $lia['clientid'], "ORDER" => "id DESC", "LIMIT" => 5]);
+    $select = "SELECT contract.id contractid,contract.contractno,assetcategories.name as servicetype,assetcategories.color as servicecolor, clients.name clientname, assets.tag,assets.serial, models.name as modelname "
+            . "FROM contract "
+            . "JOIN assets ON assets.id = contract.assetid "
+            . "JOIN models ON assets.modelid = models.id "
+            . "JOIN assetcategories ON assetcategories.id = contract.categoryid "
+            . "JOIN clients ON clients.id = contract.clientid "
+            . "WHERE contract.id is not null AND contract.clientid=" .$lia['clientid']
+            . " ORDER BY contract.id DESC ";
+//    die($select);
+    $query = $database->query($select);
+    $recentContracts = $query->fetchAll();
+    $select = "SELECT tickets.*, clients.name clientname, assets.tag,assets.serial, models.name as modelname "
+            . "FROM tickets "
+            . "JOIN contract ON contract.id = tickets.contractid "
+            . "JOIN assets ON assets.id = contract.assetid "
+            . "JOIN models ON assets.modelid = models.id "
+            . "JOIN clients ON clients.id = tickets.clientid "
+            . "WHERE tickets.clientid=".$lia['clientid']." AND (tickets.status='Open' OR tickets.status='Reopened') ORDER BY tickets.id DESC ";
+    //die($select);
+    $query = $database->query($select);
+    $openTickets = $query->fetchAll();
+}
+
+// ASSETS
+if ($route == "contract") {
+    $contracts = getTableFiltered("contract", "clientid", $lia['clientid']);
+}
+
+// ASSETS
+if ($route == "assets") {
+    $assets = getTableFiltered("assets", "clientid", $lia['clientid']);
+}
+
+// LICENSES
+if ($route == "licenses") {
+    $licenses = getTableFiltered("licenses", "clientid", $lia['clientid']);
+}
+
+
+
+
+// CONTRACT 
+if ($route == "contract/manage") {
+    $contract = getRowById("contract", $_GET['id']);
+    $clients = getTable("clients");
+//    $admins = getTableFiltered("people", "type", "admin");
+//    $users = getTableFiltered("people", "type", "user");
+    $models = getTable("models");
+//    $manufacturers = getTable("manufacturers");
+    $contracttypes = getTable("contracttype");
+    $categories = getTable("assetcategories");
+    $tickets = getTableFiltered("tickets", "contractid", $_GET['id']);
+    $files = getTableFiltered("contract_files", "contractid", $_GET['id']);
+    $contract_usages = getTableFiltered("contract_usages", "contractid", $_GET['id']);
+    $query = $database->query("SELECT assets.*, models.name as model_name FROM assets JOIN models ON assets.modelid = models.id WHERE assets.clientid = 0 OR assets.id = " . $contract['assetid']);
+    $assets = $query->fetchAll();
+    $query = $database->query("SELECT contract_history.id as history_id,contract_history.deployeddate, contract_history.pulledoutdate,contract_history.memo,contract_history.maintenance, assets.*, models.name as model_name "
+            . "FROM contract_history "
+            . "JOIN assets ON assets.id = contract_history.assetid "
+            . "JOIN models ON assets.modelid = models.id "
+            . "WHERE contract_history.contractid = ".$_GET['id']
+            . " ORDER BY contract_history.id DESC"
+            );
+    //$histories = getTableFiltered("contract_history", "contractid", $_GET['id']);
+
+    $histories = $query->fetchAll();
+//    cs_debug($assets);
+    //$section = 'history';
+}
+// TICKETS
+if ($route == "tickets")
+    $tickets = getTableFiltered("tickets", "clientid", $lia['clientid']);
+if ($route == "tickets/manage") {
+    global $database;
+	 $uid=  $lia['id'];
+	 $select1 = "SELECT * "
+            . "FROM people "
+            
+            . "WHERE id =".$uid;
+	$query1 = $database->query($select1);
+    $userdetail = $query1->fetchAll();
+    $ticket = getRowById("tickets", $_GET['id']);
+    $replies = getTableFiltered("tickets_replies", "ticketid", $_GET['id'], "", "", "*", "id", "DESC");
+    $query = $database->query("SELECT tickets_replies.*,ticket_reply_files.id as fileid, ticket_reply_files.name as filename,ticket_reply_files.file "
+            . "FROM tickets_replies "
+            . "JOIN ticket_reply_files ON tickets_replies.id = ticket_reply_files.ticket_reply_id "
+            . "WHERE tickets_replies.ticketid = ".$_GET['id']
+            . " ORDER BY tickets_replies.id DESC"
+            );
+    $replies = $query->fetchAll();
+}
+
+// TASKS
+if ($route == "issues")
+    $issues = getTableFiltered("issues", "clientid", $lia['clientid']);
+
+// PROJECTS
+if ($route == "projects")
+    $projects = getTableFiltered("projects", "clientid", $lia['clientid']);
+
+
+// REPORTS
+if ($route == "reports") {
+    $clients = getTable("clients");
+    $admins = getTableFiltered("people", "type", "admin");
+}
+if ($route == "reports/view") {
+    if ($_GET['report'] == "timesheet") {
+        $startdate = $_GET['startDate'] . " 00:00:00";
+        $enddate = $_GET['endDate'] . " 00:00:00";
+        $issues = $database->select("issues", "*", [ "AND" => [
+                "dateadded[<>]" => [$startdate, $enddate],
+                "clientid" => $lia['clientid']
+        ]]);
+    } elseif ($_GET['report'] == "timesheetSummary") {
+        $startdate = $_GET['startDate'] . " 00:00:00";
+        $enddate = $_GET['endDate'] . " 00:00:00";
+        $assets = getTableFiltered("assets", "clientid", $lia['clientid']);
+        $licenses = getTableFiltered("licenses", "clientid", $lia['clientid']);
+        $issues = $database->select("issues", "*", [ "AND" => [
+                "dateadded[<>]" => [$startdate, $enddate],
+                "clientid" => $lia['clientid']
+        ]]);
+    } elseif ($_GET['report'] == "summary") {
+        $assets = getTableFiltered("assets", "clientid", $lia['clientid']);
+        $licenses = getTableFiltered("licenses", "clientid", $lia['clientid']);
+    }
+}
+
+// LOGS
+if ($route == "system/logs") {
+    $systemLog = getTable("systemLog");
+    $emailLog = getTable("emailLog");
+}
+
+// SYSTEM SETTINGS
+if ($route == "system/logs") {
+    $emailtemplates = getTable("emailTemplates");
+}
+?>

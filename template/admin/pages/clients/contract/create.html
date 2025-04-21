@@ -1,0 +1,737 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+
+<?php // nextContractTag(); die();?>
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1> Contract<small> Manage contract </small></h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li><a href="?route=contract">Contract</a></li><li class="active">Create</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <script type="text/javascript">
+            function doDelete(id) {
+                itemid = id;
+                document.getElementById("deleteValue").value = itemid;
+                $('#delModal').modal('show');
+            }
+        </script>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Create New Contract </h3></div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateContractForm()">
+							<div class="form-group">
+                                    <label for="clientid" class="col-sm-2 control-label">Client *</label>
+									<?php if ($clientid!= "") { ?> <input type="hidden" name="clientid" value="<?= $clientid ?>" > <?php } ?>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true"<?php if ($clientid!= "") { ?> disabled <?php } ?>>
+                                            <?php foreach ($clients as $client) { 
+                                            $selected = ($client['id'] == $clientid || $client['id'] == $_GET['clientid']) ? ' selected' : '';
+                                            echo "<option ".$selected." value='".$client['id']."'>".$client['name']."</option>"; 
+                                            } ?>
+                                        </select>
+                                    </div>
+                                </div>
+							 <div class="form-group">
+                                  <label for="categoryid" title="Service Item " class="col-sm-2 control-label">Contract Categories<span title="What kind of Assets will be included in this contract" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span></label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="categoryid" name="categoryid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+										 <option value="0">Select Contract Categories</option>
+                                            <?php foreach ($categories as $category) { echo "<option value='".$category['id']."'"; echo(($category['id'] == $_GET['catid'])? "selected='selected'":'');  echo ">".$category['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+								
+                               <div class="form-group">
+                                    <label for="manufacturerid" class="col-sm-2 control-label">Asset Location
+									<span title="The asset should be ready ( listed ) at warehouse first	
+Select warehouse location where the asset is" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span>
+									</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="manufacturerid" name="manufacturerid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                        <span><option value="0" >Select Warehouse  and Check available assets bellow</option></span>
+                                            <?php foreach ($warehouses as $warehouse) { echo "<option value='".$warehouse['id']."'"; echo(($warehouse['id'] == $_GET['warehouseid'])? "selected='selected'":'');  echo ">".$warehouse['name']."</option>"; } ?>
+                                        </select><a onClick='showM("ajax.php?modal=manufacturerAdd&reroute=system/manufacturers");return false' data-toggle="modal"><!--i  class="fa fa-plus plwidstyle"></i>--></a>
+                                    </div>
+                                </div>	
+
+	
+                           <?php
+                          if($assets != ''){ ?>
+                                <div class="form-group" id="xyz">
+                                    <label for="assetid" class="col-sm-2 control-label" style="color:red;">Select Assets *</label>
+                                    <div class="col-sm-8">
+									 <select class="form-control select2 select2-hidden-accessible" id="assetid" name="assetid" style="width: 100%;" tabindex="-1" aria-hidden="true" >
+									<?php 
+										if($assets != ''){ ?>
+										<option value="0"></option>
+										
+                                            <?php 
+											foreach ($assets as $asset) {
+											$labels = getSingleValue2('labels','name','id',$asset['statusid']);
+
+					
+											if($asset['id'] == $_GET['assett']){
+											 $warehousename = getSingleValue('warehouse', 'name', $asset['warehouseid']);
+											$modelname = getSingleValue('models', 'name', $asset['modelid']); 
+										
+											 
+											echo "<option value='".$asset['id']."' selected='selected'>".$asset['serial']  . " : " .$modelname ."-".$asset['sku']." : ".$warehousename.":".$asset['tag'] .":".$labels."</option>";
+											
+											}else{
+												
+										 $warehousename = getSingleValue('warehouse', 'name', $asset['warehouseid']);
+											$modelname = getSingleValue('models', 'name', $asset['modelid']); 	
+											echo "<option value='".$asset['id']."'>".$asset['sku']." : ".$asset['serial']  . " : " .$modelname ."-".$asset['sku']. " : ".$warehousename.":".$asset['tag'] .":".$labels."</option>"; 
+											
+											}
+											}
+											?>
+											<?php 
+											}
+											}
+											else{
+											?>
+											 <option value="0">Please Select Asset Type First</option>
+											 <?php } ?>
+  
+                                        </select>
+                                    </div>
+
+									<?php
+									
+									
+									//print_r($assets);
+									if($_GET['assett']){
+								foreach ($assets as $asset) {
+								
+									if($asset['id'] == $_GET['assett']){
+									
+									
+									$asstag = $asset['tag'];
+									$assname = $asset['name'];
+									$sku = $asset['sku'];
+									$ser = $asset['serial'];
+									$case_ser = $asset['caseserial'];
+									$mc = $asset['mc_type'];
+									$statusid = $asset['statusid'];
+								   $lab  = $labels;
+								$model = getSingleValue2('models','name','id',$asset['modelid']);
+								
+								$modelid = $asset['modelid'];
+								$assettype = getSingleValue2('manufacturers','name','id',$asset['manufacturerid']);
+
+								$serno = $ser;
+									
+									
+									
+									
+									}
+									}
+								
+								}	
+
+									?>
+										
+                                </div>
+								<div class="form-group">
+								<label for="memo" class="col-sm-2 control-label">Page Count *<span class="converzent_hover" title="If page count is not sure , Input text comments like 'Not Sure' or 'N/A'etc">
+<img style="width:16px;" class="converzent_image" src="uploads/if_Help.png"/>                                  </span></label>
+                                    <div class="col-sm-8 memolist234">
+                                    <div class="row">
+										<div class="col-sm-3" style="padding-left:0px;">
+											<label for="memo" class="col-sm-5 text-center">Color(A3)</label>
+											<div class="col-sm-7">
+											<input type="text" class="form-control" id="color1" name="color1" required>
+										</div>
+										</div>
+										
+										<div class="col-sm-3">
+											<label for="memo" class="col-sm-5 text-center">Color(A4)</label>
+											<div class="col-sm-7">
+											<input type="text" class="form-control" id="color2" name="color2" required>
+										</div>
+										</div>
+										
+										<div class="col-sm-3">
+											<label for="memo" class="col-sm-5 text-center">Black(A3)</label>
+											<div class="col-sm-7">
+											<input type="text" class="form-control" id="blac1" name="blac1" required>
+										</div>
+										</div>
+										
+										<div class="col-sm-3 paddrgt_0">
+											<label for="memo" class="col-sm-5 text-center">Black(A4)</label>
+											<div class="col-sm-7">
+											<input type="text" class="form-control" id="blac2" name="blac2" required>
+										</div>
+										</div>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                    <div class="form-group">
+                                        <label for="contractno" class="col-sm-2 control-label">Contract No *<span title="Contract number will be automatically generated by system default Format : Company name + Year +month+date+number" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span></label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="contractno" name="contractno" value="<?php echo nextContractTag(); ?>" required readonly="">
+                                        </div>
+
+                                        <label for="contract_condition" class="col-sm-2 control-label">Contract Condition</label>
+                                        <div class="col-sm-5">
+                                            <input type="radio" class="form-check-input" value="Unlimited" id="unlimited" name="contract_condition" checked>
+                                            <label for="unlimited" class="form-check-label control-label ml-2">Unlimited</label>
+
+                                            <input type="radio" class="form-check-input" value="page_plan" id="page_plan" name="contract_condition">
+                                            <label for="page_plan" class="form-check-label control-label ml-2">Page Plan</label>
+
+                                            <input type="radio" class="form-check-input" value="consumable" id="consumable" name="contract_condition">
+                                            <label for="consumable" class="form-check-label control-label ml-2">Consumable</label>
+
+                                            <input type="radio" class="form-check-input" value="free_or_demo" id="free_or_demo" name="contract_condition">
+                                            <label for="free_or_demo" class="form-check-label control-label ml-2">Free or Demo</label>
+
+                                            <input type="radio" class="form-check-input" value="others" id="others" name="contract_condition">
+                                            <label for="others" class="form-check-label control-label ml-2">Others</label>
+                                        </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="contracttype" class="col-sm-2 control-label">Contract Type *</label>
+                                    <div class="col-sm-8 alnful">
+                                    <div class="row">
+									 <div class="col-sm-3">
+                                        <select class="form-control select2 select2-hidden-accessible" id="contracttype" name="contracttype" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">Select Contract Type</option>
+                                            <?php foreach ($contracttypes as $contracttype) { echo "<option value='".$contracttype['id']."'"; echo(($contracttype['id'] == $_GET['conttyp'])? "selected='selected'":'');  echo ">".$contracttype['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+									 <div class="col-sm-4">
+									  <div class="form-group">
+									  <label for="contract_amount" class="col-sm-5 control-label">Contract Amount</label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control " id="contract_amount" name="contract_amount" >
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+									 <div class="col-sm-5">
+									  <div class="form-group">
+                                  
+                                    <label for="contract_amount" class="col-sm-5 control-label text-right">Security Deposit<span title="Put deposit amount if contract condition need security deposit" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span></label>
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control " id="deposit" name="deposit" >
+                                        </div>
+                                    </div>
+                                </div>
+									
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+							<div class="form-group">
+						<div class="col-sm-5 control-label">
+<div class="form-group"> <label for="page_limit_per_month" class="col-sm-5 control-label">Contract page limit per month <span title="Put Print page limit if contract condition include print page limit" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span></label>
+   <div class="col-sm-7 padd_lft_7"><div class="input-group">
+  <input type="number" class="form-control " id="page_limit_per_month" name="page_limit_per_month"></div> </div> </div> </div><div class="col-sm-6">
+					 <div class="form-group">
+                                  
+    <label for="actual_pages_per_month" class="col-sm-5 control-label text-right">Actual pages per month</label>
+                  <div class="col-sm-5">
+                       <div class="input-group" style="width:100%;">
+               <input type="number" class="form-control " id="actual_pages_per_month" name="actual_pages_per_month">
+                                        </div></div></div></div></div>
+								
+								  <div class="form-group">
+                                    <label for="template" class="col-sm-2 control-label">Contract Details - Template<span title="	Put Print page limit if contract condition include print page limit	
+	If you select contract type, Contract contents will be displayed	
+	from ready made contract template. You can edit some 	
+	contract contents to fit this client	" class="quest"><img class="converzent_image" style="width:16px;" src="uploads/if_Help.png"/><span></label>
+                                    <div style="padding-right:16px;" class="col-sm-8">
+                                        <textarea class="form-control summernote" id="template" name="template"></textarea>
+                                    </div>
+                                </div>
+								 <div class="form-group">
+                                    <label for="technician_name" class="col-sm-2 control-label"> Technician in Charge *</label>
+                                    <div class="col-sm-8 alnful">
+                                    <div class="row">
+									 <div class="col-sm-5">
+                                        <select class="form-control select2 select2-hidden-accessible" id="technician_name" name="technician_name" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                            <option value="0">Select Technician</option>
+                                            <?php foreach ($people as $peop) {
+											if($peop['role']=='technician'){ 
+											echo "<option value='".$peop['id']."'"; echo(($peop['id'] == $_GET['conttyp'])? "selected='selected'":'');  echo ">".$peop['name']."</option>"; } }?>
+                                        </select>
+                                    </div>
+									 <div class="col-sm-5">
+						  <div class="form-group" style="width:100%;">
+									 <div class="col-sm-11">
+                                        <div class="input-group">
+                                            <input type="mail" class="form-control " placeholder="Mail id" id="mail_id" name="mail_id"readonly>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    </div>
+									 <div class="col-sm-2">
+									  <div class="form-group">
+                                  <div class="col-sm-12">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control mobile_no" placeholder="Mobile No." id="mobile_no" name="mobile_no" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+									
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+								 <div class="form-group">
+                                    <label for="contract_expiry" class="col-sm-2 control-label">Customer Contract End Date</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+										
+                                            <input type="text" class="form-control datepicker-input" id="contract_expiry" name="contract_expiry">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+								 
+                              
+								<div class="form-group">
+                                    <label for="memo" class="col-sm-2 control-label">Description</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="description" name="description" >
+                                    </div>
+                                </div>
+							
+
+                                <div class="form-group">
+          <label for="memo" title="Transaction Memo" class="col-sm-2 control-label">Updated Memo</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="memo" name="memo" value="New Contract" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+								<label for="department" class="col-sm-2 control-label">Department</label>
+									<div class="col-sm-8">
+	
+                <select  class="form-control select2 select2-hidden-accessible" id="department" name="department" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                <span><option value=" ">Select Department -  If There is No Department Name , Pls Register Department  First</option></span>
+                                            <?php foreach ($dpname as $dpna) { 
+											
+							if($_GET['clientid']== $dpna['client_name']){
+										echo "<option value='".$dpna['id']."'"; echo(($dpna['id'] == $_GET['department'])? "selected='selected'":'');  echo ">".$dpna['name']."</option>"; }} ?>
+                                        </select>
+                                    </div>
+                                </div>	
+									
+								
+                                <div class="form-group">
+                                    <label for="asset_tag" class="col-sm-2 control-label">Asset Tag</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="asset_tag" name="asset_tag" readonly="" value="<?php echo $asstag; ?>">
+                                    </div>
+                                </div>
+								  <div class="form-group">
+                                    <label for="sku" class="col-sm-2 control-label">SKU *</label>
+                                    <div class="col-sm-8">
+                      <input  type="text" class="form-control fixlenghtrand"  id="sku" name="sku" required="" value="<?php echo $sku;?>" readonly style="cursor:no-drop;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="asset_type" class="col-sm-2 control-label">Asset Category</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="asset_type" name="asset_type" readonly="" value="<?php echo $assettype; ?> ">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mc_type" class="col-sm-2 control-label">M/C Type</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="mc_type" name="mc_type" readonly="" value="<?php echo $mc;?>">
+                                    </div>
+                                </div><div class="form-group">
+                                    <label for="asset_name" class="col-sm-2 control-label">Asset Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="asset_name" name="asset_name" readonly="" value="<?php echo $assname; ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="serial" class="col-sm-2 control-label">Serial Number</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $serno; ?> " readonly="">
+										
+                                    </div>
+                                </div>
+								 <div class="form-group">
+                                    <label for="serial" class="col-sm-2 control-label">Case Serial Number </label>
+                                    <div class="col-sm-8">
+                                         <input type="text" class="form-control" id="caseserial" name="caseserial"  value="<?php echo $case_ser ; ?>" readonly="">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modelid" class="col-sm-2 control-label">Model</label>
+                                    <div class="col-sm-8">
+                                        <input type="hidden" class="form-control" id="modelid" name="modelid" value="<?php echo $modelid; ?> ">
+                                        <input type="text" class="form-control" id="modelname" name="modelname" value="<?php echo $model; ?>" readonly="">
+                                    </div>
+                                </div>
+								<div class="form-group">
+                                    <label for="status" class="col-sm-2 control-label">Contract - Service Status</label>
+                                   <div class="col-sm-8">
+                                             <!--  <select class="form-control select2 select2-hidden-accessible" id="statusid" name="statusid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                    <?php 
+													//foreach ($labels as $label) { echo "<option value='".$label['id']."'"; if($asset['statusid']==$label['id']) echo " selected"; echo ">".$label['name']."</option>"; } 
+													?>
+                                                </select>									
+										<input type="hidden" class="form-control" id="statusid" name="statusid" value="10">-->
+										<input type="text" class="form-control" id="status" name="status" value="Active" readonly="">
+                                    </div>
+                                </div>
+								
+								<div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label">Notes</label>
+                                    <div   style="padding-right:16px;" class="col-sm-8">
+                                        <textarea class="form-control summernote" id="notes" name="notes"></textarea>
+                                    </div>
+                                </div>
+
+
+                                <div class="print_page" style="display: none;">
+
+                                    <div class="form-group">
+                                        <label for="bank
+                                        _charges_pages" class="col-sm-6 control-label">Page Plan Details</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="basic_charges" class="col-sm-2 control-label">Basic Charges</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" class="form-control" id="basic_charges" name="basic_charges" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="black_printing" class="col-sm-2 control-label text-right">Black Printing</label>
+                                        <label for="color_printing" class="col-sm-5 control-label">Color Printing</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="basic_black_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" class="form-control " min="0" step="0.05" id="basic_black_a3" name="basic_black_a3" value="">
+                                            </div>
+                                        </div>
+                                        <label for="basic_black_a3" class="col-sm-1 control-label">A4 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="basic_black_a4" name="basic_black_a4" value="">
+                                            </div>
+                                        </div>
+                                        <label for="basic_color_print_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="basic_color_print_a3" name="basic_color_print_a3" value="">
+                                            </div>
+                                        </div>
+                                        <label for="basic_color_print_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="basic_color_print_a4" name="basic_color_print_a4" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                    <div class="form-group">
+                                        <label for="extra_chargeies" class="col-sm-2 control-label">Extra Charges</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="black_printing" class="col-sm-2 control-label text-right">Black Printing</label>
+                                        <label for="color_printing" class="col-sm-5 control-label">Color Printing</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="extra_black_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="extra_black_a3" name="extra_black_a3" value="">
+                                            </div>
+                                        </div>
+                                        <label for="extra_black_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="extra_black_a4" name="extra_black_a4" value="">
+                                            </div>
+                                        </div>
+                                        <label for="extra_color_print_a3" class="col-sm-2 control-label">A3 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="extra_color_print_a3" name="extra_color_print_a3" value="">
+                                            </div>
+                                        </div>
+                                        <label for="extra_color_print_a4" class="col-sm-1 control-label">A4 Paper Size</label>
+                                        <div class="col-sm-1">
+                                            <div class="input-group">
+                                                <input type="number" min="0" step="0.05" class="form-control " id="extra_color_print_a4" name="extra_color_print_a4" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                    <div class="form-group">
+                                        <label for="extra_chargeies" class="col-sm-2 control-label">Page Plan Note</label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group">
+                                                <textarea name="extrachargies" id="extrachargies" cols="129" rows="5"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <input type="hidden" name="addContract">
+                                <input type="hidden" name="created_date" value="<?php echo date('Y-m-d'); ?>">
+                                <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+                                <input type="hidden" id="clientidin" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+                                <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function () {
+	var iddd=$( "#manufacturerid" ).val();
+	if(iddd=='0'){
+		document.getElementById("xyz").style.display="none";
+		}else{
+		document.getElementById("xyz").style.display="block";
+		}
+	<!-- var clintid = $( "#clientid option:selected" ).val(); -->
+	<!-- if (clintid!= "") //  equal value and equal type -->
+	<!-- { -->
+	<!-- alert(clintid); -->
+    <!-- $("#clientid").attr("disabled", true); -->
+
+	<!-- } else {$("#clientid").attr("disabled", false);} -->
+	
+	$('#manufacturerid').change(function () {
+	             
+         var idd =   $( "#manufacturerid" ).val();
+			
+		var clientid =  $( "#clientid option:selected" ).val();
+		var catid =  $( "#categoryid option:selected" ).val();
+		var conttyp =  $( "#contracttype option:selected" ).val();
+		var id = $(this).val();
+
+		if(id=='0'){
+		
+		//var url = $(location).attr("href");
+		//window.location.replace(url+"&warehouseid="+id+"&clientid="+clientid+"&catid="+catid+"&conttyp="+conttyp);
+		document.getElementById("xyz").style.display="none";
+		
+		
+		}else{
+		var url = $(location).attr("href");
+		
+		window.location.replace(url+"&warehouseid="+id+"&clientid="+clientid+"&catid="+catid+"&conttyp="+conttyp);
+		document.getElementById("xyz").style.display="block";
+		}
+		});
+		
+		<!-- $('#assetid').change(function () { -->
+		<!-- var clientid =  $( "#clientid option:selected" ).val(); -->
+		<!-- var catid =  $( "#categoryid option:selected" ).val(); -->
+		<!-- var conttyp =  $( "#contracttype option:selected" ).val(); -->
+		<!-- var id = $(this).val(); -->
+		<!-- var url = $(location).attr("href"); -->
+		
+		<!-- window.location.replace(url+"&assett="+id+"&clientid="+clientid+"&catid="+catid+"&conttyp="+conttyp);
+		<!-- });
+		
+	
+	
+	var cname =  $( "#clientid option:selected" ).text();
+	var clientid =  $( "#clientid option:selected" ).val();
+
+	var res = cname.substring(0, 3); 
+	 var no = $( "#contractno" ).val();
+	 no = res+'-'+no;
+	$('#contractno').val(no);
+	$('#clientidin').val(clientid);
+	$('#clientid').change(function (){
+	
+	var cname =  $( "#clientid option:selected" ).text();
+	var clientid =  $( "#clientid option:selected" ).val();
+	var res = cname.substring(0, 3); 
+	 var no = $( "#contractno" ).val();
+	 no = res+'-'+no;
+	$('#contractno').val(no);
+	$('#clientidin').val(clientid);
+	
+	});
+	
+        $('#template').summernote({height: 200});
+        $('#notes').summernote({height: 100});
+        $('.bootstrap-slider').bootstrapSlider();
+
+        $(".sliderToggle").click(function () {
+            if (this.checked) {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("disable");
+            } else {
+                // With JQuery
+                $(".bootstrap-slider").bootstrapSlider("enable");
+            }
+        });
+        $('#assetid').change(function () {
+            $.ajax({
+                url: "index.php?route=contract/get_asset&id=" + $(this).val(),
+                dataType: "json",
+                success: function (responde) {
+                
+                    $('#asset_tag').val(responde.tag);
+                    $('#sku').val(responde.sku);
+                    $('#asset_type').val(responde.asset_type);
+                    $('#mc_type').val(responde.mc_type);
+                    $('#asset_name').val(responde.name);
+                    $('#serial').val(responde.serial);
+                    $('#caseserial').val(responde.caseserial);
+                    $('#modelid').val(responde.modelid);
+                    $('#modelname').val(responde.model_name);
+                    $('#blac1').val(responde.A3blk);
+                    $('#blac2').val(responde.A4blk);
+                    $('#color1').val(responde.A3clr);
+                    $('#color2').val(responde.A4clr);
+                }
+            });
+        });
+		
+		 $('#technician_name').change(function () {
+            $.ajax({
+                url: "index.php?route=contract/get_technician&id=" + $(this).val(),
+                dataType: "json",
+                success: function (responde) {
+				
+                
+				$('#mail_id').val(responde.email);
+                    $('#mobile_no').val(responde.mobile);
+                    
+                }
+            });
+        });
+		
+		  $('#contracttype').change(function () {
+            $.ajax({
+                url: "index.php?route=contract/get_contracttype&id=" + $(this).val(),
+                dataType: "json",
+                success: function (responde) {
+                    $('#template').summernote('code', responde.template);
+                }
+            });
+        });
+    });
+
+    function validateContractForm() {
+        var contracttype = $('#contracttype').val();
+        //console.log(contracttype);
+        if (contracttype == '0') {
+            $('html, body').animate({
+                scrollTop: $("#contracttype").offset().top
+            }, 2000);
+            $('#contracttype').addClass('invalid');
+            alert('Please select Contract Type!');
+            return false;
+        }
+
+        var assetid = $('#assetid').val();
+        //console.log(assetid);
+        if (assetid == '0') {
+            $('html, body').animate({
+                scrollTop: $("#assetid").offset().top
+            }, 2000);
+            $('#assetid').addClass('invalid');
+            alert('Please select Asset!');
+            return false;
+        }
+        $('#assetid').removeClass('invalid');
+        return true;
+    }
+    $(function () {
+        $(".select2").select2();
+        /*$('#contract_expiry, #warranty_expiry', '#purchase_date').datepicker({
+         format: 'yyyy-mm-dd',
+         clearBtn: 'true',
+         weekStart: '<?php echo getConfigValue("week_start"); ?>',
+         autoclose: true
+         });*/
+    });
+    /*
+     $('input:file').change(
+     function (e) {
+     var files = e.originalEvent.target.files;
+     //console.log(files);
+     for (var i = 0, len = files.length; i < len; i++) {
+     var n = files[i].name,
+     s = files[i].size,
+     t = files[i].type;
+     
+     if (s > 100) {
+     console.log(t + 'Please deselect this file: "' + n + '," it\'s larger than the maximum filesize allowed. Sorry!');
+     }
+     }
+     });
+     */
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('input[name="contract_condition"]').change(function () {
+            if ($(this).val() === 'page_plan') {
+                $('.print_page').show();
+            } else {
+                $('.print_page').hide();
+            }
+        });
+    });
+</script>
+<style>
+.alnful .input-group {
+    width: 100%;
+}
+.padd_lft_7{ padding-left:7px;}		
+.memolist234 label {
+    padding-top: 9px;
+}
+.paddrgt_0{padding-right:0px;}
+img.converzent_image {  width: 16px; margin: 2px; height: 16px;}
+#select2-manufacturerid-container {color: orangered;}
+#color1 , #color2 , #blac1 , #blac2{text-align: right;color:red;font-weight:bold;}
+}
+table#dataTablesFull {
+    border-top: 1px #ddd solid !important;
+}
+
+</style>

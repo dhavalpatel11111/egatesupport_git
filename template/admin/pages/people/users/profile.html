@@ -1,0 +1,229 @@
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1><?php echo $user['name']; ?><small> User profile</small></h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li>People</li><li class="active">Users</li></ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-default">
+                    <div class="box-body">
+						<div class="row">
+							<form role="form" method="post" class="form-horizontal">
+								<div class="form-group">
+							        <label for="clientid" class="col-sm-2 control-label">Client *</label>
+									<div class="col-sm-8">
+								        <select class="form-control select2" id="clientid" name="clientid" style="width: 100%;">
+								            <?php foreach ($clients as $client) { ?>
+								                <option value='<?php echo $client['id']; ?>' <?php if($client['id'] == $user['clientid']) echo "selected"; ?> ><?php echo $client['name']; ?></option>
+								            <?php } ?>
+								        </select>
+									</div>
+							    </div>
+								<div class="form-group">
+									<label for="name" class="col-sm-2 control-label">Name *</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="name" name="name" value="<?php echo $user['name']; ?>" required>
+									</div>
+								</div>
+
+
+								<div>
+
+								
+								<div class="form-group">
+									<label for="email" class="col-sm-2 control-label">Email Address *</label>
+									<div class="col-sm-2">
+										<input type="email" class="form-control" id="email" name="email" value="<?php echo $user['email']; ?>" required>
+									</div>
+									<!-- all checkboxes -->
+									<div class="col-sm-8">
+										<label class="control-label" style="margin: 0px 20px;">Responsible: </label>
+
+										<label class="control-label" style="margin: 0px 20px;">Invoice: 
+										<span style="margin-left: 10px;">Yes</span>
+										<?php if($user['invoice'] ==1){
+										?>
+										<input type="checkbox" class="" id="invoice" name="invoice" value ="1" checked ="checked" style="margin: 50px 0px;">
+										<?php
+										} else	{
+										?>
+										<input type="checkbox" class="" id="invoice" name="invoice" value ="1">
+										<?php	}	?>
+										</label>
+
+										<label class="control-label" style="margin: 0px 20px;">Collection: 
+										<span style="margin-left: 10px;">Yes</span>
+										<?php if($user['collection_change'] ==1){
+										?>
+										<input type="checkbox" class="" id="collection_change" name="collection_change" value ="1" checked ="checked">
+										<?php
+										} else	{
+										?>
+										<input type="checkbox" class="" id="collection_change" name="collection_change" value ="1">
+										<?php	}	?>
+										</label>
+
+
+										<label for="collection" class="control-label" style="margin: 0px 20px;">Page Count: 
+										<span style="margin-left: 10px;">Yes</span>
+										<?php 
+										if(isset($user['user_page_count_check'])){
+											if($user['user_page_count_check'] == 0){ ?>
+										<input type="checkbox" name="user_page_count_check" id="user_page_count_check" value="0">
+										<?php	}else{ ?>
+											<input type="checkbox" name="user_page_count_check" id="user_page_count_check" checked value="1">
+										  <?php	}
+										}else{ ?>
+										 <input type="checkbox" name="user_page_count_check" id="user_page_count_check" checked value="1">
+										<?php }
+										?>
+										</label>
+
+
+									</div>
+									<!-- all checkboxes -->
+
+									<!-- <label for="collection" class="col-sm-2 control-label">Collection in change?</label>
+									
+									<div class="col-sm-1">
+									Yes
+									<?php if($user['collection_change'] ==1)
+									{
+									?>
+									<input type="checkbox" class="" id="collection_change" name="collection_change" value ="1" checked ="checked">
+									<?php
+									}
+									else
+									{
+									?>
+									<input type="checkbox" class="" id="collection_change" name="collection_change" value ="1">
+									<?php
+									}
+									?>
+							
+										
+									</div>
+
+									<label for="collection" class="col-sm-1 control-label">Page Count</label>
+									<div class="col-sm-1">
+									Yes
+									<?php 
+									if(isset($user['user_page_count_check'])){
+										if($user['user_page_count_check'] == 0){ ?>
+									<input type="checkbox" name="user_page_count_check" id="user_page_count_check" value="0">
+									<?php	}else{ ?>
+										<input type="checkbox" name="user_page_count_check" id="user_page_count_check" checked value="1">
+								  	<?php	}
+									}else{ ?>
+									 <input type="checkbox" name="user_page_count_check" id="user_page_count_check" checked value="1">
+									<?php }
+									?>
+									</div> -->
+								</div>
+
+								<!-- new input field  -->
+								<!-- <div class="form-group" style="background-color: red; width: 50%;">
+									casdc
+								</div> -->
+								<!-- new input field  -->
+
+
+
+								<div class="form-group">
+									<label for="mobile" class="col-sm-2 control-label">Mobile Number</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="mobile" name="mobile" value="<?php echo $user['mobile']; ?>">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="title" class="col-sm-2 control-label">Department</label>
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="title" value="<?php echo $user['title']; ?>" name="title">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="password" class="col-sm-2 control-label">Password</label>
+									<div class="col-sm-8">
+										<input type="password" value="<?php echo $user['password']; ?>"  class="form-control" id="password" name="password" placeholder="Enter to change">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="theme" class="col-sm-2 control-label">Theme</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="theme" name="theme" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="skin-blue" <?php if($user['theme']=="skin-blue") echo "selected"; ?>>Blue</option>
+											<option value="skin-black" <?php if($user['theme']=="skin-black") echo "selected"; ?>>Black</option>
+											<option value="skin-purple" <?php if($user['theme']=="skin-purple") echo "selected"; ?>>Purple</option>
+											<option value="skin-green" <?php if($user['theme']=="skin-green") echo "selected"; ?>>Green</option>
+											<option value="skin-red" <?php if($user['theme']=="skin-red") echo "selected"; ?>>Red</option>
+											<option value="skin-yellow" <?php if($user['theme']=="skin-yellow") echo "selected"; ?>>Yellow</option>
+											<option value="skin-blue-light" <?php if($user['theme']=="skin-blue-light") echo "selected"; ?>>Blue Light</option>
+											<option value="skin-black-light" <?php if($user['theme']=="skin-black-light") echo "selected"; ?>>Black Light</option>
+											<option value="skin-purple-light" <?php if($user['theme']=="skin-purple-light") echo "selected"; ?>>Purple Light</option>
+											<option value="skin-green-light" <?php if($user['theme']=="skin-green-light") echo "selected"; ?>>Green Light</option>
+											<option value="skin-red-light" <?php if($user['theme']=="skin-red-light") echo "selected"; ?>>Red Light</option>
+											<option value="skin-yellow-light" <?php if($user['theme']=="skin-yellow-light") echo "selected"; ?>>Yellow Light</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="sidebar" class="col-sm-2 control-label">Sidebar</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="sidebar" name="sidebar" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="opened" <?php if($user['sidebar']=="opened") echo "selected"; ?>>Opened</option>
+											<option value="collapsed" <?php if($user['sidebar']=="collapsed") echo "selected"; ?>>Collapsed</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="layout" class="col-sm-2 control-label">Layout</label>
+									<div class="col-sm-8">
+										<select class="form-control select2 select2-hidden-accessible" id="layout" name="layout" style="width: 100%;" tabindex="-1" aria-hidden="true">
+											<option value="" <?php if($user['layout']== "") echo "selected"; ?>>Standard</option>
+											<option value="fixed" <?php if($user['layout']=="fixed") echo "selected"; ?>>Fixed</option>
+											<option value="layout-boxed" <?php if($user['layout']=="layout-boxed") echo "selected"; ?>>Boxed</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="notes" class="col-sm-2 control-label">Notes</label>
+									<div class="col-sm-8">
+										<textarea class="form-control summernote" id="notes" name="notes"><?php echo $user['notes']; ?></textarea>
+									</div>
+								</div>
+
+											<input type="hidden" name="editUser">
+											<input type="hidden" name="route" value="people/users/profile">
+											<input type="hidden" name="routeid" value="<?php echo $user['id']; ?>">
+											<input type="hidden" name="id" value="<?php echo $user['id']; ?>">
+
+
+
+								<div class="col-sm-2"></div><div class="col-sm-8">
+									<button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+								</div>
+
+
+							</form><!-- /.form -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

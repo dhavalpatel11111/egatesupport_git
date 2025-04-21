@@ -1,0 +1,207 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Warranty<small> Manage Warranty</small></h1>
+        <div class="pull-right"><a class="btn btn-primary " href="" style="width: 96px;padding:4px 12px;margin-left:8px;"><i class="fa fa-print"></i>Print</a></div>
+		<div class="pull-right"><a class="btn btn-primary btn-sm" href="?route=warranty/create"><i class="fa fa-plus"></i>CREATE NEW</a></div>
+		
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+					
+					
+                        <div class="table-responsive">
+							<p>Total No of Warranty Card: <?php  echo $wrtytotalCount;?> </p>
+							<div class="row spajj">
+					
+								<div class="col-md-3" style="padding-right:0px;">
+									<div style=""> Warranty Status</div>
+								</div>
+								<div class="col-md-3">
+				
+									<select name="wstatus" id="wstatus" style="">
+										<option value="1"<?php if($_GET['stts']==1) echo "selected='selected'";?> >Under Warranty</option>	
+										<option value="2"<?php if($_GET['stts']==2) echo "selected='selected'";?> >Expired</option>	
+										<option value="0"<?php if($_GET['stts']==0) echo "selected='selected'";?> >All</option>	
+									</select>
+								</div>
+								<div class="col-md-3" style="padding-right:0px;">
+									<a class="btn btn-primary btn-sm" href="?route=warrantyupdate">Update</a>
+								</div>
+							</div>
+                            <table id="dataTablesFull" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+           
+                                        <th>Asset Type</th>
+                                        <th>Model</th>
+                                        <th>Serial No.</th>
+                                        <th>Date Out</th>
+                                        <th>Claim Stub</th>
+                                        <th>Current Location</th>
+                                        <th>Department</th>
+                                        <th>Vendor Name</th>
+										<th>Purchase Date</th>
+										<th>Warranty Expired</th>
+										<th>Days</th>
+									
+                            
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+									//echo'<pre>';
+									//print_r($assets);
+								
+									//die('grtre');
+									
+                                    foreach ($assets as $asset) {
+                                    $manufacturerid = getSingleValue("manufacturers","id",$asset['assetsid']);
+                                    echo "<tr>";
+                                   
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)."</td>";
+                                    echo "<td><a href='?route=warranty/manage&id=".$asset['id']."'>".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modalid'])."</a></td>";
+                                    echo "<td>".$asset['serial']."</td>";
+									
+									$outdt = getTableFiltereddc("warrantyhistory", "warrantyid", $asset['id']);
+                                    echo "<td class='shhow'>".$outdt[0]['dateout']."<span class='onhovr'>".$outdt[0]['remark']."</span></td>";
+									if($outdt[0]['claimstub'] != ""){
+									$invooo ="<a href='ajax.php?invoicefile=".$outdt[0]['claimstub']."'  title='".$outdt[0]['claimstub']."'><i class='fa fa-file'></i>Claim file<a><br>";
+									
+                                    echo "<td>".$invooo."</td>";
+									}else{
+									echo "<td></td>";
+									}
+									if(is_numeric ($asset['location'])){
+										 echo "<td>".getSingleValue("clients","name",$asset['location'])."</td>";
+									}else{
+										echo "<td>".$asset['location']."</td>";
+									}
+                                    echo "<td>".$asset['department']."</td>";
+									
+                                    echo "<td>".getSingleValue("suppliers","name",$asset['supplier'])."</td>";
+									
+									echo "<td>".$asset['issudate']."</td>";
+									
+									echo "<td>".$asset['expairy']."</td>";
+									
+									$date1 = date('Y-m-d');
+									
+									$date2 = $asset['expairy'];
+									
+									if($date2 > $date1){
+									
+									$diff = abs(strtotime($date2) - strtotime($date1));
+									
+									$days = floor($diff/86400);
+									
+									echo "<td>".$days." Days</td>";
+									
+									$sttats = 1;
+									
+									$id = $asset['id'];
+									
+									$u = updatewarranty($sttats, $id);
+									}
+									else {
+									
+									$diff = abs(strtotime($date1) - strtotime($date2));
+									
+									$days = floor($diff/86400);
+									
+									echo "<td style='color:red'>-".$days." Expired</td>";
+									
+									$sttats = 2;
+									
+									$id = $asset['id'];
+									
+									$u = updatewarranty($sttats, $id);
+									}
+									
+									 $file = getTableFiltereddc("warrantycard", "warrantyid",$asset['id']); 
+									
+									 $fil = $file[0];
+									 
+									 if($fil['name'] == "Invoice" && $fil['file'] != ""){
+									 
+									 $invo ="<a href='ajax.php?downloadwrnty=".$fil['id']."'  title='".$fil['file']."'><i class='fa fa-file'></i>Invoice<a><br>"; 
+									 
+									  echo "<td>" .$invo. "</td>";
+									 
+									 }
+									 
+									 
+									
+						
+								
+                                    echo "<td>
+                                    <div class='pull-right'>
+                                    <a href='?route=warranty/manage&id=".$asset['id']."' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=warantyDelete&id=".$asset['id']."&reroute=warranty&stts=1\" );return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+  $('#wstatus').change(function() {
+	<!-- alert('trttr'); -->
+  var valsel= $(this).val();
+
+  if(valsel!=0)
+  {
+	  
+	  
+	   window.location.href = "?route=warranty&stts="+valsel;
+	 
+	
+  }
+  else
+  {
+	 window.location.href = "?route=warranty&stts="+valsel;
+  }
+ 
+})
+
+});
+
+</script>
+<style>
+.onhovr p{
+	padding:7px; background-color:#000; color:#fff;
+}
+.onhovr{
+	 display:none;
+	 position: absolute;
+	width: 100%;
+	top: 15%;
+	left: 73px;
+}
+.shhow:hover > .onhovr{
+	 display:block;
+ }
+ .shhow{
+	position: relative;
+ }
+</style>

@@ -1,0 +1,50 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Edit Ticket</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="subject">Amount</label>
+        <?php 
+        $invoice_contract_amount = getTableFiltereddc("invoice_contract","invoice",$_GET["invoiceid"],"contract_id",$_GET['contractid'],"amount");
+        if(!empty($invoice_contract_amount)){
+          $contract_amount =  $invoice_contract_amount[0];
+        }else{
+          $contract_amount = $_GET['amount'];
+        }
+        ?>
+        <input type="text" value="<?php echo  $contract_amount; ?>" class="form-control" name="amount" />
+    </div>
+
+    <?php 
+        $invoice_contract_notes = getTableFiltereddc("invoice_contract","invoice",$_GET["invoiceid"],"contract_id",$_GET['contractid'],"notes");
+        if(!empty($invoice_contract_notes)){
+          $contract_notes =  $invoice_contract_notes[0];
+        }else{
+          $contract_notes = '';
+        }
+        ?>
+
+    <div class="form-group">
+        <label for="message" class="control-label">Notes</label>
+        <textarea class="form-control summernote-modal" id="message" name="message"><?php echo $contract_notes; ?></textarea>
+    </div>
+
+    <input type="hidden" name="editContractInvoice">
+    <input type="hidden" name="route" value="clients/editinvoice">
+    <input type="hidden" name="clientid" value="<?php echo $_GET['clientid'];?>">
+    <input type="hidden" name="invoice_id" value="<?php echo $_GET['invoiceid']; ?>">
+    <input type="hidden" name="contract_id" value="<?php echo $_GET['contractid']; ?>">
+    
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Update</button>
+</div>
+
+<script type="text/javascript">
+
+        $(function() { $(".select2").select2(); });
+
+        $(document).ready(function() { $('.summernote-modal').summernote({height: 200}); });
+
+        
+</script>

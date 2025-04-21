@@ -1,0 +1,163 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Add Issue ascasc</h4></div>
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label for="name">Issue Name *</label>
+                <input type="text" class="form-control" id="name" name="name" value="" required>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                <label for="issuetype">Type</label>
+                <select class="form-control select2-icon" id="issuetype" name="issuetype" style="width: 100%;">
+                    <option value="Task" data-icon="fa-check-square text-blue"> Task</option>
+                    <option value="Maintenance" data-icon="fa-minus-square text-yellow"> Maintenance</option>
+                    <option value="Bug" data-icon="fa-bug text-red"> Bug</option>
+                    <option value="Improvement" data-icon="fa-external-link text-teal"> Improvement</option>
+                    <option value="New Feature" data-icon="fa-plus-square text-green"> New Feature</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="clientid">Client</label>
+                <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">None</option>
+                    <?php foreach ($clients as $client) { ?>
+                        <option value='<?php echo $client['id']; ?>' <?php if(isset($_GET['clientid'])) { if($_GET['clientid'] == $client['id']) echo "selected"; }  ?>><?php echo $client['name']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="adminid">Assigned To</label>
+                <select class="form-control select2 select2-hidden-accessible" id="adminid" name="adminid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">Nobody</option>
+                    <?php foreach ($admins as $admin) { ?>
+                        <option value='<?php echo $admin['id']; ?>' <?php if(isset($lia['id'])) { if($lia['id'] == $admin['id']) echo "selected"; }  ?>><?php echo $admin['name']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="assetid">Asset</label>
+                <select class="form-control select2" id="assetid" name="assetid" style="width: 100%;">
+                    <option value="0">None</option>
+                    <?php foreach ($assets as $asset) { $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']); ?>
+                        <option value='<?php echo $asset['id']; ?>' <?php if(isset($_GET['assetid'])) { if($_GET['assetid'] == $asset['id']) echo "selected"; }  ?>>
+                            <?php
+                                echo $asset['tag']." ".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modelid']);
+                                if ($asset['clientid'] != "0") echo " [" .getSingleValue("clients","name",$asset['clientid']). "] ";
+                             ?>
+                        </option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="projectid">Project</label>
+                <select class="form-control select2 select2-hidden-accessible" id="projectid" name="projectid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="0">None</option>
+                    <?php foreach ($projects as $project) { ?>
+                        <option value='<?php echo $project['id']; ?>' <?php if(isset($_GET['projectid'])) { if($_GET['projectid'] == $project['id']) echo "selected"; }  ?>><?php echo $project['name']; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control select2" id="status" name="status" style="width: 100%;">
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="priority">Priority</label>
+                <select class="form-control select2" id="priority" name="priority" style="width: 100%;">
+                    <option value="Low">Low</option>
+                    <option value="Normal" selected>Normal</option>
+                    <option value="High">High</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="timespent">Time Spent (minutes)</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="timespent" name="timespent">
+                    <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="duedate">Due Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control duedate" id="duedate" name="duedate">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="description" class="control-label">Description</label>
+        <textarea class="form-control summernote" id="description" name="description"></textarea>
+    </div>
+
+    <input type="hidden" name="addIssue">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+        $(".select2").select2();
+
+        function formatIcon(icon) {
+            if (!icon.id) { return icon.text; }
+            var originalOption = icon.element;
+            var $icon = $('<span></span>').append($('<i class="fa ' + $(originalOption).data('icon') + '"></i>') ).append(icon.text);
+            return $icon;
+        }
+
+        $('.select2-icon').select2({
+            templateResult: formatIcon,
+            templateSelection: formatIcon
+        });
+
+        $(function() {
+            $('.duedate').datepicker({
+                format: 'yyyy-mm-dd',
+                clearBtn: 'true',
+                weekStart: '<?php echo getConfigValue("week_start"); ?>',
+                autoclose: true
+            });
+        });
+</script>

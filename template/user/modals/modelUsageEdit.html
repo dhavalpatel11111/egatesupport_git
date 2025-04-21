@@ -1,0 +1,518 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+
+    <span style="display: flex; align-items: center; gap: 10px;">
+        <h4 class="modal-title">Send Page Count</h4>
+        <?php
+        $video_url_2 = get_user_guide_video_data('how_to_upload_2307_files' , 'video_url');
+        $video_url = isset($video_url_2) ? $video_url_2 : '';
+        ?>
+        <p class="youtube_image" data-url="<?php echo $video_url; ?>" style="margin-left: 20px; font-size: 17px;">How To
+            Send &nbsp;&nbsp;<i class="fa fa-youtube-play" style="color: red; font-size: 24px;"></i></p>
+    </span>
+</div>
+<div class="modal-body">
+
+    <div class="row">
+
+        <div class="col-xs-12 col-lg-3">
+            <div class="form-group">
+                <label for="date" style="font-weight: unset !important;">Date</label>
+                <?php
+                $date = isset($labeldata[0]['date']) ? $labeldata[0]['date'] : date('Y-m-d');
+                ?>
+                <input type="date" class="form-control" id="date" name="date"
+                    value="<?php echo date('Y-m-d', strtotime($date)); ?>" required>
+
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-lg-3">
+            <div class="form-group">
+                <label for="department" style="font-weight: unset !important;">Department</label>
+                <input type="text" class="form-control" id="department" name="department"
+                    value="<?php echo $department; ?>" readonly>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-lg-3">
+            <div class="form-group">
+                <label for="name" style="font-weight: unset !important;">Model Name *</label>
+                <input type="text" class="form-control" id="modalname" name="modalname"
+                    value="<?php echo $modelname; ?>" readonly>
+            </div>
+        </div>
+
+        <div class="col-xs-6 col-lg-3">
+            <div class="form-group">
+                <label for="serial" style="font-weight: unset !important;">Contract No *</label>
+                <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $contractNo; ?>"
+                    readonly>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-lg-12">
+            <div class="form-group">
+                <label for="image" style="color: red; font-weight: unset !important;"> Print Status Report Page
+                    , Take a Photo and Attach it</label>
+                <input type="file" class="form-control" id="image" name="image">
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <!-- <div class="form-group">
+        <label for="date">Date</label>
+        <?php
+        $date = isset($labeldata[0]['date']) ? $labeldata[0]['date'] : date('Y-m-d');
+        ?>
+        <input type="date" class="form-control" id="date" name="date"
+            value="<?php echo date('Y-m-d', strtotime($date)); ?>" required>
+
+    </div> -->
+
+    <!-- <div class="form-group">
+<label for="department">Department</label>
+<input type="text" class="form-control" id="department" name="department" value="<?php echo $department; ?>"
+    readonly>
+</div> -->
+
+    <div class="row">
+
+        <div class="col-xs-4" style="height: 140px;">
+            <div class="form-group text-center" style="width: 100%; height: 100%;">
+                <?php
+                if($modelimage != ""){ ?>
+                <img style="display: inline-block; width: auto; height: 95%;" width="100%" src="uploads/<?php echo $modelimage; ?>">
+                <?php } ?>
+            </div>
+        </div>
+
+        <div class="col-xs-8">
+
+            <div class="row">
+
+
+                <div class="col-xs-6 col-lg-6">
+                    <div class="form-group"
+                        style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <div style="width: 100%;">
+                            <label for="A3clr" style="color: red; font-weight: unset !important;">A3 Color *</label>
+                            <input type="text" class="form-control" id="A3clr" name="A3clr" value="" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-6 col-lg-6">
+                    <div class="form-group"
+                        style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <div style="width: 100%;">
+                            <label for="A3blk" style="font-weight: unset !important;">A3 Black *</label>
+                            <input type="text" class="form-control" id="A3blk" name="A3blk" value="" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-6 col-lg-6">
+                    <div class="form-group"
+                        style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <div style="width: 100%;">
+                            <label for="A4clr" style="color: red; font-weight: unset !important;">A4 Color *</label>
+                            <input type="text" class="form-control" id="A4clr" name="A4clr" value="" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-6 col-lg-6">
+                    <div class="form-group"
+                        style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <div style="width: 100%;">
+                            <label for="A4blk" style="font-weight: unset !important;">A4 Black *</label>
+                            <input type="text" class="form-control" id="A4blk" name="A4blk" value="" required>
+                        </div>
+                    </div>
+                </div>
+          
+            </div>
+
+        </div>
+
+        <div class="col-xs-12 col-lg-12">
+            <div class="form-group"
+                style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <div style="width: 100%;">
+                    <label for="remark" style="font-weight: unset !important;">Remark</label>
+                    <input type="text" class="form-control" id="remark" name="remark" value="" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="col-xs-7">
+    <div class="form-group">
+        <label for="name">Model Name *</label>
+        <input type="text" class="form-control" id="modalname" name="modalname"
+            value="<?php echo $modelname; ?>" readonly>
+    </div>
+    <div class="form-group">
+        <label for="serial">Contract No *</label>
+        <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $contractNo; ?>"
+            readonly>
+    </div>
+</div> -->
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <div class="form-group">
+   <label for="image" style="color: red;"> Print Status Report Page , Take a Photo and Attach it</label>
+    <input type="file" class="form-control" id="image" name="image">
+</div> -->
+
+    <!-- <div class="row">
+
+    <div class="col-xs-6 col-lg-12">
+        <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+            <div style="width: 100%;">
+                <label for="A3clr" style="color: red;">A3 Color *</label>
+                <input type="text" class="form-control" id="A3clr" name="A3clr" value=""
+                    required>
+            </div>
+        </div>          
+    </div>
+
+    <div class="col-xs-6 col-lg-12">
+       <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+         <div style="width: 100%;">
+            <label for="A3blk">A3 Black *</label>
+            <input type="text" class="form-control" id="A3blk" name="A3blk" value="" required>
+         </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="col-xs-6 col-lg-12">
+        <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+            <div style="width: 100%;">
+                <label for="A4clr" style="color: red;">A4 Color *</label>
+                <input type="text" class="form-control" id="A4clr" name="A4clr" value=""
+                    required>
+            </div>
+        </div>          
+    </div>
+
+    <div class="col-xs-6 col-lg-12">
+       <div class="form-group" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+         <div style="width: 100%;">
+            <label for="A4blk">A4 Black *</label>
+            <input type="text" class="form-control" id="A4blk" name="A4blk" value=""
+                required>
+         </div>
+      </div>
+    </div>
+
+
+
+
+
+</div> -->
+
+    <div style="width: 100%;" class="hidden-xs table-responsive">
+        <?php 
+if(isset($usage_report_history_data)){ ?>
+
+        <table id="page_count_report_table" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dup</th>
+                    <th>Reference No.</th>
+                    <th>Date & Time</th>
+                    <th style="color: red;">A3</th>
+                    <th>A3</th>
+                    <th style="color: red;">A4 </th>
+                    <th>A4</th>
+                    <th>Remark</th>
+                    <th>File</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+            $cntv = 1;
+            foreach ($usage_report_history_data as $page_count) { 
+               $is_duplicate = check_dup_usage_report($usage_report_history_data , $page_count['ref_no'] , $page_count['contract_id'] , $page_count['date'] , $page_count['id']);
+                    if($is_duplicate){
+                            $dup_html = "<span style='background-color: red; display: flex;width: 16px;height: 16px;'>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-check' viewBox='0 0 16 16'>
+                                    <path d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z'/>
+                                  </svg>
+                            </span>";
+                    }else{
+                            $dup_html = "<span style='background-color: lightgray; display: flex;width: 16px; height: 16px;'>&nbsp;</span>";
+                    }
+                ?>
+                <tr>
+                    <td>
+                        <?php echo $page_count['id']; ?>
+                    </td>
+                    <td>
+                        <?php echo $dup_html; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['ref_no']; ?>
+                    </td>
+                    <?php 
+              $date = $page_count['date'];
+              $formatted_datetime = date("Y-m-d H:i", strtotime($date));
+              ?>
+                    <!-- <td><?php // echo $formattedDate; ?></td> -->
+                    <td>
+                        <?php echo $formatted_datetime; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['A3clr']; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['A3blk']; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['A4clr']; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['A4blk']; ?>
+                    </td>
+                    <td>
+                        <?php echo $page_count['remark']; ?>
+                    </td>
+                    <?php
+              $host = $_SERVER['HTTP_HOST'];
+              $host_upper = strtoupper($host);
+              $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+              $baseurl = "http://" . $host . $path . "/";
+              $targetdir = $baseurl . 'uploads' . DIRECTORY_SEPARATOR . 'usage_report' . DIRECTORY_SEPARATOR; 
+              if($page_count['image'] != ''){
+                  $imagePath = $targetdir . $page_count['image'];
+              }else{
+                $imagePath = '';
+              }
+              ?>
+                    <!-- <td><img src="<?php echo $imagePath; ?>" height="80px"></td> -->
+                    <td>
+                        <?php
+                if($imagePath != ''){ ?>
+                        <a href="<?php echo $imagePath; ?>" target="_blank">
+                            <i style="color:#3c8dbc;cursor: pointer;" class="fa fa-file" aria-hidden="true"> </i>
+                        </a>
+                        <?php } ?>
+                    </td>
+                    <td>
+                        <?php 
+               echo "<a href='#' onClick='showM(\"ajax.php?modal=editUsagereport&reroute=clients&id=".$page_count['id']."\"); return false;' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                <a href='#' onClick='showM(\"ajax.php?modal=DeleteUsagereport&id=".$page_count['id']."&routeid=".$page_count['contract_id']."\"); return false;' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>";
+                ?>
+                    </td>
+
+                </tr>
+                <?php $cntv++; } ?>
+            </tbody>
+        </table>
+
+        <?php 
+} ?>
+    </div>
+
+
+
+
+
+    <!-- hidden-xs -->
+
+    <input type="hidden" name="id" value="<?php echo $labeldata[0]['id']; ?>">
+    <input type="hidden" name="editUsageModel">
+    <input type="hidden" name="modelid" value="<?php echo $modelid;?>">
+    <input type="hidden" name="route" value="clients/manage">
+    <input type="hidden" name="routeid" value="<?php echo $labeldata[0]['clientid'];?>">
+    <input type="hidden" name="contract_id" value="<?php echo $contract_id['id'];?>">
+    <input type="hidden" name="section" value="">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script type="text/javascript">
+    $(".select2").select2();
+    $('.youtube_image').click(function () {
+        var url = $(this).data('url');
+        $('#myIframe').attr('src', url);
+        $("#myModal").modal('hide');
+        $('#myModalyoutube').modal('show');
+    });
+
+    $(document).on('click', '.close-second-modal', function () {
+        $('#myModalyoutube').modal('hide');
+        $('body').addClass('modal-open');
+        $("#myModal .modal-dialog").addClass('modal-lg');
+        $("#myModal").modal('show');
+    });
+
+    $("#myModal").on("hidden.bs.modal", function () {
+        $("#myModal .modal-dialog").removeClass('modal-lg');
+    });
+
+
+</script>

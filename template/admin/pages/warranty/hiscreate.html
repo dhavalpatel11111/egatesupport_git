@@ -1,0 +1,154 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Warranty<small> Add New History</small></h1>
+        <ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li><a href="?route=warranty">Warranty</a></li><li class="active">Add New History</li></ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+    
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border"><h3 class="box-title">Create New Warranty History</h3></div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateAssetForm();">
+                  
+								
+                                <div class="form-group">
+                                    <label for="manufacturerid" class="col-sm-2 control-label">Asset</label>
+									<input type="hidden" name="menufacturerid" value="<?php echo $asset['assetsid'] ?>">
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="manufacturerid" name="manufacturerid" style="width: 100%;" tabindex="-1" aria-hidden="true"disabled>
+                                            <?php foreach ($manufacturers as $manufacturer) { echo "<option value='".$manufacturer['id']."'"; echo(($manufacturer['id'] == $asset['assetsid'])? "selected='selected'":'');  echo ">".$manufacturer['name']."</option>"; } ?>
+                                        </select>
+                                    </div>
+                                </div>
+								
+								<div class="form-group">
+                                    <label for="modelid" class="col-sm-2 control-label">Model *</label>
+									<input type="hidden" name="modalid" value="<?php echo $asset['modalid'] ?>">
+                                    <div class="col-sm-8">
+                                        <select class="form-control select2 select2-hidden-accessible" id="modelid" name="modelid" style="width: 100%;" tabindex="-1" aria-hidden="true"disabled>
+										<?php if($models != ''){ ?>
+                                            <?php foreach ($models as $model) { echo "<option value='".$model['id']."'"; echo(($model['id'] == $asset['modalid'])? "selected='selected'":'');  echo ">".getSingleValue("manufacturers","name",$model['manufacturerid'])." ".$model['name']."</option>"; } 
+											}else{ }
+											?>
+                                        </select>
+                                    </div>
+                                </div>
+                          
+								<div class="form-group">
+									<label for="serial" class="col-sm-2 control-label">Serial *</label>
+									<input type="hidden" name="serialid" value="<?php echo $asset['serial'] ?>">
+									<div class="col-sm-8">
+										<input type="text" class="form-control" id="serial" name="serial" value="<?php echo $asset['serial']; ?>"disabled>
+									</div>
+								</div>
+
+                                <div class="form-group">
+                                    <label for="dateout" class="col-sm-2 control-label">Date Out</label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control datepicker-input" id="dateout" name="dateout">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+									
+									<label for="datein" class="col-sm-2 control-label">Date In</label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control datepicker-input" id="datein" name="datein">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                              
+								<div class="form-group">
+                                    <label for="details" class="col-sm-2 control-label">Service Details</label>
+                                    <div class="col-sm-8">
+						
+										<input type="text" class="form-control" id="details" name="details">
+									
+                                    </div>
+                                </div>
+								
+                                <div class="form-group">
+                                    <label for="status" class="col-sm-2 control-label"> Service Status *</label>
+									<input type="hidden" name="sttats" id="sttats" value="">
+                                    <div class="col-sm-8">
+                                        <select class="form-control" id="status" name="status" style="width: 100%;" required>
+                                        <option value="select">Select</option>
+                                        <option value="diagnose">Diagnose</option>
+                                        <option value="wfp">Wait For Parts</option>
+                                        <option value="wfr">Wait for Replacement</option>
+                                        <option value="pickup">For Pickup</option>
+                                        <option value="complete">Completed</option>
+                                        </select>
+                                    </div>
+                                </div>
+								
+								<div class="form-group">
+                                    <label for="estimatedate" class="col-sm-2 control-label">Estimated Completion Date</label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control datepicker-input" id="estimatedate" name="estimatedate">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+									
+									<label for="claimstub" class="col-sm-2 control-label">Claim Stub</label>
+                                    <div class="col-sm-3">
+                                        <div class="input-group">
+                                            <input type="file" id="file" name='file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+                                        </div>
+                                    </div>
+                                </div>
+								
+                                <div class="form-group">
+                                    <label for="notes" class="col-sm-2 control-label">Remark</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control summernote" id="remark" name="remark"></textarea>
+                                    </div>
+                                </div>
+
+								<input type="hidden" name="route" value="warranty/manage">
+                                <input type="hidden" name="routeid" value="<?php echo $asset['id']; ?>">
+                                <input type="hidden" name="section" value="history">
+                                <input type="hidden" name="addwrntyhistory">
+                                <input type="hidden" name="warrantyid" value="<?php echo $asset['id']; ?>">
+
+                                <div class="col-sm-2"></div><div class="col-sm-8">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+                                </div>
+                            </form><!-- /.form -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+ $(document).ready(function () {
+ 
+ $("#datein").change(function() { 
+ //alert('uiguigu');
+    $("#sttats").val('complete');
+    $("#status").val('complete');
+	 $("#status").attr("disabled", "disabled");
+  });
+  
+   $("#status").change(function() { 
+    $("#sttats").val($(this).val());
+  });
+ 
+ });
+ </script>

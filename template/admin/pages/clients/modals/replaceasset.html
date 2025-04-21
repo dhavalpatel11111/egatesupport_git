@@ -1,0 +1,107 @@
+
+<div class="allwidth">
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Replace Asset</h4></div>
+<div class="modal-body">
+
+
+<?php $refurl =  $_SERVER['HTTP_REFERER']; ?>
+    <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+					
+					
+                        <div class="table-responsive">
+						<p>Total No of Assets: <?php echo $assettotalCount; ?></p>
+						
+					<input type="text" id="search" value="">
+                            <table id="dataTablesFull" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width:60px;">Tag</th>
+										<th>SKU</th>
+                                        
+                                        <th>Location</th>
+                                        <th style="min-width:150px;">Asset Type</th>
+                                        <th style="min-width:255px;">Model</th>
+                                        <th>Serial No.</th>
+                                       
+                                        <th>Status</th>
+                                        <th class="text-right">Replace</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($assets as $asset) {
+                                    $manufacturerid = getSingleValue("models","manufacturerid",$asset['modelid']);
+                                    echo "<tr>";
+                                    echo "<td><a href='?route=assets/manage&id=".$asset['id']."'>".$asset['tag']."</a></td>";
+									echo "<td>".$asset['sku']."</td>";
+                                   
+                                    echo "<td>".getSingleValue("warehouse","name",$asset['warehouseid'])."</td>";
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)."</td>";
+                                    echo "<td>".getSingleValue("manufacturers","name",$manufacturerid)." ".getSingleValue("models","name",$asset['modelid'])."</td>";
+                                    echo "<td>".$asset['serial']."</td>";
+                                    
+
+                                    echo "<td><span class='badge' style='background-color:".getSingleValue("labels","color",$asset['statusid'])."'>".getSingleValue("labels","name",$asset['statusid'])."</span></td>";
+
+                                    echo "<td>
+                                    <div class='pull-right newonee'>
+                                    <i class='fa fa-refresh refreshs' id='".$asset['id']."'></i></a>&nbsp;  
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+	<input type="hidden" name="oaid" value="<?php echo $_GET['oaid']; ?>">		
+    <input type="hidden" name="cid" value="<?php echo $_GET['cid']; ?>">
+	<input type="hidden" name="coid" value="<?php echo $_GET['coid']; ?>">		
+    <input type="hidden" name="replaceasset">
+    <input type="hidden" class="assetid" name="assetid" value="">
+    <input type="hidden" name="reroute" value="<?= $refurl ?>">
+</div>
+<div class="modal-footer">
+    <button  type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button style="display:none;" type="submit" id="sumn" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script>
+ $(document).ready(function () {
+
+		$(".refreshs").click(function(){
+		
+			
+		 var valsel= $(this).attr('id');
+		 $('.assetid').val(valsel);
+		// alert(valsel);
+			
+		 $( "#sumn" ).trigger( "click" );
+		 
+		});
+		
+});
+
+
+</script>
+</div>
+
+<style>
+.allwidth {    min-width: 850px !important;    background: #fff;    position: absolute;    left: -26%;    height: 580px;    overflow-y: scroll;}
+
+.refreshs {  cursor: pointer;}
+
+.newonee{
+position: relative; 
+display:inline-block;
+
+}
+</style>

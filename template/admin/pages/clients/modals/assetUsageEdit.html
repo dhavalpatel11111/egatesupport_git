@@ -1,0 +1,101 @@
+<?php if(isset($_GET['win'])){ $win = $_GET['win'];}else{ $win = 0; } ?>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script src="template/assets/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title"><?php if($win == 1){ ?> Edit Cutt Off <?php }else{ ?>Edit<?php } ?></h4></div>
+<div class="modal-body">
+    
+<?php 
+//echo'<pre>';
+//print_r($_GET);
+//echo'</pre>';
+?>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+				<label for="clientid">Tag</label>
+                    <input type="text" class="form-control" name="Modal" id="Modal" value="<?php echo $assets['tag'];?>" disabled />
+            </div>
+        </div>
+		<div class="col-xs-6">
+            <div class="form-group">
+				<label for="clientid">Modal</label>
+                    <input type="text" class="form-control" name="Modal" id="Modal" value="<?php echo getSingleValue('models','name', $assets['modelid']);?>" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <label for="clientid">SKU</label>
+			<input type="text" class="form-control" name="SKU" id="SKU" value="<?php echo $assets['sku'];?>" disabled />
+        </div>
+		<div class="col-xs-6">
+            <div class="form-group">
+				<label for="clientid">Serial No.</label>
+                    <input type="text" class="form-control" name="Modal" id="Modal" value="<?php echo $assets['serial'];?>" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6" <?php if($win == 1){ ?> style="display:none;" <?php } ?>>
+            <div class="form-group">
+                <label for="startdate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control datepicker-input" id="startdate" name="startdate" value="<?php  echo date('Y-m-d'); ?>">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">    
+				<label for="scolora3">Color(A3)</label>   
+				<input type="text" class="form-control" id="scolora3" name="scolora3" value="<?php if($assets['A3clr']!= ""){ echo $assets['A3clr']; } ?>">
+			</div>
+        </div>
+    </div>
+	<div class="row">  
+		<div class="col-xs-6">			
+			<div class="form-group">  	
+				<label for="sblacka3">Black(A3)</label>  
+				<input type="text" class="form-control" id="sblacka3" name="sblacka3" value="<?php if($assets['A3blk']!= ""){ echo $assets['A3blk']; } ?>">
+			</div>    
+		</div>    
+		
+	</div>		
+	<div class="row">   
+		<div class="col-xs-6">   
+			<div class="form-group">  	
+				<label for="scolora4">Color(A4)</label> 
+				<input type="text" class="form-control" id="scolora4" name="scolora4" value="<?php if($assets['A4clr']!= ""){ echo $assets['A4clr']; } ?>">
+			</div>           
+		</div>         
+	</div>		
+	<div class="row">     
+		<div class="col-xs-6">		
+			<div class="form-group">  
+				<label for="sblacka4">Black(A4)</label> 
+				<input type="text" class="form-control" id="sblacka4" name="sblacka4" value="<?php if($assets['A4blk']!= ""){ echo $assets['A4blk']; } ?>">
+			</div>     
+		</div>    
+	</div>							
+    <!-- <div class="form-group" <?php if($win == 1){ ?> style="display:none;" <?php } ?>> -->
+        <!-- <label for="description" class="control-label">Description</label> -->
+        <!-- <textarea class="form-control summernote" id="description" name="description"><?php echo $usage['description']; ?></textarea> -->
+    <!-- </div> -->
+
+    <input type="hidden" name="id" value="<?php echo $assets['id']; ?>">
+    <input type="hidden" name="editassetUsage">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="cid" value="<?php echo $_GET['cid']; ?>">
+    <input type="hidden" name="oaid" value="<?php echo $_GET['oaid']; ?>">
+    <input type="hidden" name="coid" value="<?php echo $_GET['coid']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Save</button>
+</div>
+

@@ -1,0 +1,35 @@
+<link href="template/assets/pdfstyle.css" rel="stylesheet" type="text/css" />
+<div class="pdf-wrapper">
+    <div class="pdf-header">
+        <div style="text-align: center;">
+            <img width="20%" src='template/assets/dist/img/modory1.jpg' alt='<?php echo getConfigValue("app_name")?>' />
+            
+        </div>
+        <div class="clearfix"></div>
+		<?php 
+		//echo "<pre>";
+		//print_R($history);
+		?>
+        <div><h1 class="title"><?php echo $history['contracttype'] ?></h1></div>
+    </div>
+    <div class="pdf-content">
+        <p class="">
+            <strong>Contract No.:</strong> <?php echo $history['contractno'] ?> <br>
+            <strong>Contract Amount:</strong> <?php echo $history['contract_amount'] ?> <br>
+            <strong>Contract Ends:</strong> <?php echo $history['contract_expiry'] ?> <br>
+
+        </p>
+        <p>
+            <strong>Subject:</strong> <?php echo $history['memo'] ?> <br>
+            <strong>Maintenance Note:</strong> <?php echo $history['maintenance'] ?> <br>
+        </p>
+        
+            <?php echo $history['template'] ?>
+    </div>
+    <div class="pdf-footer">
+        <div style="float: left;width: 40%;">
+        </div>
+        <div style="float: right;width: 40%;">
+        </div>
+    </div>
+</div>

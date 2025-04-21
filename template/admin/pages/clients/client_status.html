@@ -1,0 +1,687 @@
+<style>
+    .technician_filter .select2-selection {
+        min-width: 168px;
+    }
+    .one_line{white-space:nowrap;} 
+    table#dataTablesFullr td:nth-child(5){min-width:108px!important;white-space: nowrap;}
+    table#dataTablesFullr td:nth-child(3){min-width:201px;}
+    table#dataTablesFullr td:nth-child(2){min-width:80px;}
+    table#dataTablesFullr td:nth-child(7){min-width:50px;}
+    /* table#dataTablesFullr td:nth-child(9){min-width:50px;} */
+    
+    
+    span.rrfgh.label{height:21px;display:inline-block;padding-top:4px;padding-bottom:0;border-radius:2px}
+    .badge{min-height:21px;border-radius:2px;cursor:pointer;}a.hegt21.btn.btn-success.btn-xs{padding-bottom:0;border-radius:2px;height:21px;display:inline-block}span.pulloutsq{border-radius:2px;height:25px;display:inline-block;line-height:18px}
+    .count_values_close {
+        font-weight: 800;
+        background: red;
+        color: #ff6;
+        padding: 0px;
+        border-radius: 50%;
+        line-height: 20px;
+        height: 20px;
+        min-width: 20px;
+        display: inline-block;
+        text-align: center; 
+    }
+    .close_d {
+        text-align: right;
+        padding-right: 23px !important;
+    }
+    .delete_css{display:none}#dataTablesFullr td.text-right{padding-right:25px}
+    .dataTable thead>tr>th.text_css{padding-right:15px;padding-left:15px;cursor:pointer;}.status_css{width:82px;font-size:15px;padding:5px}
+    .invoice_css { background-color: #3c8dbc; border-color: #3c8dbc;}
+    .invoice_css.btn-success:hover { color: #fff; background-color: #3c8dbc !IMPORTANT; border-color: #3c8dbc;}
+    .for_pull {  background: none !important;  color: #d4cbcb !important;}
+    #dataTablesFullr td:nth-child(7) {  white-space: nowrap;}
+    table#dataTablesFullr td:nth-child(5) {min-width: 10px!important;}
+    table#dataTablesFullr th:nth-child(5) {width: 35px !important;}
+    #dataTablesFullr th:nth-child(4) {width: 27px !important;}
+    #dataTablesFullr th:nth-child(7) { width: 100px !important;}
+    table#dataTablesFullr td:nth-child(5) a { white-space: nowrap;}
+    .technician_filter {float: right;position: absolute;    right: 206px;top: 58px;}
+    .reduce_pding {    padding-right: 21px !important;}
+    table#dataTablesFullr td:nth-child(6) a {
+        white-space: nowrap;
+    }
+    .onholdd { text-align: center;}
+    .technician_filter {
+        float: left;
+        position: absolute;
+        right: 13%;
+        top: -34px;
+    }
+    table#dataTablesFullr {
+        border-top: 1px #ddd solid;
+    }
+    table#dataTablesFullr thead tr th:nth-child(8) {
+        width: 50px !important;
+        min-width: 50px;
+    }
+    table#dataTablesFullr thead tr th:nth-child(9) {
+        width: 20px !important;
+        min-width: 20px;
+    }
+    table#dataTablesFullr thead tr th:nth-child(10) {
+        width: 50px !important;
+        min-width: 50px;
+    }
+    
+    td.one_line a:nth-child(1) {
+        margin-right: 6px;
+        background: #337ab7;
+        color: #fff;
+        padding: 1px 7px;
+        position: relative;
+        top: 1px;
+        border-radius:2px;
+    }
+    span.badge {
+       
+        font-weight: 800;
+        background: red;
+        color: #fff;
+        padding: 0px;
+        border-radius: 50%;
+        line-height: 20px;
+        height: 20px;
+        min-width: 20px;
+        display: inline-block;
+        text-align: center;
+    }
+    span.explan {
+        margin-left: 8px;
+        font-size: 15px;
+    }
+    #dataTablesFullr_filter label {
+        color: #9B9B8C;
+    }
+    </style>
+    <?php if($_GET['status'] ==1)
+    {
+    ?>
+    <script>
+     $(document).ready(function() {
+     //$("#dataTablesFullr").dataTable({ "order": [[0, "asc"]] });
+     alert("Mail Sent Successfully");
+    });
+    </script>
+    <?php 
+    } 
+    ?>
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 class="pull-left">Client(Location)<small> Manage clients</small></h1>
+            <div class="pull-right"><a onClick='showM("ajax.php?modal=clientAdd&reroute=clients");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> NEW CLIENT</a></div>
+            <div style="clear:both"></div>
+        </section>
+        <!-- Main content -->
+        <section class="content">
+        
+    
+            <?php if(!empty($statusmessage)): ?>
+            <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+            <?php endif; ?>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box box-default">
+    
+                        <div class="box-body">
+                            <div class="row">
+                                     <div class="col-md-2 col-xs-12" style="padding: 15px;">
+                                    <?php
+                                    $total = count($clients);
+                                    $total_inact = count($clients_inact);
+                                    
+                                    $client_act = "<span>( ".$total." )</span>";
+                                    $total_inac1 = "<span>( ".$total_inact." )</span>";
+                                    $allb = $total_inact+$total;
+                                    $allc ="<span>( ".$allb." )</span>";
+    ?> 
+                                     <!-- <strong>View</strong> -->
+                                         <select id="view-options" class="form-control select2" style="width:100%;">
+     <option value="all">All Clients <?php echo $allc; ?></option>
+                                        
+                                 
+    <option selected="" value="active">Active <?php echo $client_act; ?></option>
+    <option value="inactive">Inactive <?php echo $total_inac1; ?></option>
+                                         </select>
+                                     </div>
+                                    
+                                     <div class="col-md-2 col-xs-12" style="padding: 15px;">
+                                        <?php $client_types = getTable("clienttype");?>
+                                                   <select class="form-control select2 select2-accessible" id="client_type" name="client_type" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                                                        <option value="">Select Type</option>
+                                                                        <?php foreach ($client_types as $client_type) {
+                                                                        echo "<option value='".$client_type['name']."'";   echo ">".$client_type['name']."</option>"; } ?>
+                                                                    </select>
+                                     </div>
+                                     
+                                     <?php $people = getTable("people");?>
+                                     <div class="col-md-2 col-xs-12" style="padding: 15px;">
+                                      
+                                                        <select class="form-control select2 select2-accessible" id="technician_name" name="technician_name" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                                             <option value="0">Select Technician</option>
+                                                                             <?php foreach ($people as $peop) {
+                                                                             if($peop['role']=='technician'){ 
+                                                                             echo "<option value='".$peop['name']."'";   echo ">".$peop['name']."</option>"; } }?>
+                                                                         </select>
+                                                                     </div>
+                                     
+                                     
+                            <div class="col-md-6 role-1 col-xs-12" style="padding: 15px;">
+    
+                                    <?php
+                                
+                                if($lia['role'] != 'technician'){
+                                if($lia['email']=='k09178548787@gmail.com') 
+                                    {                           ?>
+                                    <span class="t-label2 hidden-xs" style="color: #3C8DBC;">Balance:</span>
+                                    <span class="hidden-lg" style="font-size: 20px; color: #3C8DBC;">Bal:</span>
+                                    <span id="totalBalance" class="t-number">
+                                        <?php 
+                                            $total_balance = getTotalBalance('invoice','balance');
+                                            echo number_format($total_balance); ?>
+                                    </span>
+                                    <span class="t-label2 hidden-xs" style="padding-left: 16px !important;"
+                                        e="color: #3C8DBC;">Amount:</span>
+                                    <span class="hidden-lg" style="font-size: 20px; padding-left: 10px !important;"
+                                        e="color: #3C8DBC;">Amt:</span>
+    
+                                    <span id="totalAmount" class="t-number autoNumeric1 animated-number">
+                                        <?php
+                                    
+                                    foreach ($clients as $client) {
+    
+                                     $total1 += getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                                     $total12 += getTotalAmount("licenses","amount","clientid",$client['id']);
+                                      $total2 += countTableFiltered("assets","clientid",$client['id']);}
+                                    $coto = $total1 + $total12;
+                                     echo $coto;?>
+                                        <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                                    </span>
+                                    <?php 
+                                     }
+                                     ?>
+                                    <span class="t-label2 hidden-xs" style="padding-left: 16px !important;"
+                                        style="color: #3C8DBC;">Assets:</span>
+                                    <span class="t-label2 hidden-lg" style="padding-left: 10px !important;"
+                                        style="color: #3C8DBC;">Assets:</span>
+                                    <span id="totalAsset" class="t-number  animated-number">
+                                        <?php echo $total2;
+                                    ?>
+                                        <?php// echo getTotalAmount('contract','contract_amount','is_end',0);?>
+                                    </span>
+                                    <?php } ?>
+    
+                                    <a target='_blank' class="hidden-xs" style="padding-left: 16px !important;" href="?route=pdf/all_invoice">
+                                        <input type="button" value="All Invoice" class="btn btn-success  status_css"></a>
+                                    <a target='_blank' class="hidden-xs" href="?route=pdf/all_status"><input type="button" value="All Status"
+                                            class="btn btn-success  invoice_css"></a>
+                                    <a target='_blank' class="hidden-xs" href="?route=exportclientdata"><input type="button" value="Export"
+                                            class="btn btn-success  invoice_css"></a>
+    
+                                    <div class="hidden-lg text-center">
+                                        <a target='_blank' style="padding-left: 16px !important;" href="?route=pdf/all_invoice">
+                                            <input type="button" value="All Invoice" class="btn btn-success  status_css"></a>
+                                        <a target='_blank' href="?route=pdf/all_status"><input type="button" value="All Status"
+                                                class="btn btn-success  invoice_css"></a>
+                                        <a target='_blank' href="?route=exportclientdata"><input type="button" value="Export"
+                                                class="btn btn-success  invoice_css"></a>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+        
+                            <div class="table-responsive">
+                            
+                                <table id="dataTablesFullr" class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th class="hidden-xs" style="width:5%;">Type</th>
+                                            <th>Client(Location)</th>
+                                            <th class="reduce_pding" title="Open Ticket"><i style="color:red;" class="fa fa-ticket" title="Open Tickets" aria-hidden="true"></i></th>
+                                            <th class="reduce_pding" title="Closed Ticket"><i style="color:red;" class="fa fa-ticket" title="Closed Ticket" aria-hidden="true"></i></th>
+    <th style="text-align:center; padding-right: 16px; padding-left: 16px;
+    " class="text-right"></th>
+                                            <!-- <th>Client Highlights<span title="Record only highlights which need to be notified to office admin & technician regarding
+                                                any issue If resolved, need to delete immediately to avoid any confusion. Client memo should
+                                                 be monitored every day for updates." class="explan"><i class="fa fa-info-circle" aria-hidden="true"></i></span></th> -->
+                                           <?php if($lia['role'] != 'technician'){ ?> <th title="Contract Amount">Amount</th><?php } ?>
+                                            <th title="Not Paied Invoice">NP</th>
+                                            <th title="Not Cleared Invoice">NC</th>
+                                            <th>Balance</th>
+                                            <th style="width:10%;">For month of</th>
+                                            <th>Deposit</th>
+                                            
+                                            <th>Technician<span title="
+    Technician who is in charge 
+    for this company" class="explan"><i class="fa fa-info-circle" aria-hidden="true"></i></span></th>
+                                           
+                                            <th class="text_css" title="Remaining Days of Contract">1</th>
+                                            <th class="text_css" title="Assets">2</th>
+                                            <th class="text_css" title="Licenses">3</th>
+                                     <th class="text_css" title="Asset on hold">4</th>
+                                      <th class="text_css" title="For Pull Out"> 5 <span title="	
+        If you replace unit or stop contract . There will be Old unit to be pulled out
+    You can process pull out  this page
+    Client Page- Create Ticket Tab --> There is Asset Already for pull out
+    "><i class="fa fa-info-circle" aria-hidden="true"></i></span></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        //echo"<pre>";
+                                        //print_r($clients);
+                                        
+                                        foreach ($clients as $client) {
+                                        
+                                        $hassets = getTableFiltered("assets", "clientid", $client['id']);
+                                        $hcontracts = getTableFiltered2("contract", ["clientid" => $client['id']], "*", "id", "DESC");
+                                        $deposit_count = 0;
+                                        foreach($hcontracts as $hcontract){
+                                            $deposit_count += $hcontract['deposit'];
+                                        }
+                                        $lics = getTableFiltered2("licenses", ["clientid" => $client['id']], "*", "id", "DESC");
+                                        
+                                        $pull_out_array = array();
+                                         foreach ($hcontracts as $contacts) {
+                                        $modelid = getSingleValue("assets","modelid",$contacts['assetid']);
+                                        $modelname = getSingleValue("models","name",$modelid);
+                                        $asset_serial = getSingleValue("assets","serial",$contacts['assetid']);
+                                        $hovertext = getSingleValue("assets","tag",$contacts['assetid']). " : " . $modelname . " : " . $asset_serial;
+                                        $asset_status = getSingleValue("assets","status",$contacts['assetid']);
+                                        
+                                        $counpull = countTableFiltered("assets", "clientid", $client['id'],"status", "For Pullout");
+    
+                                        $counthold = countTableFiltered("assets", "clientid", $client['id'],"status", "On Hold");
+                                        
+                                         }
+                                         
+    
+                                        echo "<tr>";
+                                        echo "<td><a href='?route=clients/manage&id=".$client['id']."&tab=department&status=d'>".$client['id']."</a></td>";
+                                        $ctypes = getSingleValue("clienttype","name",$client['clienttypes']);
+                                        echo "<td class='hidden-xs'>".$ctypes."</td>";
+                                        echo "<td class='onhover'><a href='?route=clients/manage&id=".$client['id']."&tab=department'>".$client['name']."</a><span class='hovertext'>";
+                                         foreach ($hcontracts as $contacts) {
+                                        $modelid = getSingleValue("assets","modelid",$contacts['assetid']);
+                                        $modelname = getSingleValue("models","name",$modelid);
+                                        $asset_serial = getSingleValue("assets","serial",$contacts['assetid']);
+                                        $hovertext = getSingleValue("assets","tag",$contacts['assetid']). " : " . $modelname . " : " . $asset_serial;
+                                           if($contacts['is_end'] != 1){
+                                                echo $hovertext ."<br>";
+                                            }
+                                         }
+                                          foreach ($lics as $lic) { 
+                                          echo $lic['tag']." : ".$lic['name']."<br>";
+                                          }
+                                         
+                                        ?>
+                                        
+                                        </span></td>
+                                        <?php
+                                        $totalss = getTableFiltered("tickets", "status[!]", "Closed","clientid",$client['id']);
+            $count=0;
+                foreach($totalss as $tickete){
+    
+    
+                  if($client['id'] == $tickete['clientid']){
+    
+                   $count++;
+    
+                 }
+    }
+    
+    $totals = getTableFiltered("tickets", "status", "Closed","clientid",$client['id']);
+            $countt=0;
+                foreach($totals as $ticket){
+    
+    
+                  if($client['id'] == $ticket['clientid']){
+    
+                   $countt++;}
+    }
+    if(!empty($count)){
+    echo "<td  title='Open Tickets'><span class='count_values_close'>".$count."</span></td>";
+    }else{
+    echo "<td></td>";
+    }
+    echo "<td class='close_d'><span class='closed_css' title='Closed Tickets'>".$countt."</span></td>";
+                                      echo "<td class='action_button'>
+                                        <div class='pull-right'>
+                                        <a href='?route=clients/manage&id=".$client['id']."' class='btn-right text-dark'><i class='fa fa-bars' aria-hidden='true'></i></a>&nbsp;
+                                        <a title='".$client['client_memo']."' href='#' onClick='showM(\"ajax.php?modal=clientEdit&reroute=clients&id=".$client['id']."\");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                        <a href='#' onClick='showM(\"ajax.php?modal=clientDelete&reroute=clients&id=".$client['id']."\");return false' class='btn-right text-red delete_css'><i class='fa fa-trash-o'></i></a>
+    
+                                        <i class='fa fa-eye see_client_memo_eye' data-client_memo='".$client['client_memo']."'></i>
+                                        </div>
+                                        </td>";
+                                         
+                                        // echo "<td ><a href='?route=clients/manage&id=".$client['id']."'>".$client['client_memo']."</a>
+                                        //</td>";
+                                        
+                                        //Calculate total amount
+                                        
+                                        $total = getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                                        $total1 = getTotalAmount("licenses","amount","clientid",$client['id']);
+                                        $to = $total + $total1;
+                                        $cr_date = getCRDate("assets","contract_expiry","clientid",$client['id']);
+                                        if($lia['role'] != 'technician'){ 
+                                        echo "<td class='text-right'><span class=''>".number_format($to)."</span></td>";
+                                        }
+                                        $invoices = getTableFiltered("invoice", "clintid", $client['id']);
+                                            $countPaidInvoices = 0;
+    
+                                            foreach ($invoices as $invoice) {
+                                                if ($invoice['paid'] == 0) {
+                                                    $countPaidInvoices++;
+                                                }
+                                            }
+    
+                                            if($countPaidInvoices=='0'){
+                                                echo "<td title='Quantity of Invoice to pay'  class='text-right' ><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'><span class='badge bg-blue badge for_pull'>".$countPaidInvoices."</span></a></td>";
+                                                }else{
+                                                 echo "<td title='Quantity of Invoice to pay' class='text-right'><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'><span class='badge' style='border-radius: 5px; background-color:#ff0000'>".$countPaidInvoices."</span></a></td>";
+                                                }
+                                                $not_cleared_count = get_not_cleared_invoice_count_by_client($client['id']);
+                                                if($not_cleared_count == 0){
+                                                    $not_clear_html = $not_cleared_count;
+                                                }else{
+                                                    $not_clear_html = '<span style="width: 22px; height: 22px; display: inline-block; color: white; font-weight: bolder; border-radius: 5px; background-color: red; text-align: center;">'. $not_cleared_count .'</span>';
+                                                }
+                                                echo "<td style='text-align: center; color: #d4cbcb; font-weight: 800;'>" . $not_clear_html ."</td>";
+    
+                                         $total_balance = getTotalAmount('invoice', 'balance', 'clintid', $client['id']);
+                                         echo "<td class='text-right'><a href='?route=clients/manage&id=".$client['id']."&tab=invoice'>" . number_format($total_balance) . "</a></td>";
+                                        $m = $client['for_the_month'] == 0 ? '1' : $client['for_the_month'];
+                                        $formonth = $months[$m];
+    
+                                         $invoice = getTableFiltered2("invoice", ["clintid" => $client['id']], "*", "id", "DESC");
+    
+                                       $month_name = "";
+                                        $background_color = ""; // Initialize background color variable
+    
+                                        if ($invoice[0]['month'] == 1) {
+                                            $month_name = "Jan";
+                                            $background_color = "#FF0000"; // Red for January
+                                        } elseif ($invoice[0]['month'] == 2) {
+                                            $month_name = "Feb";
+                                            $background_color = "#0000FF"; // Blue for February
+                                        } elseif ($invoice[0]['month'] == 3) {
+                                            $month_name = "Mar";
+                                            $background_color = "#0000FF"; // Blue for March
+                                        } elseif ($invoice[0]['month'] == 4) {
+                                            $month_name = "Apr";
+                                            $background_color = "#FF00FF"; // Magenta for April
+                                        } elseif ($invoice[0]['month'] == 5) {
+                                            $month_name = "May";
+                                            $background_color = "#000000"; // Black for May
+                                        } elseif ($invoice[0]['month'] == 6) {
+                                            $month_name = "Jun";
+                                            $background_color = "#FF7F00"; // Orange for June
+                                        } elseif ($invoice[0]['month'] == 7) {
+                                            $month_name = "Jul";
+                                            $background_color = "#007FFF"; // Aqua for July
+                                        } elseif ($invoice[0]['month'] == 8) {
+                                            $month_name = "Aug";
+                                            $background_color = "#664C00"; // Brown for August
+                                        } elseif ($invoice[0]['month'] == 9) {
+                                            $month_name = "Sep";
+                                            $background_color = "#1A6600"; // Dark green for September
+                                        } elseif ($invoice[0]['month'] == 10) {
+                                            $month_name = "Oct";
+                                            $background_color = "#23008C"; // Purple for October
+                                        } elseif ($invoice[0]['month'] == 11) {
+                                            $month_name = "Nov";
+                                            $background_color = "#FFFF00"; // Yellow for November
+                                        } elseif ($invoice[0]['month'] == 12) {
+                                            $month_name = "Dec";
+                                            $background_color = "#26FFFF"; // Cyan for December
+                                        } else {
+                                            $month_name = "N/A";
+                                            $background_color = "#CCCCCC"; // White for N/A
+                                        }
+    
+                                        echo "<td class='one_line'>
+                                            <a id='email_notification_btn' title='Click to send email regarding payment collection follow up email - Email contents is provided at email template setting' 
+                                            onclick=\"showM('ajax.php?modal=notificationTemplate&reroute=clients&id=7&clientid=".$client['id']."'); return false;\">
+                                            <i class='fa fa-envelope-o'></i>
+                                         </a>
+    <span class='rrfgh label' style='text-transform:uppercase;color:#ffffff;background-color:" . $background_color . "'>".$month_name."</span> <a title='Print QR code Inventory List for QR code inventory if needed
+    
+    
+    '  class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/issue_invoice&clientid=".$client['id']."&month=".$m."'>QR</a>&nbsp;&nbsp;<a title='Print this inventory with price list for attachment to commercial 
+    invoice / So that customer will know accurate inventory status as of today' class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/invoice&clientid=".$client['id']."&month=".$m."'>INV</a>
+                                        <a title='
+    Print Printer Inventory list, check actual model & department 
+    and get signature from end user to confirm that inventory mentioned is correct.'class='hegt21 btn btn-success btn-xs' target='_blank' href='?route=pdf/inv&clientid=".$client['id']."&month=".$m."'>A/S</a>
+                                        
+                                        </td>";
+    
+                                        echo "<td style='text-align: right;'>".number_format($deposit_count)."</td>";
+                                        
+                    echo "<td>".getSingleValue("people","name",$client['tech_incharge'])."</td>";
+                                         $str = (strtotime($cr_date) > strtotime(date("Y-m-d"))) ? floor((strtotime($cr_date) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000; border-radius: 3px !important;" title="Contract is expired">X</span>';
+                                        echo "<td>".$str."</td>";
+                                        $asset=countTableFiltered("assets","clientid",$client['id']);
+                                        if($asset=='0'){
+                                        echo "<td title='Assets' ><span class='badge bg-blue badge for_pull' style='border-radius: 3px !important;'>".$asset."</span></td>";
+                                        }else{
+                                         echo "<td title='Assets' ><span class='badge bg-blue' style='border-radius: 3px !important;'>".$asset."</span></td>";
+                                        }
+                                        
+                                        $lincence = countTableFiltered("licenses","clientid",$client['id']);
+                                        
+                                        if($lincence=='0'){
+                                        echo "<td title='Licenses' ><span class='badge bg-green badge for_pull' style='border-radius: 3px !important;'>".$lincence."</span></td>";
+                                        }else{
+                                        echo "<td title='Licenses' ><span class='badge bg-green' style='border-radius: 3px !important;'>".$lincence."</span></td>";
+                                        }
+                                        
+                                        if($counthold=='0'){
+                                        echo "<td class='onholdd' title='For Pull Out'><span class=' for_pull' style='border-radius: 3px !important;'>".$counthold."</span></td>";
+                                        }else{
+            echo "<td class='onholdd' title='On Hold'><span class='on_hold badge' style='border-radius: 3px !important;'>".$counthold."</span></td>";}
+                                        
+                                        
+                                        
+                                        if($counpull=='0'){
+                                        echo "<td title='For Pull Out'><span class='badge for_pull' style='border-radius: 3px !important;'>".$counpull."</span></td>";
+                                        }else{
+                                        echo "<td title='For Pull Out'><span title='Number of asset to be pulled out' class='badge pulloutsq' style='border-radius: 3px !important;'>".$counpull."</span></td>";
+                                        }
+                                        
+                                   echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside><!-- /.right-side -->
+    
+    <div class="modal fade" id="client_memo_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body" id="client_memo_modal_body">
+    
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+        
+            $("#email_notification_btn").on('click' , function(){
+                $("#myModal .modal-dialog").addClass('modal-lg');
+            })
+            $("#myModal").on("hidden.bs.modal" , function(){
+                $("#myModal .modal-dialog").removeClass('modal-lg');
+            })
+        
+            $('#view-options').change(function() {
+                var v = $(this).val();
+                switch(v) {
+                    case 'all' :
+                        window.location = '?route=clients/all';
+                        break;
+                    case 'active' :
+                        window.location = '?route=clients/active';
+                        break;
+                    case 'inactive' :
+                        window.location = '?route=clients/inactive';
+                        break;
+                    
+                }
+            });
+            $('#technician_name').change( function(e) { 
+            var letter = $(this).val();
+            if (letter === '0') {
+                $ ('tr').show ();
+            }else{
+                $("#dataTablesFullr tr td:nth-child(9)").each(
+                function(){
+                    if($(this).text() != letter){
+                        $(this).parent().hide();
+                    }
+                    else{
+                        $(this).parent().show();
+                    }
+                });
+               }         
+        });
+    
+        $('#client_type').change( function(e) { 
+            var type = $(this).val();
+    
+            var totalAmountIndex = 0;
+            var totalAmountSum = 0;
+            var totalbalanceIndex = 0;
+            var totalBalanceSum = 0;
+            var totalAssetIndex = 0;
+            var totalAssetSum = 0;
+           
+            var table = $('#dataTablesFullr').DataTable();
+    
+            $("#dataTablesFullr.dataTables_filter").append($("#client_type"));
+    
+            var categoryIndex = 0;
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Type") {
+                categoryIndex = i; 
+                return false;
+                }
+            });
+    
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Amount") {
+                totalAmountIndex = i; 
+                return false;
+                }
+            });
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "Total Balance") {
+                    totalbalanceIndex = i; 
+                return false;
+                }
+            });
+    
+            $("#dataTablesFullr th").each(function (i) {
+                if ($($(this)).html() == "2") {
+                    totalAssetIndex = i; 
+                return false;
+                }
+            });
+    
+            
+             $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+              var selectedItem = $('#client_type').val()
+              var category = data[categoryIndex];
+              var total_amount = data[totalAmountIndex];
+              var totalbalance = data[totalbalanceIndex];
+              var totalasset = data[totalAssetIndex];
+              var numericTotalAmount = parseFloat(total_amount.replace(/,/g, ''));
+              var numericTotalBalance = parseFloat(totalbalance.replace(/,/g, ''));
+              var numericTotalAsset = parseFloat(totalasset.replace(/,/g, ''));
+              if (selectedItem === "" || category ===selectedItem ) {
+                    totalAmountSum += numericTotalAmount;
+                    totalBalanceSum += numericTotalBalance;
+                    totalAssetSum += numericTotalAsset;
+                // var formattedTotalAmount = totalAmountSum.toLocaleString();
+                return true;
+              }
+             
+              return false;
+            }
+          );
+         
+          table.draw();
+          $("#totalAmount").text(totalAmountSum.toLocaleString());
+          $("#totalBalance").text(totalBalanceSum.toLocaleString());
+          $("#totalAsset").text(totalAssetSum.toLocaleString());
+        });
+            
+                
+            $("#dataTablesFullr").dataTable( { "order": [[ 2, "asc" ]],"pageLength": "<?php echo getConfigValue("table_records"); ?>", "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "Search" }, "columnDefs": [ { "orderable": false,} ] } );
+            
+                
+        $(".autoNumeric1").text( $(".autoNumeric1").text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+                                
+        });
+    
+    
+        $(document).on("click", ".see_client_memo_eye", function() {
+            var client_memo = $(this).data("client_memo");
+            if (client_memo.trim() != "") {
+                $("#client_memo_modal").modal("show");
+                $("#client_memo_modal_body").html('');
+                $("#client_memo_modal_body").html(client_memo);
+            }
+    
+        });
+    </script>
+    
+    <style>
+    @media only screen and (max-width:1366px) and (min-width:768px){
+     .technician_filter {
+        float: left;
+        position: absolute;
+        right: 0%;
+        top: -34px;
+    }
+    .col-md-7.role-1 {
+        width: 59% !important;
+    }
+    }
+    </style>
+    
+    <style>
+    a.hegt21.btn.btn-success.btn-xs {
+        font-size: 12px !important;
+    }
+    span.rrfgh.label {
+        height: 21px;
+        display: inline-block;
+        padding-top: 6px;
+        padding-bottom: 0px;
+        border-radius: 2px;
+    }
+    </style>
+    
+    
+    
+    
+    
+    

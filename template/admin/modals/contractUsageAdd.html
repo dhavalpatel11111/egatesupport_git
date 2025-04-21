@@ -1,0 +1,383 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Add New Usage</h4></div>
+<div class="modal-body">
+
+    <!--
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label for="duedate">Checked Date</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control datepicker-input" id="checkeddate" name="checkeddate">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label for="issuetype">Total Mileage</label>
+                    <input type="text" class="form-control" id="total_mileage" name="total_mileage" value="" required>
+                </div>
+            </div>
+        </div>
+    -->
+
+    <div class="row">
+        <div class="col-xs-6">
+                <div class="form-group">      
+                    <label for="name">Transaction Type</label>        
+                    <select class="form-control" id="transtype" name="transtype" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="new_usage">Input New Usage</option>
+                    <option value="old_unit">Input Old Unit Usage for Replacement</option>
+                    <option value="start_milege">Input Start Milage for Newly Replaced Unit</option>
+                    </select>
+                </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="billofmonth">Bill for the Month</label>
+                <div class="input-group">
+                    <input type="text" class="form-control datepicker-input" id="billofmonth" name="billofmonth" value="<?php echo date ('Y-m-d');?>">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="contractid">Contract No.</label>
+                <input type="hidden" name="contractid" id="contractid" value="<?php echo $contractid; ?>" />
+                <input type="text" class="form-control" name="contractno" id="contractno" value="<?php echo getSingleValue('contract','contractno', $contractid);?>" readonly="" />
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+				<label for="clientid">Modal No</label>
+                    <input type="text" class="form-control" name="Modal" id="Modal" value="<?php $astid = getSingleValue('contract','assetid', $contractid); $moddid = getSingleValue('assets','modelid', $astid); echo getSingleValue('models','name', $moddid);?>" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="clientid">Client</label>
+                    <input type="hidden" name="clientid" id="clientid" value="<?php echo $clientid; ?>" />
+                    <input type="text" class="form-control" name="client" id="client" value="<?php echo getSingleValue('clients','name', $clientid);?>" readonly="" />
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <label for="clientid">SKU</label>
+                    <input type="text" class="form-control" name="SKU" id="SKU" value="<?php $astid = getSingleValue('contract','assetid', $contractid); echo getSingleValue('assets','sku', $astid);?>" disabled />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label for="name">Add Page Count by Order Reference </label>        
+                <select id="add_page_count_by_order_reference" name="add_page_count_by_order_reference" class="form-control" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                    <option value="" ></option>
+                    <?php 
+                    foreach ($usage_page_report_dropdown as $usage_page_report) { 
+                        $date = $usage_page_report['date'];
+                        $dateParts = explode(' ', $date);
+                        $formattedDate = $dateParts[0];
+                        ?>
+                        <option value="<?php echo $usage_page_report['id'] ?>"> <?php echo $usage_page_report['ref_no'] . ' - ' . $formattedDate . ' - ' . $usage_page_report['department'] . ' - ' . $usage_page_report['modal_name']; ?></option>
+                <?php }
+                    ?>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+<?php
+$usages=$usages[0];
+if(!empty($usages)){
+    if( $usages['startdate']!="" && $usages['enddate']!=""){
+        $wwwiin = 1;
+        }else{
+        $wwwiin = 0;
+        }
+}else{
+    $wwwiin = 1;
+}
+
+
+
+?>
+
+<input type="hidden" name="wwwiin" value="<?php echo $wwwiin; ?>">	
+	
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="startdate">Start Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="startdate" name="startdate" value="<?php if($usages['enddate']!=""){ echo $usages['enddate'] ; }else{ echo $usages['startdate'] ; } ?>" <?php if($usages['enddate']!="" || $usages['startdate']!=""){ ?> readonly <?php } ?>>
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="enddate">Cut off Date</label>
+                <div class="input-group">
+                    <input type="text" class="form-control datepicker-usuage" id="enddate" name="enddate" value="<?php echo $usages['enddate']!= '' ? date('Y-m-d',strtotime($usages['enddate']))  : date('Y-m-d'); ?>" value="" <?php if($usages['startdate']!=""){ ?> required <?php } ?>>
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+						
+        </div>
+    </div>	  <div class="row">     
+	<div class="col-xs-6">       
+	<div class="form-group">     
+	<label for="scolora3">Color(A3)</label>           
+	             
+	<input type="text" class="form-control" id="scolora3" name="scolora3" value="<?php if($usages['ecolora3']!=""){ echo $usages['ecolora3'] ; }else{ echo $usages['scolora3'] ; } ?>" <?php if($usages['ecolora3']!="" || $usages['scolora3']!=""){ ?> readonly <?php } ?>  >    
+    
+	
+	</div>
+	</div>
+	<div class="col-xs-6"> 
+
+	<div class="form-group">    
+	<label for="ecolora3">Color(A3)</label> 
+	     
+	<!-- <input type="text" class="form-control" id="ecolora3" name="ecolora3" value="<?php if($usages['ecolora3']!=""){ echo $usages['ecolora3'] ; }else{ echo $usages['scolora3'] ; } ?>"<?php if($usages['scolora3']!=""){ ?> required <?php } ?>>    -->
+
+    <input type="text" class="form-control" id="ecolora3" name="ecolora3" value="">   
+	 
+	</div> 
+
+
+
+
+	
+	
+	</div>
+    </div>	
+				
+
+    <div class="row">
+        <div class="col-xs-6">
+            
+			<div class="form-group">  
+	<label for="sblacka3">Black(A3)</label>  
+	    
+	<input type="text" class="form-control" id="sblacka3" name="sblacka3" value="<?php if($usages['eblacka3']!=""){ echo $usages['eblacka3'] ; }else{ echo $usages['sblacka3'] ; } ?>" <?php if($usages['eblacka3']!="" || $usages['sblacka3']!=""){ ?> readonly <?php } ?> >    
+	 
+	</div>
+			
+        </div>
+        <div class="col-xs-6">
+            
+			<div class="form-group">   
+	<label for="eblacka3">Black(A3)</label>   
+ 
+	<input type="text" class="form-control" id="eblacka3" name="eblacka3" value="">   
+    <!-- <?php if($usages['eblacka3']!=""){ echo $usages['eblacka3'] ; }else{ echo $usages['sblacka3'] ; } ?>"<?php if($usages['sblacka3']!=""){ ?> required <?php } ?> -->
+	     
+	</div> 
+			
+			
+			
+        </div>
+    </div>	
+    
+    <div class="row">   
+        <div class="col-xs-6">   
+    
+        <div class="form-group">  
+        <label for="scolora4">Color(A4)</label>
+        <input type="text" class="form-control" id="scolora4" name="scolora4" value="<?php if($usages['ecolora4']!=""){ echo $usages['ecolora4'] ; }else{ echo $usages['scolora4'] ; } ?>" <?php if($usages['ecolora4']!="" || $usages['scolora4']!=""){ ?> readonly <?php } ?> >
+        </div>   
+        
+        </div>    
+        <div class="col-xs-6">       
+             
+             <div class="form-group">      
+        <label for="ecolora4">Color(A4)</label>     
+        <input type="text" class="form-control" id="ecolora4" name="ecolora4" value=""> 
+    
+        <!-- <?php if($usages['ecolora4']!=""){ echo $usages['ecolora4'] ; }else{ echo $usages['scolora4'] ; } ?>"<?php if($usages['scolora4']!=""){ ?> required <?php } ?> -->
+        </div> 
+             
+             
+        </div>  
+        </div>	
+	<div class="row">     
+	<div class="col-xs-6">       
+	
+	  <div class="form-group">     
+	<label for="sblacka4">Black(A4)</label> 
+	<input type="text" class="form-control" id="sblacka4" name="sblacka4" value="<?php if($usages['eblacka4']!=""){ echo $usages['eblacka4'] ; }else{ echo $usages['sblacka4'] ; } ?>" <?php if($usages['eblacka4']!="" || $usages['sblacka4']!=""){ ?> readonly <?php } ?>>  
+	</div>
+	  
+	</div>    
+    <div class="col-xs-6"> 
+	  <div class="form-group">     
+	<label for="eblacka4">Black(A4)</label>     
+	<input type="text" class="form-control" id="eblacka4" name="eblacka4" value="">
+    <!-- <?php if($usages['eblacka4']!=""){ echo $usages['eblacka4'] ; }else{ echo $usages['sblacka4'] ; } ?>"<?php if($usages['sblacka4']!=""){ ?> required <?php } ?> -->
+	</div> 
+	  
+	  
+	</div>  
+	</div>		
+			
+
+    <div class="form-group">
+        <label for="description" class="control-label">Usage Remarks</label>
+        <textarea class="form-control summernote" id="description" name="description">Update Milage</textarea>
+    </div>
+
+    <!-- <div class="form-group">
+        <label for="attachment" class="control-label">Attachment</label>
+        <input type="file" class="form-control" id="attachment" name="attachment[]" multiple>
+    </div> -->
+
+    <input type="hidden" name="addContractUsage">
+    <input type="hidden" name="asetid" value="<?php echo getSingleValue('contract','assetid', $_GET['contractid']); ?>">
+    <input type="hidden" name="cuid" value="<?php $cuid = getlastdata('contract_usages','id',['contractid'=>$contractid]); echo $cuid[0]; ?>">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+    <input type="hidden" id="clientid" name="clientid" value="<?php echo getSingleValue('contract','clientid', $_GET['contractid']); ?>" />
+    <input type="hidden" id="contractid" name="contractid" value="<?php echo $_GET['contractid']?>" />
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary" id="submitdata"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+    $(".select2").select2();
+
+    function formatIcon(icon) {
+        if (!icon.id) {
+            return icon.text;
+        }
+        var originalOption = icon.element;
+        var $icon = $('<span></span>').append($('<i class="fa ' + $(originalOption).data('icon') + '"></i>')).append(icon.text);
+        return $icon;
+    }
+
+    $('.select2-icon').select2({
+        templateResult: formatIcon,
+        templateSelection: formatIcon
+    });
+
+    $(document).ready(function () {
+
+	
+	//	$('#submitdata').click(function() {
+	//	var sba4 = parseInt($('#sblacka4').val(),10); // always use a radix
+	//	var eba4 = parseInt($('#eblacka4').val(),10);
+	//	var sba3 = parseInt($('#sblacka3').val(),10);
+	//	var eba3 = parseInt($('#eblacka3').val(),10);
+	//	var sca3 = parseInt($('#scolora3').val(),10);
+	//	var sca4 = parseInt($('#scolora4').val(),10);
+	//	var eca3 = parseInt($('#ecolora3').val(),10);
+	//	var eca4 = parseInt($('#ecolora4').val(),10);
+	//if( sba4>eba4 || sba3>eba3 || sca3>eca3 || sca4>eca4) {
+	//	stop();
+	//			location.reload();
+				
+		
+	//	} 
+		
+		
+		
+		
+		
+		
+   // });
+	
+   
+	
+	
+        $(document).on('keyup mouseup', '#enddate', function () {
+            //var s = $(this).val();
+            //var e = $(this).closest('.modal-body').find('#end_mileage').val();
+            //var e = $(this).closest('.modal-body').find('#end_mileage').val();
+            calculate_milage($(this));
+        });
+        $(document).on('keyup mouseup', '#end_mileage', function () {
+            //var e = $(this).val();
+            //var s = $(this).closest('.modal-body').find('#start_mileage').val();
+            //console.log(s,e);
+            calculate_milage($(this));
+        });
+        function calculate_milage(elm) {
+            var s = elm.closest('.modal-body').find('#start_mileage');
+            var e = elm.closest('.modal-body').find('#end_mileage');
+            var m = elm.closest('.modal-body').find('#month_mileage');
+            //console.log(s)
+            if (parseInt(e.val()) > parseInt(s.val())) {
+                m.val(parseInt(e.val()) - parseInt(s.val()));
+            } else {
+                m.val("");
+            }
+        }
+
+    });
+
+    $("#add_page_count_by_order_reference").on('change' , function(){
+        var usage_report_id = $(this).val();
+        if (usage_report_id != '') {
+            
+        
+        $.ajax({
+            url : 'ajax.php?usage_report_detail='+usage_report_id,
+            success: function(res){
+            var data = JSON.parse(res);
+            console.log('data:', data);
+            var requied_data = data.requied_data;
+            $("#ecolora3").val(requied_data.A3clr);
+            $("#eblacka3").val(requied_data.A3blk);
+            $("#ecolora4").val(requied_data.A4clr);
+            $("#eblacka4").val(requied_data.A4blk);
+            $("#description").val(requied_data.remark);
+
+
+            }
+        })        
+    }else{
+        $("#ecolora3").val('');
+        $("#eblacka3").val('');
+        $("#ecolora4").val('');
+        $("#eblacka4").val('');
+        $("#description").val('');
+    }
+    })
+</script>
+
+<script>
+       function contracttype() {
+        var transtype = $("#transtype").val();
+        if (transtype == 'old_unit') {
+            $("#description").val("Old Unit-Closed");
+        } else if (transtype == "start_milege") {
+            $("#description").val("New Unit-Replaced");
+        } else {
+            $("#description").val("Update Milage");
+        }
+    }
+    contracttype();
+
+    $(document).on('change', '#transtype', function () {
+        var transtype = $("#transtype").val();
+        if (transtype == 'old_unit') {
+            $("#description").val("Old Unit-Closed");
+        } else if (transtype == "start_milege") {
+            $("#description").val("New Unit-Replaced");
+        } else {
+            $("#description").val("Update Milage");
+        }
+    });
+</script>

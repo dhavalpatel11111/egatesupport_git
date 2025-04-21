@@ -1,0 +1,90 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Create New Ticket</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+  <label for="subject">Subject *</label>
+       <select class="form-control select2" id="subject" name="subject" style="width: 100%;" required>
+            <option value="">None</option>
+            <?php foreach ($ticketsubject as $subject) { ?>
+            <option value='<?php echo $subject['id']; ?>'><?php echo $subject['subject']; ?></option>
+            <?php } ?>
+        </select>
+		
+		
+		</div>
+
+    <div class="form-group">
+        <label for="contractid">Contract</label>
+        <select class="form-control select2" id="contractid" name="contractid" style="width: 100%;">
+            <?php foreach ($contracts as $contract) {
+
+
+
+
+			?>
+            <option value='<?php echo $contract['id']; ?>' <?php if(isset($_GET['contractid'])) { if($_GET['contractid'] == $contract['id']) echo "selected"; }  ?>><?php echo "Contract No : ".$contract['contractno'] ." : ". $contract['tag'] ." : ". $contract['model_name']." : ". $contract['serial']." : SKU : ". $contract['sku']; ?></option>
+            
+        </select>
+    </div>
+
+	 <div class="form-group">
+        <label for="department">Department</label>
+		<?php $dipartment_name = getSingleValue('department', 'name',$contract['department']);?>
+       <input type="text" style="width: 100%;padding: 6px;" name="department" value="<?php echo $dipartment_name;?>" readonly>
+    </div>
+<?php } ?>
+    <div class="form-group">
+        <label for="priority">Priority</label>
+        <select class="form-control select2" id="priority" name="priority" style="width: 100%;">
+            <option value="Low">Low</option>
+            <option value="Normal" selected>Normal</option>
+            <option value="High">High</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="message" class="control-label">Problem Details *</label>
+        <textarea class="form-control summernote-modal" id="message" name="message" placeholder="Please specify the details of your problem.				So that we can determine what parts & tools we will prepare to attend your request. It will be a great help for us to serve you promptly.We will NOT attend your request until you specify the problem details." required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="warranty_card" class="control-label">Attachment</label>
+            <div class="input-group">
+                <input type="file" id="ticket_file" name='ticket_file' class="filestyle" data-iconName="glyphicon glyphicon-inbox">
+            </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <input type="hidden" name="clientid" value="<?php echo $lia['clientid']; ?>">
+    <input type="hidden" name="userid" value="<?php echo $lia['id']; ?>">
+    <input type="hidden" name="adminid" value="0">
+    <input type="hidden" name="email" value="<?php echo $lia['email']; ?>">
+    <input type="hidden" name="notification" value="false">
+
+    <input type="hidden" name="addTicket">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Create</button>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.summernote-modal').summernote({height: 200,
+		 placeholder: 'Please specify the details of your problem.So that we can determine what parts & tools we will prepare to attend your request. It will be a great help for us to serve you promptly.We will NOT attend your request until you specify the problem details'});
+       
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(function () {
+        $(".select2").select2();
+        $(":file").filestyle();
+    });
+
+</script>

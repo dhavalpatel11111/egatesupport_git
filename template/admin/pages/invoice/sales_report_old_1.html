@@ -1,0 +1,437 @@
+<style>
+    table.dataTable th, 
+  table.dataTable td {
+      white-space: nowrap; /* Prevent text wrapping */
+  }
+</style>
+<aside class="right-side">
+    <section class="content-header" style="display: flex; justify-content: space-between; align-items: center; gap: 30px; width: 100%; overflow-x: auto;">
+        <span style="font-size: 24px; text-wrap: nowrap;"><i class="fa fa-tag" style="margin-right: 5px; font-size: 20px;"></i>Sales Comparison</span>
+        <span style="margin-left: 5%; font-size: 16px; text-wrap: nowrap;"> Total Active Company : <span style="color: red;"><?php echo isset($active_client_count) ? $active_client_count : 0; ?></span></span>
+
+        <span style="margin-left: 5%; margin-top: 1px; font-size: 16px; text-wrap: nowrap;">
+            <label for="is_diffrence_check" style="font-size: 16px; display: flex; justify-content: center; align-items: center; font-weight: unset;">
+                Check Difference &nbsp;&nbsp;
+                <input type="checkbox" id="is_diffrence_check" style="width: 25px; height: 25px;" >
+            </label>
+        </span>
+
+        
+        <button type="button" class="btn btn-primary" id="export_invoice" style="min-width: 115px; max-width: 150px;">Find Difference</button>
+        
+    </section>
+
+
+    <section class="content">
+        <div class="row">
+            <div class="col-lg-12 col-xs-12">
+                <div class="box box-primary">
+                    <!-- <div class="box-header">
+                        <i class="fa fa-tag"></i>
+                        <h3 class="box-title">Sales Report</h3>
+                    </div> -->
+                    <div class="box-body">
+                        <!-- two tab -->
+                       <div class="row">
+                        <!-- first tab -->
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col-sm-6">
+                                            <label for="year">Year</label>
+                                            <?php 
+
+                                            $defult = date("Y");
+                                            if(isset($_GET['tab1_year']) && $_GET['tab1_year'] != ''){
+                                                $defult = $_GET['tab1_year'];
+                                            }
+                                            ?>
+                                            <select style="width: 100%;" class="form-control" id="tab1_year">
+                                                <option value="none" <?php echo isset($defult) && $defult == '' ? 'selected' : '' ?> >Select Year</option>
+                                                <?php
+                                                $year_data = get_year_data();
+                                                foreach($year_data as $key => $value){ 
+                                                    if($defult != '' && $defult == $key ){ ?>
+                                                        <option value="<?php echo $key; ?>" selected><?php echo $value; ?></option>
+                                                    <?php }else{ ?>
+                                                        <option value="<?php echo $key; ?>"><?php echo $value; ?></option>
+                                                    <?php }
+                                                 }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="month">Month</label>
+                                            <select name="" id="tab1_month" style="width: 100%;" class="form-control">
+                                                <?php 
+                                                $defult_month_1 = date("m", strtotime("first day of last month"));
+                                                if(isset($_GET['tab1_month']) && $_GET['tab1_month'] != ''){
+                                                    $defult_month_1 = $_GET['tab1_month'];
+                                                }
+                                                ?>
+                                                <option value="none" <?php echo isset($defult_month_1) && $defult_month_1 == '' ? 'selected' : '' ?> >Select Month</option>
+                                                <?php
+                                               
+                                                $months = [
+                                                    1 => 'Jan',
+                                                    2 => 'Feb',
+                                                    3 => 'Mar',
+                                                    4 => 'Apr',
+                                                    5 => 'May',
+                                                    6 => 'Jun',
+                                                    7 => 'Jul',
+                                                    8 => 'Aug',
+                                                    9 => 'Sep',
+                                                    10 => 'Oct',
+                                                    11 => 'Nov',
+                                                    12 => 'Dec'
+                                                ];
+                                                foreach ($months as $num => $month) {
+                                                    if($defult_month_1 != '' && $defult_month_1 == $num){
+                                                        echo "<option value='".$num ."' selected>".$month."</option>";
+                                                    }else{
+                                                        echo "<option value='".$num ."'>".$month."</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col-sm-3" style="font-size: 16px;">
+                                            Number of Company : <span style="color: red;"><?php echo isset($client_list_count) ? $client_list_count : 0; ?></span> 
+                                        </div>
+                                        <div class="col-sm-5" style="font-size: 16px;">
+                                            <?php 
+                                            $current_contract_amount_html = '';
+                                            if(isset($total_amount_text)){
+                                                $total1_html = '<span style="color: black;" title="Rental Contract Amount">( '.number_format($total1).'</span>';
+                                                $licenses_amount_total_html = '<span style="color: black;" title="Liscense Contract Amount"> + '.number_format($licenses_amount_total).' )</span>';
+
+                                                $current_contract_amount_html = number_format($total_amount_text) . $total1_html . $licenses_amount_total_html;
+
+                                            }
+                                            ?>
+                                            Contract Amount : <span style="color: red;"><?php echo $current_contract_amount_html; ?></span>
+                                        </div>
+                                        <div class="col-sm-4" style="font-size: 16px;">
+                                            Total Invoice Amount : <span style="color: red;"><?php echo isset($total_sum) ? number_format($total_sum) : 0; ?></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 table-responsive">
+                                    <table class="table table-striped table-hover" id="client_list">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Client</th>
+                                                <th>Invoice No</th>
+                                                <th>Invoice Amount</th>
+                                                <th>Invoice Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            if(isset($client_list) && !empty($client_list)){
+                                                $c1 = 0;
+                                                foreach($client_list as $client){
+
+                                                    //for adding invoice data 
+
+                                                    $client_id = $client['id'];
+                                                    $i_year = isset($_GET['tab1_year']) ? $_GET['tab1_year'] : date("Y");
+                                                    $i_month_1 = isset($_GET['tab1_month']) ? $_GET['tab1_month'] : date("m", strtotime("first day of last month"));
+                                                    $get_invoice_for_sale_report = get_invoice_for_sale_report('' ,$i_month_1 , $client_id);
+                                                    $invoice_no = [];
+                                                    $invoice_remark = [];
+                                                    foreach($get_invoice_for_sale_report as $invoice_for_sale_report){
+                                                        $invoice_no[] = '<a href="?route=clients/editinvoice&id='.$invoice_for_sale_report["id"] .'">' .$invoice_for_sale_report['invoiceno'] . '</a>';
+                                                        $invoice_remark[] = $invoice_for_sale_report['remark'];
+                                                    }
+                                                    $invoice_no_string = implode(',', $invoice_no);
+                                                    $invoice_remark_string = implode(',', $invoice_remark);
+                                                    //for adding invoice data 
+
+
+                                                    $diffrence = '';
+                                                    if($client['is_difference']){
+                                                        $diffrence = " color: red;";
+                                                    }
+                                                    ?>
+                                                <tr>
+                                                    <td><?php  echo ++$c1; ?></td>
+                                                    <td style="<?php echo $diffrence; ?>" ><?php echo $client['name']; ?></td>
+                                                    <td><?php  echo $invoice_no_string; ?></td>
+                                                    <td style="text-align: right;<?php echo $diffrence; ?>"><?php echo number_format($client['total_amount']); ?></td>
+                                                    <td><?php echo $invoice_remark_string; ?></td>
+                                                </tr>
+                                            <?php }
+                                            } ?>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-striped table-hover" id="client_list_diff">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Client</th>
+                                                <th>Invoice No</th>
+                                                <th>Invoice Amount</th>
+                                                <th>Invoice Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            if(isset($client_list_diff) && !empty($client_list_diff)){
+                                                $cd_1 = 0;
+                                                foreach($client_list_diff as $client){ 
+                                                    //for adding invoice data 
+
+                                                    $client_id = $client['id'];
+                                                    $i_year = isset($_GET['tab1_year']) ? $_GET['tab1_year'] : date("Y");
+                                                    $i_month_1 = isset($_GET['tab1_month']) ? $_GET['tab1_month'] : date("m", strtotime("first day of last month"));
+                                                    $get_invoice_for_sale_report = get_invoice_for_sale_report('' ,$i_month_1 , $client_id);
+                                                    $invoice_no = [];
+                                                    $invoice_remark = [];
+                                                    foreach($get_invoice_for_sale_report as $invoice_for_sale_report){
+                                                        $invoice_no[] = '<a href="?route=clients/editinvoice&id='.$invoice_for_sale_report["id"] .'">' .$invoice_for_sale_report['invoiceno'] . '</a>';
+                                                        $invoice_remark[] = $invoice_for_sale_report['remark'];
+                                                    }
+                                                    $invoice_no_string = implode(',', $invoice_no);
+                                                    $invoice_remark_string = implode(',', $invoice_remark);
+                                                    //for adding invoice data 
+                                                    $diffrence = '';
+                                                    if($client['is_difference']){
+                                                        $diffrence = " color: red;";
+                                                    }
+                                                    ?>
+                                                <tr>
+                                                    <td><?php echo ++$cd_1; ?></td>
+                                                    <td style="<?php echo $diffrence; ?>" ><?php echo $client['name']; ?></td>
+                                                    <td><?php  echo $invoice_no_string; ?></td>
+                                                    <td style="text-align: right;<?php echo $diffrence; ?>"><?php echo number_format($client['total_amount']); ?></td>
+                                                    <td><?php echo $invoice_remark_string; ?></td>
+                                                </tr>
+                                            <?php }
+                                            } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- first tab -->
+                         <!-- second tab -->
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-sm-12" style="display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 15px;">
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col-sm-6">
+                                            <label for="month">Month</label>
+                                            <select name="" id="tab2_month" style="width: 100%;" class="form-control">
+                                                <?php 
+                                                $defult_month_2 = date("m");
+                                                if(isset($_GET['tab2_month']) && $_GET['tab2_month'] != ''){
+                                                    $defult_month_2 = $_GET['tab2_month'];
+                                                }
+                                                ?>
+                                                <option value="none" <?php echo isset($defult_month_2) && $defult_month_2 == '' ? 'selected' : '' ?> >Select Month</option>
+                                                <?php
+                                                $months = [
+                                                    1 => 'Jan',
+                                                    2 => 'Feb',
+                                                    3 => 'Mar',
+                                                    4 => 'Apr',
+                                                    5 => 'May',
+                                                    6 => 'Jun',
+                                                    7 => 'Jul',
+                                                    8 => 'Aug',
+                                                    9 => 'Sep',
+                                                    10 => 'Oct',
+                                                    11 => 'Nov',
+                                                    12 => 'Dec'
+                                                ];
+                                                foreach ($months as $num => $month) {
+                                                    if($defult_month_2 != '' && $defult_month_2 == $num){
+                                                        echo "<option value='".$num ."' selected>".$month."</option>";
+                                                    }else{
+                                                        echo "<option value='".$num ."'>".$month."</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <!-- <div class="col-sm-6">
+                                            <label for="is_diffrence_check" style="font-size: 16px; display: flex; justify-content: center; align-items: center; margin-top: 25px;">
+                                                Check Difference &nbsp;&nbsp;
+                                                <input type="checkbox" id="is_diffrence_check" style="width: 25px; height: 25px;" >
+                                            </label>
+                                        </div> -->
+                                        
+                                    </div>
+                                    <div class="row" style="width: 100%;">
+                                        <div class="col-sm-6" style="font-size: 17px;">
+                                            Total Number of Company : <span style="color: red;"><?php echo isset($client_list_count_2) ? $client_list_count_2 : 0; ?></span> 
+                                        </div>
+                                        <div class="col-sm-6" style=" font-size: 16px;">
+                                            Total Invoice Amount : <span style="color: red;"><?php echo isset($total_sum_2) ? number_format($total_sum_2) : 0; ?></span> 
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 table-responsive">
+                                    <table class="table table-striped table-hover" id="client_list_2">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Client</th>
+                                                <th>Invoice No</th>
+                                                <th>Invoice Amount</th>
+                                                <th>Invoice Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            if(isset($client_list_2) && !empty($client_list_2)){
+                                                $client_list_2_count = count($client_list_2);
+                                                $c_2 = 0;
+                                                foreach($client_list_2 as $client){ 
+                                                    //for adding invoice data 
+
+                                                    $client_id = $client['id'];
+                                                    $i_year = isset($_GET['tab1_year']) ? $_GET['tab1_year'] : date("Y");
+                                                    $i_month_2 = isset($_GET['tab2_month']) ? $_GET['tab2_month'] : date("m", strtotime("first day of last month"));
+                                                    $get_invoice_for_sale_report = get_invoice_for_sale_report('' ,$i_month_2 , $client_id);
+                                                    $invoice_no = [];
+                                                    $invoice_remark = [];
+                                                    foreach($get_invoice_for_sale_report as $invoice_for_sale_report){
+                                                        $invoice_no[] = '<a href="?route=clients/editinvoice&id='.$invoice_for_sale_report["id"] .'">' .$invoice_for_sale_report['invoiceno'] . '</a>';
+                                                        $invoice_remark[] = $invoice_for_sale_report['remark'];
+                                                    }
+                                                    $invoice_no_string = implode(',', $invoice_no);
+                                                    $invoice_remark_string = implode(',', $invoice_remark);
+                                                    //for adding invoice data 
+                                                    $diffrence = '';
+                                                    if($client['is_difference']){
+                                                        $diffrence = " color: red;";
+                                                    }
+                                                    ?>
+                                                <tr>
+                                                    <td><?php echo ++$c_2; ?></td>
+                                                    <td style="<?php echo $diffrence; ?>" ><?php echo $client['name']; ?></td>
+                                                    <td><?php  echo $invoice_no_string; ?></td>
+                                                    <td style="text-align: right;<?php echo $diffrence; ?>"><?php echo number_format($client['total_amount']); ?></td>
+                                                    <td><?php echo $invoice_remark_string; ?></td>
+                                                </tr>
+                                            <?php }
+                                            } ?>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-striped table-hover" id="client_list_2_diff">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Client</th>
+                                                <th>Invoice No</th>
+                                                <th>Invoice Amount</th>
+                                                <th>Invoice Remark</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            if(isset($client_list_2_diff) && !empty($client_list_2_diff)){
+                                                $cd_2 = 0;
+                                                $client_list_2_count = count($client_list_2_diff);
+                                                foreach($client_list_2_diff as $client){ 
+                                                    //for adding invoice data
+
+                                                    $client_id = $client['id'];
+                                                    $i_year = isset($_GET['tab1_year']) ? $_GET['tab1_year'] : date("Y");
+                                                    $i_month_2 = isset($_GET['tab2_month']) ? $_GET['tab2_month'] : date("m", strtotime("first day of last month"));
+                                                    $get_invoice_for_sale_report = get_invoice_for_sale_report('' ,$i_month_2 , $client_id);
+                                                    $invoice_no = [];
+                                                    $invoice_remark = [];
+                                                    foreach($get_invoice_for_sale_report as $invoice_for_sale_report){
+                                                        $invoice_no[] = '<a href="?route=clients/editinvoice&id='.$invoice_for_sale_report["id"] .'">' .$invoice_for_sale_report['invoiceno'] . '</a>';
+                                                        $invoice_remark[] = $invoice_for_sale_report['remark'];
+                                                    }
+                                                    $invoice_no_string = implode(',', $invoice_no);
+                                                    $invoice_remark_string = implode(',', $invoice_remark);
+                                                    //for adding invoice data
+                                                    $diffrence = '';
+                                                    if($client['is_difference']){
+                                                        $diffrence = " color: red;";
+                                                    }
+                                                    ?>
+                                                <tr>
+                                                    <td><?php echo ++$cd_2; ?></td>
+                                                    <td style="<?php echo $diffrence; ?>" ><?php echo $client['name']; ?></td>
+                                                    <td><?php  echo $invoice_no_string; ?></td>
+                                                    <td style="text-align: right;<?php echo $diffrence; ?>"><?php echo number_format($client['total_amount']); ?></td>
+                                                    <td><?php echo $invoice_remark_string; ?></td>
+                                                </tr>
+                                            <?php }
+                                            } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                       </div>
+                       <!-- second tab -->
+                       <!-- two tab -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+   
+</aside>
+
+<script>
+     
+$("#tab1_year , #tab1_month , #tab2_month").on('change' , function(){
+
+    var tab1_year = $("#tab1_year").val();
+    var tab1_month = $("#tab1_month").val();
+    var tab2_month = $("#tab2_month").val();
+
+    if(tab1_year != '' && tab1_year != 'none' && tab1_month != '' && tab1_month != 'none' && tab2_month != '' && tab2_month != 'none'){
+        window.location = '?route=invoice/sales_report&tab1_year=' + tab1_year + '&tab1_month=' + tab1_month + '&tab2_month=' + tab2_month;
+    }else if (tab1_year != '' && tab1_year != 'none' && tab1_month != '' && tab1_month != 'none') {
+        window.location = '?route=invoice/sales_report&tab1_year=' + tab1_year + '&tab1_month=' + tab1_month;
+    }else if (tab1_year != '' && tab1_year != 'none') {
+        window.location = '?route=invoice/sales_report&tab1_year=' + tab1_year;
+    }else if (tab1_month != '' && tab1_month != 'none') {
+        window.location = '?route=invoice/sales_report&tab1_month=' + tab1_month;
+    }else{
+        window.location = '?route=invoice/sales_report';
+    }
+})
+
+$("#client_list_diff").hide();
+$("#client_list_2_diff").hide();
+$("#is_diffrence_check").on('change' , function(){
+    if ($(this).is(':checked')) {
+        $("#client_list_diff").show();
+        $("#client_list").hide();
+        
+        $("#client_list_2_diff").show();
+        $("#client_list_2").hide();
+    }else{
+        $("#client_list_diff").hide();
+        $("#client_list").show();
+        
+        $("#client_list_2_diff").hide();
+        $("#client_list_2").show();
+    }
+})
+
+        $("#export_invoice").on('click', function () {
+            var tab2_month = $("#tab2_month").val();
+            var tab1_year = $("#tab1_year").val();
+            var tab1_month = $("#tab1_month").val();
+            window.location.href = "?route=invoice_sales_report&tab2_month=" + tab2_month + "&tab1_year=" + tab1_year + "&tab1_month=" + tab1_month;
+        });
+</script>

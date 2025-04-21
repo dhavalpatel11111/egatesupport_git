@@ -1,0 +1,41 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Edit Department</h4></div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="name">Department Name *</label>
+		
+		<?php
+           
+       $dpname = getTableFiltered("department", "id", $_GET['id']);
+	   foreach($dpname as $name){
+		?>
+        <input type="text" class="form-control" id="nameValue" name="name" value="<?php echo $name['name'] ; ?>" required>
+    </div>
+	<div class="form-group">
+        <label for="Person_incharge">Person in charge </label>
+        <input type="text" class="form-control" 
+		id="Person_incharge" name="Person_incharge" value="<?php echo $name['person_In_charge'] ; ?>"  autocomplete="off">
+    </div>
+	
+     <div class="form-group">
+        <label for="average-printing">Average Printing Pages Per Month</label>
+        <input type="number" class="form-control" id="average_printing" 
+		  name="average_printing" value="<?php echo $name['average_printing'];?>" autocomplete="off">
+    </div>
+	
+	<div class="form-group">
+        <label for="department_memo">Department Memo</label>
+        <input type="text" class="form-control" id="department_memo" 
+		  name="department_memo"  value="<?php echo $name['department_memo'];?>" autocomplete="off">
+    </div>
+<?php } ?>
+    <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>">
+    <input type="hidden" name="editdipartment">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>

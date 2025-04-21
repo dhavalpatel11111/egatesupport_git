@@ -1,0 +1,93 @@
+<style>
+    .d-hide {
+        display: none !important;
+    }
+</style>
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Edit Invoice & Collection Note</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label for="name">Name *</label>
+        <input type="text" class="form-control" id="name" name="name" value="<?php echo $client['name']; ?>" required readonly>
+        <label for="name">Client Type *</label>
+        <select class="form-control select2 select2-accessible" id="clienttypes" name="clienttypes" style="width: 100%;"
+            tabindex="-1" aria-hidden="true" disabled>
+            <option value="0">Select Client Type</option>
+            <?php foreach ($clienttypes as $clienttype) { 
+                $selected = ($client['clienttypes'] == $clienttype['id']) ? 'selected' : '';
+                echo "<option value='" . $clienttype['id'] . "' $selected>" . $clienttype['name'] . "</option>";
+            } ?>
+        </select>
+
+        <label for="name" class="d-hide">Contact Person *</label>
+        <input type="text" class="form-control d-hide" id="contact_person" name="contact_person"
+            value="<?php echo $client['contact_person']; ?>" required>
+
+            <div class="form-group">
+                <table id="dataTablesFullr" class="table table-striped table-hover">
+                     <thead>
+                           <tr>
+                               <th>Name</th>
+                               <th>Mobile</th>
+                               <th>Department</th>
+                           </tr>
+                     </thead>
+                     <tbody>
+                       <?php foreach ($people as $user): ?>
+                           <tr>
+                               <td><?php echo $user['name']; ?></br><?php echo $user['title']; ?></td>
+                               <td><?php echo $user['mobile']; ?></td>
+                               <td><?php echo $user['title']; ?></td>
+                           </tr>
+                       <?php endforeach; ?>
+                   </tbody>
+                </table>
+           </div>
+
+
+
+        <label class="d-hide" for="name"> IT MANGER EMAIL * </label>
+        <input type="email" class="form-control d-hide" id="it_manager_email" name="it_manager_email"
+            value="<?php echo $client['it_manager_email']; ?>">
+        <label class="d-hide" for="name">PURC MANAGER EMAIL *</label>
+        <input type="email" class="form-control d-hide" id="purc_manager_email" name="purc_manager_email"
+            value="<?php echo $client['purc_manager_email']; ?>">
+        <label class="d-hide" for="technician_name"> Technician in Charge *</label>
+        <?php $people = getTable("people");?>
+        <select class="form-control select2 select2-accessible d-hide" id="technician_name" name="technician_name"
+            style="width: 100%;" tabindex="-1" aria-hidden="true">
+            <option value="0">Select Technician</option>
+
+            <?php foreach ($people as $peop) {if($peop['role']=='technician'){ 
+			echo "<option value='".$peop['id']."'"; echo(($peop['id'] == $client['tech_incharge'])? "selected='selected'":'');  echo ">".$peop['name']."</option>"; } }?>
+        </select>
+        <label for="name">Invoice & Collection Note</label>
+        <textarea class="form-control summernote" id="invoice_collection_note"
+            name="invoice_collection_note"> <?php echo $client['invoice_collection_note']; ?> </textarea>
+    </div>
+    <?php   $client_contract_data = getTableFiltered("contract", "is_end", "0","clientid",$client['id']);  $count;
+	foreach($client_contract_data as $client_contract){$count++;}	
+?>
+    <div class="form-group">
+        <div class="checkbox d-hide"><label>
+                <?php if($client['is_active']==1){ ?><input type="checkbox" <?php echo ($client['is_active']==1) ? 'checked' : '' ?>
+                value="true" name="is_active"> Active
+            </label>
+            <?php } else {?><input style="display:none" type="checkbox" <?php echo ($client['is_active']==0) ? 'checked'
+                : 'checked' ?> value="true" name="is_active">
+            <?php echo "Pls Void Contract & Pull out asset before you make this client as (Inactive)";}
+	?>
+        </div>
+    </div> <input type="hidden" name="id" value="<?php echo $client['id']; ?>">
+    <input type="hidden" name="editClientPendingInvoice">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="">
+    <input type="hidden" name="section" value="">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+<script>$(document).ready(function () { $('#invoice_collection_note').summernote({ height: 100 }); });</script>

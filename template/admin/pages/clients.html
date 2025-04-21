@@ -1,0 +1,103 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Clients<small> Manage clients</small></h1>
+        <div class="pull-right"><a onClick='showM("ajax.php?modal=clientAdd&reroute=clients");return false' data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> NEW CLIENT</a></div>
+        <div style="clear:both"></div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($statusmessage)): ?>
+        <div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+
+                    <div class="box-body">
+                        <div class="row" style="margin-bottom: 15px;">
+                                 <div class="col-md-3">
+                                     <strong>View</strong>
+                                     <select id="view-options" class="form-control select2" style="width:auto;display:inline;">
+                                         <option value="all">All Clients</option>
+                                         <option selected="" value="active">Active</option>
+                                         <option value="inactive">Inactive</option>
+                                     </select>
+                                 </div>
+                            <div class="col-md-9">
+                                <span class="t-label2">Total Amount:</span>
+                                <span class="t-number autoNumeric animated-number"><?php echo getTotalAmount('contract','contract_amount','is_end',0);?></span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="dataTablesFullC" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Client Memo</th>
+                                        <th>Contract AMT</th>
+                                        <th>For month of</th>
+                                        <th>CR-Date</th>
+                                        <th>Assets</th>
+                                        <th>Licenses</th>
+                                        <th class="text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($clients as $client) {
+                                    echo "<tr>";
+                                    echo "<td><a href='?route=clients/manage&id=".$client['id']."'>".$client['id']."</a></td>";
+                                    echo "<td><a href='?route=clients/manage&id=".$client['id']."'>".$client['name']."</a></td>";
+                                    echo "<td><a href='?route=clients/manage&id=".$client['id']."'>".$client['client_memo']."</a></td>";
+                                    //Calculate total amount
+                                    $total = getTotalAmount("contract","contract_amount","clientid",$client['id'],"is_end",0);
+                                    $cr_date = getCRDate("assets","contract_expiry","clientid",$client['id']);
+                                    echo "<td class='text-right'><span class='autoNumeric'>".$total."</span></td>";
+                                    $m = $client['for_the_month'] == 0 ? '1' : $client['for_the_month'];
+                                    $formonth = $months[$m];
+                                    echo "<td><span class='label' style='text-transform:uppercase;color:#ffffff;background-color:".$formonth[1]."'>".$formonth[0]."</span> <a class='btn btn-success btn-xs' target='_blank' href='?route=pdf/issue_invoice&clientid=".$client['id']."&month=".$m."'>Print Invoice</a></td>";
+                                    $str = (strtotime($cr_date) > strtotime(date("Y-m-d"))) ? floor((strtotime($cr_date) - strtotime(date("Y-m-d")))/3600/24) : '<span class="badge" style="background-color:#ff0000">X</span>';
+                                    echo "<td>".$str."</td>";
+                                    echo "<td><span class='badge bg-blue'>".countTableFiltered("assets","clientid",$client['id'])."</span></td>";
+                                    echo "<td><span class='badge bg-green'>".countTableFiltered("licenses","clientid",$client['id'])."</span></td>";
+                                    echo "<td>
+                                    <div class='pull-right'>
+                                    <a href='?route=clients/manage&id=".$client['id']."' class='btn-right text-dark'><i class='fa fa-eye'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=clientEdit&reroute=clients&id=".$client['id']."\");return false' class='btn-right text-dark'><i class='fa fa-edit'></i></a>&nbsp;
+                                    <a href='#' onClick='showM(\"ajax.php?modal=clientDelete&reroute=clients&id=".$client['id']."\");return false' class='btn-right text-red'><i class='fa fa-trash-o'></i></a>
+                                    </div>
+                                    </td>";
+                                    echo "</tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#view-options').change(function() {
+            var v = $(this).val();
+            switch(v) {
+                case 'all' :
+                    window.location = '?route=clients/all';
+                    break;
+                case 'active' :
+                    window.location = '?route=clients/active';
+                    break;
+                case 'inactive' :
+                    window.location = '?route=clients/inactive';
+                    break;
+            }
+        });
+		 $("#dataTablesFullC").dataTable({ "order": [[1, "asc"]], "pageLength": <?php echo getConfigValue("table_records"); ?> , "dom": '<"top"f>rt<"bottom"><"row dt-margin"<"col-md-6"i><"col-md-6"p>><"clear">', "oLanguage": { "sSearch": "" }, "columnDefs": [ { "orderable": false, "targets": - 1 } ] });
+    });
+</script>

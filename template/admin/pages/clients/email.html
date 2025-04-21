@@ -1,0 +1,95 @@
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>Email<small> Send Messages</small></h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li class="active">Email</li></ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="box box-primary">
+          			<div class="box-header with-border"><h3 class="box-title">Receipient</h3></div><!-- /.box-header -->
+					<form role="form" method="post" class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateAssetForm();">
+	                    <div class="box-body">
+							<p>Generate a Message to all Users or selected Users.</p>
+							<div class="form-group">
+								<div style="padding-top:20px;padding-left:30px;">
+									<input type="checkbox" id="chkall" style="zoom:1.5;-moz-transform:scale(1.5)" name="chkall">
+									<label for="chkall" class="control-label" style="padding-left:20px;">All Client</label>
+								</div>
+								<div style="padding-top:20px;padding-left:15px;">
+									<div class="col-xs-4">
+										<input type="checkbox" id="chkslt" style="zoom:1.5;-moz-transform:scale(1.5)" name="chkslt">
+										<label for="chkslt" class="control-label" style="padding-left:20px;">Select Client</label>
+									</div>
+									<div class="col-xs-8" id="clint" style="display:none">
+										<select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 70%;" tabindex="-1" aria-hidden="true">
+											<option value="0">Select</option>
+											<?php foreach ($clients as $client) { echo "<option value='".$client['id']."'>".$client['name']."</option>"; } ?>
+										</select>
+									</div>
+								</div>
+								<div class="col-xs-10" style="padding-top:40px;">
+									<div>
+										<label for="subject" style="float:left;margin-right:20px">Subject</label>
+										<div class="input-group" style="width:91%">
+											<input type="text" class="form-control" id="subject" name="subject" required>
+										</div>
+									</div>
+									<div style="margin-top:30px">
+										<label for="message" style="float:left;margin-right:15px">Message</label>
+										<div class="input-group" style="width:91%">
+											<textarea class="form-control" id="message" name="message" style="height:250px" required></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+							<input type="hidden" name="sendmail" value="">
+							<input type="hidden" name="route" value="email">
+						</div>
+						<div class="box-footer">
+							<div class="col-xs-10">
+								<a id="upfile1" style="cursor:pointer">Attachment........</a>
+								<input type="file" id="file1"  name="file" style="display:none" />
+								<button type="submit" class="btn btn-primary pull-right" style="margin-right:20px">Send</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->
+<script>
+$("#upfile1").click(function () {
+    $("#file1").trigger('click');
+});
+
+$('#chkall').click(function() {
+     $('#chkslt').not('#chkall').removeAttr('checked');
+	 if($("#chkslt").is(":checked")){
+     
+	 }else{
+	 $("#clint").hide();
+	 }
+});
+
+$('#chkslt').click(function() {
+     $('#chkall').not('#chkslt').removeAttr('checked');
+	if($("#chkslt").is(":checked")){
+     $("#clint").show();
+	 }else{
+	 $("#clint").hide();
+	 }
+	 
+});
+
+</script>

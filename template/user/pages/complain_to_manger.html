@@ -1,0 +1,149 @@
+<aside class="right-side" style="padding-top: 50px;">
+    <?php 
+    $lia_id = isset($lia) && isset($lia['clientid']) ? $lia['clientid'] : 0;
+    ?>
+
+    <section class="content-header" style="margin-bottom: 5px; display: flex;">
+
+        <span style="font-size: 30px; width: 20%;">Question, Complain , Issue</span>
+
+        <span class="col-md-6 col-xs-6" style="display: flex; justify-content: left; align-items: center; background-color: #00008E; color: white; gap: 5px; border-radius: 5px; padding: 6px; width: 63%; margin-left: 10px; padding-left: 10px;">
+            <span>
+                <i class="fa fa-exclamation-triangle" style="color: orange; font-size: 40px; margin-right: 10px;" aria-hidden="true"></i>
+            </span>
+            <span style="font-size: 19px;">
+                Your feedback and concerns are very important to us. To ensure your issue is promptly forwarded to our management team,<br> we kindly request that you share it here directly. Contacting us via email or phone may risk your concern being overlooked
+            </span>
+        </span>
+
+        <span style="padding-left: 10px;">
+            <button class="btn btn-primary" id="add_complain_btn" style="padding-top: 21px; padding-bottom: 21px;">Add Question, Complain , Issue</button>
+        </span>
+
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+
+                        <div class="row">
+
+                            <!-- <div class="col-sm-12">
+                                <button class="btn btn-primary" id="add_complain_btn">Add Question, Complain , Issue</button>
+                            </div> -->
+
+                            <div class="col-sm-12" style="margin-top: 10px;">
+                                <table id="dataTablesFullDesc" class="table table-striped table-hover dataTable no-footer">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 5% !important;">Id</th>
+                                            <th class="text-center" style="width: 12% !important;">Date</th>
+                                            <th class="text-center" style="width: 13% !important;">Type</th>
+                                            <th class="text-center" style="width: 25% !important;">Subject</th>
+                                            <th class="text-center" style="width: 45% !important;">Description</th>
+                                            <!-- <th class="text-center">Action</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        if(isset($user_complain_list)){
+                                            foreach($user_complain_list as $user_complain){ ?>
+                                                <tr>
+                                                    <td class="text-center"><?php echo $user_complain['id']; ?></td>
+                                                    <td class="text-center"><?php echo $user_complain['date']; ?></td>
+                                                    <td class="text-center"><?php echo $user_complain['issuetype']; ?></td>
+                                                    <td class="text-center"><?php echo $user_complain['name']; ?></td>
+                                                    <td class="text-center"><?php echo $user_complain['description']; ?></td>
+                                                    <!-- <td class="text-center">
+                                                        Action
+                                                    </td> -->
+                                                </tr>
+                                        <?php }
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</aside>
+
+<div class="modal" tabindex="-1" role="dialog" id="add_complain_modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="complain_from" method="post" role="form" action="?route=complain_to_manger">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Add Issue</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="name">Issue Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" value="" required>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="issuetype">Type</label>
+                            <select class="form-control select2-icon" id="issuetype" name="issuetype" style="width: 100%;">
+                                <option value="Task" data-icon="fa-check-square text-blue"> Task</option>
+                                <option value="Maintenance" data-icon="fa-minus-square text-yellow"> Maintenance</option>
+                                <option value="Bug" data-icon="fa-bug text-red"> Bug</option>
+                                <option value="Improvement" data-icon="fa-external-link text-teal"> Improvement</option>
+                                <option value="New Feature" data-icon="fa-plus-square text-green"> New Feature</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="clientid">Client</label>
+                            <select class="form-control select2 select2-hidden-accessible" id="clientid" name="clientid" style="width: 100%;" tabindex="-1" aria-hidden="true">
+                                <option value="0">None</option>
+                                <?php foreach ($clients as $client) { ?>
+                                    <option value='<?php echo $client['id']; ?>' <?php if(isset($lia_id)) { if($lia_id == $client['id']) echo "selected"; }  ?>><?php echo $client['name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="description" class="control-label">Description</label>
+                            <textarea class="form-control summernote" id="description" name="description"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+    $(document).on("click" , "#add_complain_btn" , function(){
+        $("#add_complain_modal").modal('show');
+    })
+</script>
+

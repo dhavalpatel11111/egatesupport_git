@@ -1,0 +1,54 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button><h4 class="modal-title">Issue Invoice</h4></div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="month">Select for the month</label>
+        <?php
+        $months = array(
+        '1' => ['Jan', '#337ab7'],
+        '2' => ['Feb', '#5cb85c'],
+        '3' => ['Mar', '#5bc0de'],
+        '4' => ['Apr', '#f0ad4e'],
+        '5' => ['May', '#d9534f'],
+        '6' => ['Jun', '#F2F271'],
+        '7' => ['Jul', '#B26B07'],
+        '8' => ['Aug', '#FC0000'],
+        '9' => ['Sep', '#1FF21F'],
+        '10' => ['Oct', '#42A6F7'],
+        '11' => ['Nov', '#025191'],
+        '12' => ['Dec', '#EA77F4'],
+        );
+        ?>
+        <select class="form-control select2" id="month" name="month" style="width: 100%;">
+            <?php foreach($months as $key => $month) { ?>
+            <option <?php echo ($key == date('m'))? 'selected': ''?> value="<?=$key?>"><?=$month[0]?></option>
+            <?php } ?>
+        </select>    </div>
+
+    <input type="hidden" name="saveMonth">
+    <input type="hidden" name="route" value="<?php echo $_GET['reroute']; ?>">
+    <input type="hidden" name="routeid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="clientid" value="<?php echo $_GET['routeid']; ?>">
+    <input type="hidden" name="section" value="<?php echo $_GET['section']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".select2").select2();
+    });
+
+    $(document).ready(function () {
+        $('.summernote-modal').summernote({height: 200});
+    });
+
+    function userEmail(_this) {
+        var emailaddr = $(_this).find(':selected').data("emailaddr");
+        document.getElementById("email").value = emailaddr;
+    }
+
+</script>

@@ -1,0 +1,139 @@
+<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Page Count Report</h4>
+</div>
+<div class="modal-body">
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <?php
+         $date = isset($labeldata[0]['date']) ? $labeldata[0]['date'] : date('Y-m-d');
+        ?>
+        <input type="date" class="form-control" id="date" name="date"
+            value="<?php echo date('Y-m-d', strtotime($date)); ?>" required>
+
+    </div>
+
+    <div class="form-group">
+        <label for="department">Department</label>
+        <input type="text" class="form-control" id="department" name="department" value="<?php echo $department; ?>"
+            readonly>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-5">
+            <div class="form-group text-center">
+                <?php
+                    if($modelimage != ""){ ?>
+                <img style="display: inline-block;" width="100%" src="uploads/<?php echo $modelimage; ?>">
+                <?php } ?>
+            </div>
+        </div>
+
+        <div class="col-xs-7">
+            <div class="form-group">
+                <label for="name">Model Name *</label>
+                <input type="text" class="form-control" id="modalname" name="modalname"
+                    value="<?php echo $modelname; ?>" readonly>
+            </div>
+            <div class="form-group">
+                <label for="serial">Contract No *</label>
+                <input type="text" class="form-control" id="serial" name="serial" value="<?php echo $contractNo; ?>"
+                    readonly>
+            </div>
+        </div>
+    </div>
+
+    <?php 
+        $month = [
+                    '',
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December'
+                ];            
+                //$monthNumeric = date('m', strtotime($date));
+                $monthNumeric = (int) date('m', strtotime($date)) ; // Convert to zero-based index
+
+    ?>
+    <div class="form-group">
+        <label for="A4blk">Page Report for the Month of</label>
+        <select class="form-control select2 select2-hidden-accessible" id="page_report_for_month"
+            name="page_report_for_month" style="width: 100%;" tabindex="-1" aria-hidden="true">
+            <?php 
+                for ($i=0; $i < count($month) ; $i++) { 
+                    if($i == $monthNumeric){ ?>
+            <option value="<?php echo $i; ?>" selected>
+                <?php echo $month[$i]; ?>
+            </option>
+            <?php 
+                    }else{ ?>
+            <option value="<?php echo $i; ?>">
+                <?php echo $month[$i]; ?>
+            </option>
+            <?php  }
+                        }
+                    ?>
+        </select>
+    </div>
+
+
+
+
+
+    <div class="form-group">
+        <label for="A3blk">A3 Black</label>
+        <input type="text" class="form-control" id="A3blk" name="A3blk" value="">
+    </div>
+    <div class="form-group">
+        <label for="A4blk">A4 Black</label>
+        <input type="text" class="form-control" id="A4blk" name="A4blk" value="">
+    </div>
+    <div class="form-group">
+        <label for="A3clr" style="color: red;">A3 Color</label>
+        <input type="text" class="form-control" id="A3clr" name="A3clr" value="">
+    </div>
+    <div class="form-group">
+        <label for="A4clr" style="color: red;">A4 Color</label>
+        <input type="text" class="form-control" id="A4clr" name="A4clr" value="">
+    </div>
+
+
+
+
+
+    <div class="form-group">
+        <label for="remark">Remark</label>
+        <input type="text" class="form-control" id="remark" name="remark" value="<?php echo $usageReport['remark']; ?>"
+            required>
+    </div>
+
+    <div class="form-group">
+        <label for="image">File attatchment</label>
+        <input type="file" class="form-control" id="image" name="image">
+    </div>
+
+    <input type="hidden" name="id" value="<?php echo $labeldata[0]['id']; ?>">
+    <input type="hidden" name="editUsageModel">
+    <input type="hidden" name="modelid" value="<?php echo $modelid;?>">
+    <input type="hidden" name="route" value="clients/manage">
+    <input type="hidden" name="routeid" value="<?php echo $labeldata[0]['clientid'];?>">
+    <input type="hidden" name="section" value="">
+    <input type="hidden" name="contract_id" value="<?php echo $labeldata['contract_id']; ?>">
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+</div>
+
+<script type="text/javascript">
+    $(".select2").select2();
+</script>

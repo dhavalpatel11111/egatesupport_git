@@ -1,0 +1,121 @@
+<aside class="right-side">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>Logs<small> View application logs</small></h1>
+		<ol class="breadcrumb"><li><a href="?route=dashboard"><i class="fa fa-dashboard"></i> Home</a></li><li>System</li><li class="active">Logs</li></ol>
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<?php if(!empty($statusmessage)): ?>
+				<div class="row"><div class='col-md-12'><div class="alert alert-<?php print $statusmessage["type"]; ?> alert-auto" role="alert"><?php print $statusmessage["message"]; ?></div></div></div>
+		<?php endif; ?>
+	    <div class='row'>
+            <div class='col-md-12'>
+                <!-- Custom Tabs -->
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#system" data-toggle="tab">System Log</a></li>
+						<li><a href="#email" data-toggle="tab">Email Message Log</a></li>
+						<li><a href="#sms" data-toggle="tab">SMS Message Log</a></li>
+
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="system">
+							<div class="table-responsive">
+								<table id="dataTablesFull" class="table table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>User/Admin</th>
+											<th>Client</th>
+											<th>IP Address</th>
+											<th>Description</th>
+											<th>Timestamp</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										foreach ($systemLog as $log) {
+										echo "<tr>";
+											echo "<td>".$log['id']."</td>";
+											echo "<td>".getSingleValue("people","name",$log['peopleid'])."</td>";
+											echo "<td>".getSingleValue("clients","name",$log['clientid'])."</td>";
+											echo "<td>".$log['ipaddress']."</td>";
+											echo "<td>".$log['description']."</td>";
+											echo "<td>".$log['timestamp']."</td>";
+										echo "</tr>";
+										}
+										?>
+									</tbody>
+								</table>
+							</div>
+						</div><!-- /.tab-pane -->
+                        <div class="tab-pane" id="email">
+							<div class="table-responsive">
+								<table id="dataTablesFull" class="table table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>User/Admin</th>
+											<th>Client</th>
+											<th>Email</th>
+											<th>Subject</th>
+											<th>Timestamp</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										foreach ($emailLog as $log) {
+										echo "<tr>";
+											echo "<td>".$log['id']."</td>";
+											echo "<td>".getSingleValue("people","name",$log['peopleid'])."</td>";
+											echo "<td>".getSingleValue("clients","name",$log['clientid'])."</td>";
+											echo "<td>".$log['to']."</td>";
+											echo "<td>".$log['subject']."</td>";
+											echo "<td>".$log['timestamp']."</td>";
+										echo "</tr>";
+										}
+										?>
+									</tbody>
+								</table>
+							</div>
+                        </div><!-- /.tab-pane -->
+						<div class="tab-pane" id="sms">
+							<div class="table-responsive">
+								<table id="dataTablesFull" class="table table-hover">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>User/Admin</th>
+											<th>Client</th>
+											<th>Mobile</th>
+											<th>Text</th>
+											<th>Timestamp</th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										foreach ($SMSLog as $log) {
+										echo "<tr>";
+											echo "<td>".$log['id']."</td>";
+											echo "<td>".getSingleValue("people","name",$log['peopleid'])."</td>";
+											echo "<td>".getSingleValue("clients","name",$log['clientid'])."</td>";
+											echo "<td>".$log['mobile']."</td>";
+											echo "<td>".$log['sms']."</td>";
+											echo "<td>".$log['timestamp']."</td>";
+										echo "</tr>";
+										}
+										?>
+									</tbody>
+								</table>
+							</div>
+                        </div><!-- /.tab-pane -->
+                    </div><!-- /.tab-content -->
+                </div><!-- nav-tabs-custom -->
+            </div><!-- /.col-->
+        </div><!-- ./row -->
+
+
+	</section><!-- /.content -->
+</aside><!-- /.right-side -->

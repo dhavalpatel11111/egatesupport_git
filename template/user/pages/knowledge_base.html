@@ -1,0 +1,225 @@
+<style>
+    .onhoverfile:hover>.hovertextfile {
+        display: block;
+        position: absolute;
+        background: #000;
+        color: #fff;
+        padding: 7px;
+        border-radius: 4px;
+        /* top: 0; */
+        /* left: 62%; */
+        z-index: 10;
+        min-width: 329px;
+        text-align: left;
+    }
+
+    .hovertextfile {
+        display: none;
+    }
+
+    td.onhoverfile {
+        position: relative;
+    }
+</style>
+<!-- Right side column. Contains the navbar and content of the page -->
+<aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1 class="pull-left">Knowledge Base<small></small></h1>
+        <div style="clear:both"></div>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <?php if(!empty($articles)): ?>
+        <div class="row">
+            <div class='col-md-12'>
+                <?php 
+                if(isset($statusmessage) && !empty($statusmessage)){
+                    if(isset($statusmessage["type"]) && $statusmessage["type"] != ''){ ?> 
+                        <div class="alert alert-<?php print $statusmessage[" type"]; ?> alert-auto" role="alert">
+                            <?php print $statusmessage["message"]; ?>
+                        </div>
+                <?php  }
+                }
+                ?>
+
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-default">
+                    <div class="box-body">
+
+                        <div class="box box-default" style="border-top: none;">
+                            <div class="box-body">
+                                <!-- <h4>
+                                    <?php echo 'Categories'; ?>
+                                </h4> -->
+                                <hr style="margin-top: 0px">
+                                <?php foreach($categories as $category){?>
+                                <div class="btn-group">
+                                    <a class="btn btn-primary btn-flat"
+                                        href="?route=knowledge_base&id=<?php echo $category['id']; ?>"><i
+                                            class="fa fa-folder-open fa-fw"></i>
+                                        <?php echo $category['name'];?>
+                                    </a>
+
+                                    <!-- <button type="button" class="btn btn-primary btn-flat dropdown-toggle"
+                                        data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button> -->
+                                    <!-- <ul class="dropdown-menu" role="menu">
+                                        <?php //if(in_array("editKB",$perms)) { ?>
+                                        <li><a onClick='showM("ajax.php?modal=kb/editCategory&reroute=kbedit&routeid=<?php echo $category['
+                                                id'];?>&id=
+                                                <?php echo $category['id'];?>&section=
+                                                <?php echo $category['name'];?>");return false' data-toggle="modal"
+                                                href="#">Edit Category
+                                            </a></li>
+                                        <?php // } ?>
+
+                                        <?php //if(in_array("deleteKB",$perms)) { ?>
+                                        <li><a onClick='showM("ajax.php?modal=kb/deleteCategory&reroute=kb&routeid=<?php echo $category['
+                                                id'];?>&section=
+                                                <?php echo $category['name'];?>&id=
+                                                <?php echo $category['id'];?>");return false' data-toggle="modal"
+                                                href="#">Delete Category
+                                            </a></li>
+                                        <?php //} ?>
+                                    </ul> -->
+                                </div>
+                                <?php }?>
+
+                                <!-- <h4>
+                                    <?php echo 'Articles'; ?>
+                                </h4> -->
+
+                                <?php if(empty($articles)) { ?>
+
+                                <p class="text-muted">
+                                    <?php echo'There are no articles in this category. Please select a different category.'; ?>
+                                </p>
+
+                                <?php } ?>
+
+
+
+                                <?php if(!empty($articles)) { ?>
+
+                                <div class="table-responsive">
+
+                                    <table id="dataTablesFullDesc" class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th style="width: 15% !important;">Category</th>
+                                                <th style="width: 15% !important;">Printer Model</th>
+                                                <th>Error Message</th>
+                                                <th style="width: 30% !important;">Subject</th>
+                                                <th>File Attachment</th>
+                                                <th>View Video</th>
+                                                <th class="text-right"></th>
+                                            </tr>
+                                        </thead>
+                                        <?php 
+                                        foreach($articles as $kb_art){
+								        ?>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <?php echo'KB'.$kb_art['id'];?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                        $category_name = getSingleValue("kb_categories", "name", $kb_art['categoryid']);
+                                                        echo $category_name;
+                                                     ?>
+                                                </td>
+                                                <td><?php
+                                                    $modelname = getSingleValue("models","name",$kb_art['modelid']);
+                                                     echo $modelname; ?></td>
+                                                <td><?php echo $kb_art['errormessage']; ?></td>
+                                                <td><?php echo $kb_art['subject']; ?></td>
+                                               
+                                                <?php
+                                                    $host = $_SERVER['HTTP_HOST'];
+                                                    $host_upper = strtoupper($host);
+                                                    $path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+                                                    $baseurl = "http://" . $host . $path . "/";
+                                                    $targetdir = $baseurl . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . "Asset" . DIRECTORY_SEPARATOR;
+                                                    $fileLink = "";
+                                                    if (!empty($kb_art['file'])) {
+                                                        $fileLink = "<a target='_blank' class='onhoverfile' href='" . $targetdir . $kb_art['file'] . "'><i class='fa fa-file'></i><span class='hovertextfile'>" . $kb_art['file'] . "</span></a><br>";
+                                                    }
+                                                    ?>
+
+                                                <td><?php echo $fileLink; ?></td>
+                                                <td>
+                                                    <?php 
+                                                    if($kb_art['youtube_url'] != ''){ ?>
+                                                        <div data-url="<?php echo $kb_art['youtube_url']; ?>" class="youtube_image" style="cursor: pointer;">
+                                                            <i class="fa fa-youtube-play" style="color: red;"></i>
+                                                        </div>
+                                                    <?php  }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <div class='pull-right'>
+                                                        <div class="btn-group">
+
+                                                            <a href='#' onClick='showM("ajax.php?modal=kb/viewArticle&reroute=kbedit&routeid=<?php echo $kb_art['id']; ?>&id=<?php echo $kb_art['id']; ?>"); return false;' class='btn btn-flat btn-primary btn-sm'><i class='fa fa-eye'></i></a>
+
+                                                            <?php// if(in_array("viewKB",$perms)) { ?>
+                                                            <?php //} ?>
+
+                                                            <!-- <?php // if(in_array("editKB",$perms)) { ?>
+                                                                <a href='#' onClick='showM("ajax.php?modal=kb/editArticle&reroute=kb&routeid=<?php echo $kb_art['id']; ?>&id=<?php echo $kb_art['id']; ?>"); return false;' class='btn btn-flat btn-success btn-sm'><i class='fa fa-edit'></i></a>
+                                                            <?php // } ?> -->
+
+                                                            <!-- <?php //if(in_array("deleteKB",$perms)) { ?><a href='#'
+                                                                onClick='showM("ajax.php?modal=kb/deleteArticle&reroute=kb&routeid=<?php echo $kb_art['
+                                                                id']; ?>&id=
+                                                                <?php echo $kb_art['id']; ?>");return false' class='btn
+                                                                btn-flat btn-danger btn-sm'><i
+                                                                    class='fa fa-trash-o'></i>
+                                                            </a>
+                                                            <?php //} ?> -->
+
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <?php }?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </section><!-- /.content -->
+</aside><!-- /.right-side -->
+<div class="modal fade" id="myModalyoutube" style="display: none;" tabindex="-1" role="dialog">
+	<form role="form" method="post" enctype="multipart/form-data" style="height: 100%;">
+		<div class="modal-dialog modal-center modal-lg">
+			<div class="modal-content">
+				<button style="margin: 0px 6px 0 0px;font-size: 32px;" type="button" class="close"
+					data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<iframe style="padding: 0 15px 15px 15px;" id="myIframe" width="100%" height="500" frameborder="0"
+					allowfullscreen></iframe>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</form><!-- /.form -->
+</div>
+<script>
+	$('.youtube_image').click(function () {
+            var url = $(this).data('url');
+            $('#myIframe').attr('src', url);
+            $('#myModalyoutube').modal('show');
+    });
+</script>

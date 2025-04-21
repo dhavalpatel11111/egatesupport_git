@@ -1,0 +1,11 @@
+DirectoryIndex index.php
+RewriteEngine on
+RewriteCond $1 !^(index\.php|images|css|js|robots\.txt|favicon\.ico)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Use PHP56 as default
+AddHandler application/x-httpd-php56 .php
+<IfModule mod_suphp.c>
+    suPHP_ConfigPath /opt/php56/lib
+</IfModule>
